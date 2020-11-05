@@ -7513,6 +7513,13 @@ body {
 .navbar-custom .navbar-nav .login-item .nav-link {
   color: #ffffff; }
 
+.navbar-custom .navbar-nav .login-text {
+  color: #ffffff;
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.75rem; }
+
 @media (min-width: 576px) {
   .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link {
     text-align: center;

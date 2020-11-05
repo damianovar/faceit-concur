@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, flash, redirect, request, send_file, send_from_directory, abort
+from flask import Flask, render_template, url_for, flash, redirect, request, send_file, send_from_directory, abort, session
 from user.forms import RegistrationForm, LoginForm
 from functools import wraps
 from werkzeug.utils import secure_filename
@@ -19,11 +19,12 @@ if not os.path.exists(app.config["TEX_UPLOADS"]):
 # Decorators
 def login_requiered(f):
     @wraps(f)
-    def wrap(*arg, **kwargs):
+    def wrap(*args, **kwargs):
         if 'logged_in' in session:
-            return f(*args,**kwargs)
+            return f(*args, **kwargs)
         else:
             return redirect('/')
+    return wrap
 
 @app.route("/")
 def index():
@@ -36,7 +37,7 @@ def register():
     if form.validate_on_submit():
         User().signup(form)
         return redirect('/')
-    return render_template('register.html', title='Register',form = form)
+    return render_template('register.html', title='Register', form=form)
 
 
 @app.route("/login", methods=['GET', 'POST'])
@@ -56,7 +57,7 @@ def signout():
     return User().signout()
 
 
-def allowed_file(filename): 
+def allowed_file(filename):
     if not "." in filename:
         return False
 
@@ -106,6 +107,7 @@ def get_image(tex_name):
 
 
 @app.route("/downloads/", methods=['GET', 'POST'])
+@login_requiered
 def downloads():
 
     files = os.listdir('backend/sample_data')
