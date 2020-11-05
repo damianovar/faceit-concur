@@ -1,0 +1,82 @@
+.sidebar {
+    order: 0;
+    // background-color: #f5f2f9;
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+  
+    @include media-breakpoint-up(md) {
+      @supports (position: sticky) {
+        position: sticky;
+        z-index: 1000;
+        min-height: calc(100vh - 50px);
+      }
+      border-right: 1px solid rgba(0, 0, 0, .1);
+    }
+  
+    @include media-breakpoint-up(xl) {
+      flex: 0 1 320px;
+    }
+  }
+
+  .form-control-underlined:focus {
+    border-bottom: 1px solid #ff5500;
+    background: transparent;
+    box-shadow: none;
+    color: #ffffff;
+  }
+  
+  .form-control-underlined {
+    border: 0;
+    outline: 0;
+    background: transparent;
+    border-bottom: 1px solid rgb(255, 255, 255);
+    border-radius: 0;
+  }
+  
+  .form-inline{
+    padding-left: 1.0rem;
+}
+
+.sticky-offset {
+  top: 65px;
+}
+
+/* change the brand and text color */
+.sidebar .navbar-text {
+    color: rgba(255,255,255,.8);
+}
+
+/* change the link color and padding  */
+.sidebar .nav .nav-link {
+    color: rgba(255,255,255,.5);
+    padding: .75rem 1rem;
+}
+
+/* change the color and bg color of active or hovered links */
+.sidebar .nav-item.active .nav-link,
+.sidebar .nav-item:hover .nav-link {
+    color: #333333;
+    background-color:#ffffff;
+}
+
+/* for dropdown only - change the color of droodown */
+.sidebar .dropdown-menu {
+    border-radius: 0;
+}
+.sidebar .dropdown-item {
+    color: #333333;
+}
+.sidebar .dropdown-item:hover,
+.sidebar .dropdown-item:focus {
+    color: #333333;
+    background-color: rgba(255,255,255,.5);
+} 
+
+.navbar-custom .navbar-nav .nav-item{
+  font-size: 1.25rem;
+}
+
+.navbar-custom .navbar-nav .login-item .nav-link{
+    color:#ffffff ;
+}
+
+

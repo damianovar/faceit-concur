@@ -1,0 +1,232 @@
+\begin{frame}{Question E8.1}
+	\QuestionKCs{scores plots}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{A scores plot shows \ldots}
+	\QuestionAnswers
+	{
+		\correctanswer the distribution of the samples
+		\answer the correlations among the scores
+		\answer the correlations among the loadings
+		\answer I do not know
+	}
+	\QuestionSolution{the scores plot shows the distribution of the samples, and thus we can check if there are patterns, groupings, similarities and differences in the samples}
+\end{frame}
+
+
+\begin{frame}{Question E8.2}
+	\QuestionKCs{loadings}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{Assume to collect daily temperatures measurements from 4 sensors equally spaced in this room. How will the loadings of th 1st PC probably look like?}
+	\QuestionAnswers
+	{
+		\answer $[0.25 \quad 0.25 \quad 0.25 \quad 0.25]$
+		\correctanswer $[0.5 \quad 0.5 \quad 0.5 \quad 0.5]$
+		\answer $[1 \quad 0 \quad 0 \quad 0]$
+		\answer I don't know
+	}
+	\QuestionSolution{the loadings should be almost the same; moreover we need to have orthonormality, thus we need the Euclidean norm of the vector to be equal to 1}
+\end{frame}
+
+
+\begin{frame}{Question E8.3}
+	\QuestionKCs{loadings}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{Assume to collect daily temperatures measurements from 4 sensors in this room, but assume also that one of the sensors is closer to a window than the rest. How will the loadings of the 1st PC probably look like?}
+	\QuestionAnswers
+	{
+        \answer $[0.5 \quad 0.5 \quad 0.5 \quad 0.5]$
+        \correctanswer the loading associated to that sensor will be higher
+        \answer the loading associated to that sensor will be smaller
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.4}
+	\QuestionKCs{SVD}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{In a SVD, are both the $U$ and $V$ matrices operating from / to the same spaces?}
+	\QuestionAnswers
+	{
+		\answer yes, always
+		\answer no, never
+		\correctanswer sometimes
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.5}
+	\QuestionKCs{PCA}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{When doing a PCA, is the order of the data rows important?}
+	\QuestionAnswers
+	{
+		\answer yes, always
+		\correctanswer no, never
+		\answer sometimes
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.6}
+	\QuestionKCs{PCA}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody
+	{
+		How would you score the pilots below, based on their abilities to take off AND land? \vspace{0.1cm} \\
+		\centering
+		\includegraphics[width = 0.4\textwidth]{taking-off-score-vs-landing-score}
+% 		\newcommand{\InsertImageAt}[5] % path / height / width / xshift / yshift
+% 		\InsertImageAt{taking-off-score-vs-landing-score}{3}{5}{5}{-3}
+	}
+	\QuestionAnswers
+	{
+		\answer select one specific component
+		\answer use the average of the two components
+		\correctanswer use a non-symmetric combination of the two components
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.7}
+	\QuestionKCs{ICA}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{In an ICA model, the $A$ matrix mixing the original signals into the measured ones must be full rank}
+	\QuestionAnswers
+	{
+		\correctanswer true
+		\answer false
+		\answer it depends
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.8}
+	\QuestionKCs{ICA}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{In an ICA model, the original signals must be Gaussian-distributed}
+	\QuestionAnswers
+	{
+		\answer true
+		\correctanswer false
+		\answer it depends
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.9}
+	\QuestionKCs{ICA}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{In an ICA model, the original signals must be independent}
+	\QuestionAnswers
+	{
+		\correctanswer true
+		\answer false
+		\answer it depends
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.10}
+	\QuestionKCs{PCA}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{In a PCA model, we can choose the sign of the loadings vectors}
+	\QuestionAnswers
+	{
+		\correctanswer true
+		\answer false
+		\answer it depends
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.11}
+	\QuestionKCs{data imputation}
+	\QuestionKCsTaxonomies{(1,1)}
+	\QuestionBody{Assume that the matrix $\bm{X}$ is missing some values in column $j$. How to cope with this?}
+	\QuestionAnswers
+	{
+		\answer we take the average of the remaining values in column $j$ and substitute the missing samples with this average
+		\correctanswer we consider column $j$ as a ``$\bm{y}$'' and do MLR
+		\answer we eliminate that rows from our dataset
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.12}
+	\QuestionKCs{MLR,regularization}
+	\QuestionKCsTaxonomies{(1,1),(1,1)}
+	\QuestionBody{Consider a linear model $y = \sum_{i} \theta_{i} x_{i} + e$ for which the number of parameters to be estimated is larger than the number of available samples in the dataset, so that $\bm{X}^{T} \bm{X}$ is not invertible. How do we do?}
+	\QuestionAnswers
+	{
+		\answer reduce the model order, so to have less parameters to estimate
+		\answer collect more data
+		\correctanswer consider a regularized MLR approach
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.13}
+	\QuestionKCs{MLR,regularization}
+	\QuestionKCsTaxonomies{(1,1),(1,1)}
+	\QuestionBody{Consider the regularized MLR solution $\thetahat = \left( \bm{X}^{T} \bm{X} + \gamma \Lambda \right)^{-1} \bm{X}^{T} \bm{y}$. What physical meaning does $\Lambda$ have?}
+	\QuestionAnswers
+	{
+		\correctanswer it reflects some information on the prior
+		\answer it reflects some information on the likelihood
+		\answer it reflects some information on the posterior
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.14}
+	\QuestionKCs{MLR,regularization}
+	\QuestionKCsTaxonomies{(1,1),(1,1)}
+	\QuestionBody{Consider the regularized MLR solution $\thetahat = \left( \bm{X}^{T} \bm{X} + \gamma \Lambda \right)^{-1} \bm{X}^{T} \bm{y}$. What will be the effect of choosing a wrong $\Lambda$?}
+	\QuestionAnswers
+	{
+		\correctanswer it will highlight features that are different from the desired ones
+		\answer it will increase the bias of the estimator
+		\correctanswer it will increase the variance of the estimator
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+
+\begin{frame}{Question E8.15}
+	\QuestionKCs{MLR,regularization}
+	\QuestionKCsTaxonomies{(1,1),(1,1)}
+	\QuestionBody{Consider the regularized MLR solution $\thetahat = \left( \bm{X}^{T} \bm{X} + \gamma \Lambda \right)^{-1} \bm{X}^{T} \bm{y}$. Are there cases for which it is meaninless to try $\gamma \neq 0$?}
+	\QuestionAnswers
+	{
+		\answer yes
+		\correctanswer not
+		\answer it depends
+		\answer I do not know
+	}
+	\QuestionSolution{}
+\end{frame}
+
+

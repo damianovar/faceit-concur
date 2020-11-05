@@ -1,0 +1,303 @@
+[
+    {
+      "state": "",
+      "course": 0,
+      "cu": "59612340-4a1c-4cff-be14-7b070de688ca",
+      "isActive": true,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 1,
+      "cu": "fd36203b-9a06-435a-9ec2-ce63849ad35f",
+      "isActive": true,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 2,
+      "cu": "7108a77e-76bd-4962-95ff-54d1ba97c471",
+      "isActive": true,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 3,
+      "cu": "b209fadf-c483-4012-b780-2c80a810e7d3",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 4,
+      "cu": "f9f16e1b-25b3-4da9-9512-7e756bce0c5d",
+      "isActive": true,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 5,
+      "cu": "38de04a2-2719-43f0-ae98-62a0b5102966",
+      "isActive": false,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 6,
+      "cu": "812bb046-0152-4963-8d81-24da983e327a",
+      "isActive": true,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 7,
+      "cu": "c8aae458-8367-4951-befd-e3ecbf4ce406",
+      "isActive": true,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 8,
+      "cu": "b9d089d1-3e9a-452b-9cf5-3fec17eba63c",
+      "isActive": true,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 9,
+      "cu": "18500010-6be2-4944-9a2b-9f1942c4ddae",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 10,
+      "cu": "4ce351c7-2b61-4dc3-b478-5867ecc6ebec",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 11,
+      "cu": "15c9a31d-a83c-4c27-ad23-12518eea3952",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 12,
+      "cu": "c63ba545-7937-4468-b62c-a08ce6545db2",
+      "isActive": true,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 13,
+      "cu": "360f1630-cc01-40c8-9e66-7bc3c9e22618",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 14,
+      "cu": "480cbd21-0e0e-4941-ab30-64ab723a470c",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 15,
+      "cu": "7e8cb06c-9516-49bf-ae26-2935de18f881",
+      "isActive": false,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 16,
+      "cu": "c1cddc4e-cae8-4bc3-971b-7ef21167357e",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 17,
+      "cu": "f1eb93ee-0065-44c1-a32a-240be48e73ad",
+      "isActive": true,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 18,
+      "cu": "6f88e2e9-19fd-4abf-80f9-11de99b86ac6",
+      "isActive": true,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 19,
+      "cu": "2466db63-946f-409a-9826-fdbf793f958b",
+      "isActive": false,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 20,
+      "cu": "d9d64700-89d3-4cfd-9676-cd8a60428b41",
+      "isActive": true,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 21,
+      "cu": "a9ae7784-4cd1-4194-8ae4-d2c3e2380604",
+      "isActive": false,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 22,
+      "cu": "0cd1e43e-9b1d-47a4-8096-e38bcb7fc76a",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 23,
+      "cu": "b51ea12a-8b93-4e27-b84a-689c512bc66a",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 24,
+      "cu": "458be114-c2b4-437a-8fdd-3891dc1e64da",
+      "isActive": true,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 25,
+      "cu": "67f36164-d3a8-4f1a-a217-72db8a1d918e",
+      "isActive": true,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 26,
+      "cu": "88c21ea9-2018-4a62-b207-1a8363f8653b",
+      "isActive": false,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 27,
+      "cu": "b504a097-81f5-4d80-a92f-239a553b3edf",
+      "isActive": false,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 28,
+      "cu": "9c4c5cfe-4693-4413-ae55-9ba0c4dffd6b",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 29,
+      "cu": "d34f74ba-8a3d-45d9-8429-b649e990fc46",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 30,
+      "cu": "0434841c-dc18-448f-bab7-30099b899c79",
+      "isActive": true,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 31,
+      "cu": "76959aad-4455-4bab-8464-b58596105b63",
+      "isActive": false,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 32,
+      "cu": "11c62d1a-3358-4438-809b-0dc595fee85b",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 33,
+      "cu": "bd2d95ad-5e44-43a9-b159-fb480ae53cd2",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 34,
+      "cu": "9f120c94-d4c8-405b-9995-581939388e3a",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 35,
+      "cu": "6571e954-a43c-43c0-a828-39915a452e22",
+      "isActive": true,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 36,
+      "cu": "97eb9e3b-6192-46b1-9669-5b7fabaa269d",
+      "isActive": false,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 37,
+      "cu": "cc6fd49c-49c1-484e-bd5e-ac7a5b5d022b",
+      "isActive": false,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 38,
+      "cu": "a41b98e1-c162-42ec-9dbf-61c56a7fecfb",
+      "isActive": false,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 39,
+      "cu": "9478b58e-7d59-430c-9b58-e3d232edeb2d",
+      "isActive": false,
+      "taxonomy": "green"
+    },
+    {
+      "state": "",
+      "course": 40,
+      "cu": "3c32e314-0ee4-421e-890d-986d716a8864",
+      "isActive": false,
+      "taxonomy": "yellow"
+    },
+    {
+      "state": "",
+      "course": 41,
+      "cu": "17e201aa-a7cd-47af-9fd3-eecefad0c726",
+      "isActive": false,
+      "taxonomy": "red"
+    },
+    {
+      "state": "",
+      "course": 42,
+      "cu": "4d0ddbc4-2229-4d6e-9664-1b2ff785bd97",
+      "isActive": false,
+      "taxonomy": "green"
+    }
+  ]

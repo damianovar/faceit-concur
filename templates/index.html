@@ -1,0 +1,18 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu1" %}
+{% block main %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+      <img src="{{url_for('static', filename='img/uni-logo.png')}}" style="height: 480px;" />
+
+      {{session['logged_in']}}
+      {{session['user']}}
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

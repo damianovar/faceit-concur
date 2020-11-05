@@ -1,0 +1,155 @@
+% global variable to conditionally print the solutions together with the questions
+\newif \ifshowsolutions
+% \showsolutionstrue % comment this line to have ``showsolutionsfalse''
+
+% global variable to conditionally print the contents map of the instructional material
+\newif \ifshowcontentsmap
+\showcontentsmaptrue % comment this line to have ``showcontentsmapfalse''
+
+% required packages
+\RequirePackage{enumerate}
+\RequirePackage[table]{xcolor}
+
+% supported document classes - decomment the one that you prefer
+\documentclass{article}
+% \documentclass{beamer}
+
+% commands to define the contents maps
+\input{contentsmapping}
+
+% -------------------------------------------------------------- %
+\begin{document}
+
+
+% example of how to set some variables as global settings 
+\def\QUESTIONAUTHOREMAIL{myemail@something.edu}
+\def\QUESTIONDISCLOSABILITY{everybody}
+\def\QUESTIONSOLUTIONDISCLOSABILITY{everybody}
+
+
+% example of a contents map -- always keep the ``ifshowcontentsmap .. \fi''
+\ifshowcontentsmap
+\begin{ContentsMap}
+	%
+	\begin{DevelopedContents}
+		free evolution & u1, e2 \\
+	\end{DevelopedContents}
+	%
+	\begin{PrerequisiteContents}
+		ODEs & u1, e1 \\
+		linear time invariant systems & u2, e2 \\
+	\end{PrerequisiteContents}
+	%
+\end{ContentsMap}
+\fi
+
+
+% example of an open question with minimalistic information provided
+\begin{IndexedQuestion}
+	\QuestionContentUnits{inverse Laplace transforms, partial fraction expansion}
+	\QuestionTaxonomyLevels{u1}
+	\QuestionType{open}
+	\QuestionBody
+	{
+		Inverse-Laplace transform the following $F(s)$:
+		\begin{enumerate}[{\theQuestionsCounter}-1.]
+			\item $F(s) = \frac{5s+1}{s^2-25}$
+			\item $F(s) = \frac{6}{(s+1)^3}$
+			\item $F(s) = \frac{1}{s^4-s^2}$
+			\item $F(s) = \frac{e^{-2s}}{(s-1)^3}$
+		\end{enumerate}
+	}
+\end{IndexedQuestion}
+
+
+% example of a multiple-choice question with minimalistic information provided
+\begin{IndexedQuestion}
+\QuestionContentUnits{time constant, first order systems}
+\QuestionTaxonomyLevels{u2, e1}
+\QuestionType{multiple choice}
+\QuestionBody
+{
+	Consider the system $\dot{y} = -0.5 y + 2.3 u$, $y_{0} = 1$, and $\left| u(t) \right| \leq 2$ for every $t$. Assume moreover that from $t = 10$, $u(t) = 0$. Then we are sure that $y(t) \approx 0$ at the earliest starting from \ldots
+}
+\QuestionPotentialAnswers
+{
+	\answer $t = 10$
+	\correctanswer $t = 20$
+	\answer $t = 30$
+	\answer $t = 40$
+	\answer none of the above
+	\answer I do not know
+}
+\end{IndexedQuestion}
+
+
+% example of a question where one has compiled all the compilable fields
+\begin{IndexedQuestion}
+	\QuestionAuthorEmail{myemail@mydomain.edu}
+	\QuestionContentUnits{sums, multiplications} % must be a comma separated list
+	\QuestionTaxonomyLevels{e1, u1} % must be a comma separated list
+	\QuestionType{multiple choice} % [ multiple choice | open | numeric ]
+	\QuestionBody{$( 2 + 2 ) \cdot 1$ equals to?}
+% 	\QuestionImage{../myfilepath/myimage.jpg} % keep commented if you don't have an image
+	\QuestionPotentialAnswers{ \answer 2 \correctanswer 4 \answer I don't know } % this field is meaningful only for ``multiple choice'' questions
+	\QuestionSolutions{you can arrive at the solution thinking at $1 + 1 = 2$ twice}
+	\QuestionNotesForTheTeachers{if they are less than 1 year old then probably they won't answer}
+	\QuestionNotesForTheStudents{remember that $1 + 1 = 2$}
+	\QuestionFeedbackForTheStudents{if you answered in this way, blabla, if not, blabla}
+	\QuestionDisclosability{everybody} % [ only me, only teachers, everybody ]
+	\QuestionSolutionDisclosability{only teachers} % [ only me, only teachers, everybody ]
+\end{IndexedQuestion}
+
+
+% example of a complete contents map -- always keep the ``ifshowcontentsmap .. \fi''
+\ifshowcontentsmap
+\begin{ContentsMap}
+	%
+	\begin{DevelopedContents}
+		content unit A & uA, eA \\
+		content unit B & uB, eB \\
+		\vdots & \vdots \\
+	\end{DevelopedContents}
+	%
+	\begin{PrerequisiteContents}
+		content unit C & uC, eC \\
+		content unit D & uD, eD \\
+		\vdots & \vdots \\
+	\end{PrerequisiteContents}
+	%
+	\begin{ContentsRelationships}
+		%
+		\begin{WhatIsNecessaryForWhatRelationships}
+			CU X & uX, eX & CU Y & uY, eY \\
+			\vdots & \vdots & \vdots & \vdots \\
+		\end{WhatIsNecessaryForWhatRelationships}
+		%
+		\begin{WhatIsUsefulForWhatRelationships}
+			CU X & uX, eX & CU Y & uY, eY \\
+			\vdots & \vdots & \vdots & \vdots \\
+		\end{WhatIsUsefulForWhatRelationships}
+		%
+		\begin{WhatGeneralizesWhatRelationships}
+			CU X & CU Y \\
+			\vdots & \vdots \\
+		\end{WhatGeneralizesWhatRelationships}
+		%
+		\begin{WhatIsASynonymOfWhatRelationships}
+			CU X & CU Y \\
+			\vdots & \vdots \\
+		\end{WhatIsASynonymOfWhatRelationships}
+		%
+		\begin{WhatIsDirectlyLogicallyConnectedToWhatRelationships}
+			CU X & uX, eX & CU Y & uY, eY \\
+			\vdots & \vdots & \vdots & \vdots \\
+		\end{WhatIsDirectlyLogicallyConnectedToWhatRelationships}
+		%
+	\end{ContentsRelationships}
+	%
+\end{ContentsMap}
+\fi
+
+
+\end{document}
+% -------------------------------------------------------------- %
+

@@ -1,0 +1,2 @@
+id,short_name,name,start_date,description,prerequisites,user_id,created_at,updated_at,time_zone,unique_identifier,discussion_link,importing,image_url,end_date,disable_registration,guest_unique_identifier
+4363,TTK4260 - 2020,Introduction to Multivariate Data Modelling,2019-12-12,,,61953,2019-12-12 14:44:04,2020-01-07 12:45:57,UTC,GUKXE-22315,"",false,,2020-04-30,,FDWBT-73453

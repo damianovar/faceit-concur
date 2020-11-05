@@ -1,0 +1,40 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu6" %}
+{% block title %}Upload{% endblock %}
+{% block main %}
+<div class="container mb-2">
+    <form method="POST">
+        <table id="table" data-toggle="table" data-search="true" data-advanced-search="true" data-search-align="right"
+            data-show-columns="true" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
+            data-show-pagination-switch="true" data-filter-control="true" data-filter-show-clear="true"
+            data-id-table="advancedTable" data-pagination="true" data-pagination-pre-text="Previous"
+            data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
+            data-page-list="[10,20,50,100,All]">
+
+            <thead>
+                <tr>
+                    <th data-field="state"   data-valign="middle"></th>
+                    <th data-field="question" data-sortable="true" data-filter-control="input">Question</th>
+                    <th data-field="course" data-sortable="true" data-filter-control="input">Course</th>
+                    <th data-field="taxonomy" data-sortable="true" data-filter-control="input">Taxonomy</th>
+                    <th data-field="taxonomy_level" data-sortable="true" data-filter-control="input">Taxonomy Level</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in data %}
+                <tr>
+                    <td><input type="checkbox" name="box" value="{{row[1]}}"></td>
+                    {% for col in row %}
+                        <td> {{ col }}</td>
+                    {% endfor %}
+                    <!--    <td><input class="form-check-input" type="checkbox" name="check" id="inlineCheckbox1" value="{{file}}">
+                    <label class="form-check-label" for="inlineCheckbox1">&nbsp;</label></td> -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <input type="submit" class ="btn-primary mt-2">
+    </form>
+</div>
+{% endblock %}

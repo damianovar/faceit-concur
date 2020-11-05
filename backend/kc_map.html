@@ -1,0 +1,126 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 75%;
+            height: 1500px;
+            background-color: #222222;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+        
+        #config {
+            float: left;
+            width: 400px;
+            height: 600px;
+        }
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<div id = "config"></div>
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"color": "#8B008B", "font": {"color": "white"}, "id": "Complex", "label": "Complex", "shape": "ellipse", "title": "What to learn next:\u003cbr\u003ecomplex\u003cbr\u003eprojection\u003cbr\u003eLinAlg\u003cbr\u003eStat\u003cbr\u003evectors\u003cbr\u003e"}, {"color": "#8B008B", "font": {"color": "white"}, "id": "LinAlg", "label": "LinAlg", "shape": "ellipse", "title": "What to learn next:\u003cbr\u003ecomplex\u003cbr\u003eprojection\u003cbr\u003eComplex\u003cbr\u003eStat\u003cbr\u003evectors\u003cbr\u003e"}, {"color": "#8B008B", "font": {"color": "white"}, "id": "Stat", "label": "Stat", "shape": "ellipse", "title": "What to learn next:\u003cbr\u003ecomplex\u003cbr\u003eprojection\u003cbr\u003eLinAlg\u003cbr\u003eComplex\u003cbr\u003evectors\u003cbr\u003e"}, {"color": "#8B008B", "font": {"color": "white"}, "id": "complex", "label": "complex", "shape": "ellipse", "title": "What to learn next:\u003cbr\u003eprojection\u003cbr\u003eLinAlg\u003cbr\u003eComplex\u003cbr\u003eStat\u003cbr\u003evectors\u003cbr\u003e"}, {"color": "#8B008B", "font": {"color": "white"}, "id": "vectors", "label": "vectors", "shape": "ellipse", "title": "What to learn next:\u003cbr\u003ecomplex\u003cbr\u003eprojection\u003cbr\u003eLinAlg\u003cbr\u003eComplex\u003cbr\u003eStat\u003cbr\u003e"}, {"color": "#8B008B", "font": {"color": "white"}, "id": "projection", "label": "projection", "shape": "ellipse", "title": "What to learn next:\u003cbr\u003ecomplex\u003cbr\u003eLinAlg\u003cbr\u003eComplex\u003cbr\u003eStat\u003cbr\u003evectors\u003cbr\u003e"}]);
+        edges = new vis.DataSet([{"arrows": "to", "color": "#ff8c00", "from": "Complex", "to": "LinAlg"}, {"arrows": "to", "color": "#ff8c00", "from": "Complex", "to": "Stat"}, {"arrows": "to", "color": "#ff8c00", "from": "Complex", "to": "complex"}, {"arrows": "to", "color": "#ff8c00", "from": "Complex", "to": "vectors"}, {"arrows": "to", "color": "#ff8c00", "from": "Complex", "to": "projection"}, {"arrows": "to", "color": "#ff8c00", "from": "LinAlg", "to": "Complex"}, {"arrows": "to", "color": "#ff8c00", "from": "LinAlg", "to": "Stat"}, {"arrows": "to", "color": "#ff8c00", "from": "LinAlg", "to": "complex"}, {"arrows": "to", "color": "#ff8c00", "from": "LinAlg", "to": "vectors"}, {"arrows": "to", "color": "#ff8c00", "from": "LinAlg", "to": "projection"}, {"arrows": "to", "color": "#ff8c00", "from": "Stat", "to": "Complex"}, {"arrows": "to", "color": "#ff8c00", "from": "Stat", "to": "LinAlg"}, {"arrows": "to", "color": "#ff8c00", "from": "Stat", "to": "complex"}, {"arrows": "to", "color": "#ff8c00", "from": "Stat", "to": "vectors"}, {"arrows": "to", "color": "#ff8c00", "from": "Stat", "to": "projection"}, {"arrows": "to", "color": "#ff8c00", "from": "complex", "to": "Complex"}, {"arrows": "to", "color": "#ff8c00", "from": "complex", "to": "LinAlg"}, {"arrows": "to", "color": "#ff8c00", "from": "complex", "to": "Stat"}, {"arrows": "to", "color": "#ff8c00", "from": "complex", "to": "vectors"}, {"arrows": "to", "color": "#ff8c00", "from": "complex", "to": "projection"}, {"arrows": "to", "color": "#ff8c00", "from": "vectors", "to": "Complex"}, {"arrows": "to", "color": "#ff8c00", "from": "vectors", "to": "LinAlg"}, {"arrows": "to", "color": "#ff8c00", "from": "vectors", "to": "Stat"}, {"arrows": "to", "color": "#ff8c00", "from": "vectors", "to": "complex"}, {"arrows": "to", "color": "#ff8c00", "from": "vectors", "to": "projection"}, {"arrows": "to", "color": "#ff8c00", "from": "projection", "to": "Complex"}, {"arrows": "to", "color": "#ff8c00", "from": "projection", "to": "LinAlg"}, {"arrows": "to", "color": "#ff8c00", "from": "projection", "to": "Stat"}, {"arrows": "to", "color": "#ff8c00", "from": "projection", "to": "complex"}, {"arrows": "to", "color": "#ff8c00", "from": "projection", "to": "vectors"}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": true,
+        "filter": [
+            "edges",
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.3,
+            "damping": 0.09,
+            "gravitationalConstant": -80000,
+            "springConstant": 0.001,
+            "springLength": 250
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+        
+        
+
+        
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        
+
+        network = new vis.Network(container, data, options);
+
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
