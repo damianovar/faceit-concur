@@ -7518,7 +7518,8 @@ body {
   display: table-cell;
   text-align: center;
   vertical-align: middle;
-  font-size: 0.75rem; }
+  font-size: 0.75rem;
+  padding: 1rem; }
 
 @media (min-width: 576px) {
   .navbar-icon-top.navbar-expand-sm .navbar-nav .nav-link {
