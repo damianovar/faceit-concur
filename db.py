@@ -6,12 +6,6 @@ connect(db="KCMap",
         password="TTK4260",
         host="mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority")
 
-
-def find_kc_by_name(name: str) -> KC:
-    return KC.objects(name=name).first()
-
-
-
 def list_question_objects() -> Question:
         object_list = []
         for elements in Question.objects():

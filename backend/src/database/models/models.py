@@ -67,7 +67,7 @@ class Register(Document):
     #userid = UUIDField(primary_key=True)
     username = StringField(required=True, max_length=50)
     email = StringField(required=True, max_length=50)
-    password = StringField(required=True, max_length=50)
+    password = StringField(required=True, max_length=100)
 
     @queryset_manager
     def objects(doc_cls, queryset):
