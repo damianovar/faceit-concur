@@ -1,4 +1,78 @@
-# database.py
+"""
+database.py
+This file contains functions for interacting with a Mongo database through python
+Among the inclucions are functions for adding, updating, deleting and querying for each table described in models-> models.py
+
+Classes:
+    
+
+
+Functions:
+    Adding:
+        add_user(name: str, nationality, pos: str, university, courses=None) -> User
+        add_country(name: str, universities=None) -> Country
+        add_university(name, country) -> University
+        add_course(name, code, semester, kcs=None) -> Course
+        add_kc(name, courses=None) -> KC
+        add_connection(user, course, semester, kc_list, kc_matrix, percentage=0.0) -> Connection
+        add_question(...) -> Question
+        add_test(name, course, questions=None) -> Test
+
+    Updating:
+        update_user_name(user, new_name)
+        update_user_position(user, new_position)
+        update_country()
+        update_university(university, new_name)
+        update_course_name(course, new_name) 
+        update_course_code(course, new_name) 
+        update_course_kc_list(course, kc) 
+        update_kc(kc, new_name) 
+        update_connection(connection, new_map, percentage) 
+        update_question_name(question, new_question) 
+        update_question_correct_answer(question, new_correct_answer) 
+        update_test_name(test, new_name) 
+
+    Add values to list:
+        add_course_to_kc(kc, course) 
+        add_kc_to_course(course, kc) 
+        update_kc_course_list(kc, course) 
+        add_options_to_question(question, options) 
+
+    Delete:
+        delete_user(fn, ln)
+        delete_country(name)
+        delete_university(name)
+        delete_course(code)
+        delete_kc(name)
+        delete_connection(course)
+        delete_question(question_number)
+        delete_test(name)
+    
+    Querying:
+        find_user_by_name(name: str) -> User
+        find_country(name: str) -> Country
+        find_course(code: str) -> Course
+        find_kc_by_name(name: str) -> KC
+        find_university(name: str) -> University
+        find_map_connection(user, course, semester)
+        get_kc_list_course(course_code: str) -> Course
+        get_kc_matrix(user: User, course: Course) -> np.array
+        get_kc_matrices_course(course_code, course_name: str) -> np.array
+        get_kc_matrices_user(user_name: str) -> np.array
+        get_questions_by_kc(name) -> dict
+        get_questions_by_kc_taxonomy(name) -> dict
+        get_questions_by_course(name) -> dict
+
+Misc variables:
+
+
+
+Todo:
+    update_kc_course_list: make this work and not reset list every time
+
+"""
+
+
 """import datetime
 from bson.objectid import ObjectId
 
