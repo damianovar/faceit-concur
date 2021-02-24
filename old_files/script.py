@@ -203,7 +203,7 @@ def main():
         elif choice == '2':
             #spreadsheet()
             #register_kcs_from_list()  # TODO: Make sure this works and creates
-            download_questions_latex()
+            _questions_latex()
         elif choice == '3':
             #visualize_map()
             cu_hierarchy_mapping()
