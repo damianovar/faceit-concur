@@ -92,6 +92,18 @@ def upload_tex():
 
     return render_template("upload_tex.html", title='Upload')
 
+@app.route("/submit_answer", methods=["GET", "POST"])
+@login_requiered
+def submit_answer():
+    data, selection_data = db.list_questions()
+
+    if request.method == "POST":
+        question_id = request.form.get('question_id')
+        answer = request.form.get('answer')
+        db.write_answer_to_mongo(question_id, answer)
+
+    return render_template("submit_answer.html", title='Submit Answer', data=data, selection_data=selection_data)
+
 
 @app.route("/get-tex/<tex_name>", methods=['GET', 'POST'])
 def get_image(tex_name):
