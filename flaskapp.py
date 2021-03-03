@@ -95,12 +95,17 @@ def upload_tex():
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_requiered
 def submit_answer():
-    data, selection_data = db.list_questions()
-
+    data, selection_data = db.list_question_objects_lite()
     if request.method == "POST":
-        question_id = request.form.get('question_id')
-        answer = request.form.get('answer')
-        db.write_answer_to_mongo(question_id, answer)
+        selection = request.form.get('id')
+        if selection:
+            answer = request.form.get('answer')
+            question_obj = db.get_question_by_obj_id(selection)
+            db.write_answer_to_mongo(question_obj, answer)
+
+            return render_template("answer_submitted_successfully.html", answer=answer,question=question_obj.question)
+        else:
+            return render_template("no_question_selected.html", title='Answer not submitted')
 
     return render_template("submit_answer.html", title='Submit Answer', data=data, selection_data=selection_data)
 

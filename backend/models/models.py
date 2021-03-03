@@ -132,14 +132,14 @@ class Question(Document):
 
 
 class Answer(Document):
-    question_id = StringField(unique=True, required=True)
-    author_name = StringField(unique=False, required=True)
+    question = ReferenceField(Question, reverse_delete_rule=CASCADE, required=True)
+    user = ReferenceField(Register, reverse_delete_rule=CASCADE, required=True)
+    user_name = StringField(unique=False, required=True)
     answer = StringField(unique=False, required=True)
 
     @queryset_manager
     def objects(doc_cls, queryset):
-        return queryset.order_by('+question_id')
-
+        return queryset.order_by('+author_name')
 
 
 class Test(Document):
