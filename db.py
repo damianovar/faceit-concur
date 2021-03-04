@@ -62,7 +62,7 @@ def write_answer_to_mongo(question, answer):
     user_email = session["user"][email_str_start:email_str_end]
     user = Register.objects(email=user_email).first()
 
-    Answer.objects(question = question).update_one(user=user, user_name=user_name, answer=answer, upsert=True)
+    Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=answer, upsert=True)
 
     
 def get_question_by_obj_id(selections):
