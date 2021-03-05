@@ -1,10 +1,9 @@
 from flask import Flask, jsonify, request, flash, redirect, session
 from passlib.hash import pbkdf2_sha256
-from backend.src.database.models.models import Register
+from backend.models.models import Register
 import uuid
 
 class User:
-
     def start_session(self, user):
         session['logged_in'] = True
         session['user'] = user

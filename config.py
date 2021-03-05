@@ -8,11 +8,8 @@ class Config(object):
     DB_PASSWORD = "example"
 
     TEX_UPLOADS = "static/uploads/tex"
-    ALLOWED_EXTENSIONS = "TEX"
+    ALLOWED_EXTENSIONS = "ZIP"
     MAX_CONTENT_LENGTH = 50 * 1024 * 1024
-
-    CLIENT_TEX = "static/clients/tex"
-
 
     SESSION_COOKIE_SECURE = True
 

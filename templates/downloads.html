@@ -3,19 +3,21 @@
 {% block title %}Upload{% endblock %}
 {% block main %}
 <div class="container mb-2">
-    <form method="POST">
+    <form method="POST" id="download_form">
         <table id="table" data-toggle="table" data-search="true" data-advanced-search="true" data-search-align="right"
             data-show-columns="true" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
             data-show-pagination-switch="true" data-filter-control="true" data-filter-show-clear="true"
             data-id-table="advancedTable" data-pagination="true" data-pagination-pre-text="Previous"
             data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
-            data-page-list="[10,20,50,100,All]">
+            data-page-list="[10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
+            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
 
             <thead>
                 <tr>
-                    <th data-field="state"   data-valign="middle"></th>
-                    <th data-field="question" data-sortable="true" data-filter-control="input">Question</th>
-                    <th data-field="course" data-sortable="true" data-filter-control="input">Course</th>
+                    <th data-field="id" data-valign="middle" data-visible="false"></th>
+                    <th data-field="state" data-checkbox="true" data-valign="middle"></th>
+                    <th data-field="question" data-sortable="true">Question</th>
+                    <th data-field="course" data-sortable="true" data-filter-control="select">Course</th>
                     <th data-field="taxonomy" data-sortable="true" data-filter-control="input">Taxonomy</th>
                     <th data-field="taxonomy_level" data-sortable="true" data-filter-control="input">Taxonomy Level</th>
 
@@ -24,9 +26,11 @@
             <tbody>
                 {% for row in data %}
                 <tr>
-                    <td><input type="checkbox" name="box" value="{{row[1]}}"></td>
+                    <td> {{ selection_data[loop.index0] }}</td>
+                    <td></td>
+                    <!--  <td><input type="checkbox" name="box" id = "{{loop.index}}" value="{{loop.index}}"></td> -->
                     {% for col in row %}
-                        <td> {{ col }}</td>
+                    <td> {{ col }}</td>
                     {% endfor %}
                     <!--    <td><input class="form-check-input" type="checkbox" name="check" id="inlineCheckbox1" value="{{file}}">
                     <label class="form-check-label" for="inlineCheckbox1">&nbsp;</label></td> -->
@@ -34,7 +38,31 @@
                 {% endfor %}
             </tbody>
         </table>
-        <input type="submit" class ="btn-primary mt-2">
+        <div id="toolbar">
+            <button type="submit" id="dl-button" class="btn btn-primary mt-2">Submit</button>
+        </div>
+
+
+        <!-- Modal -->
+        <!-- <div class="modal fade" id="empModal" role="dialog">
+            <div class="modal-dialog">
+
+                
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Download Questions</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" id="zipname" name="submit_button" value="" class="btn btn-primary">OK, Got it!</button>
+
+                    </div>
+                </div>
+            </div>
+        </div> -->
     </form>
 </div>
 {% endblock %}

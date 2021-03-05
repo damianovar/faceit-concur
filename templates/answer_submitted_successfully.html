@@ -1,0 +1,13 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu8" %}
+{% block title %}Submit answer{% endblock %}
+{% block main %}
+
+<div class="container mb-2">
+  <h1>Answer submitted successfully!</h1>
+  <hr>
+  <p> Question &nbsp; &nbsp; &nbsp;:  <b> {{ question }} </b> </p>
+  <p> Your answer : <b> {{ answer }} </b> </p>
+  <td>Go back to <a href="{{url_for('submit_answer')}}">previous page</a></td>
+</div>
+{% endblock %}
