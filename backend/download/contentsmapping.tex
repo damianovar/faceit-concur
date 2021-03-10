@@ -1,9 +1,93 @@
-<<<<<<< HEAD
-% Current version: 0.2
+% MANUAL: HOW TO WRITE YOUR QUESTIONS IN A DATABASE-FRIENDLY MANNER
 %
+% Current version: 0.7
+%
+% --------------------------------------------------------------------
+% step 1: surround individual question within
+% \begin{IndexedQuestion}
+% ...
+% \end{IndexedQuestion}
+%
+% --------------------------------------------------------------------
+% step 2: add the information within the IndexedQuestion environment.
+% More specifically, add
+% \QuestionAuthorEmail{ZZZ}
+% \QuestionContentUnits{ZZZ}
+% \QuestionTaxonomyLevels{ZZZ}
+% For the last two items, check the provided manuals on how to define
+% the content units and the taxonomy levels (see the link below these
+% instructions)
+%
+% --------------------------------------------------------------------
+% step 3: set the type of the question by adding and setting:
+% \QuestionType{ZZZ}
+% The potential values for ZZZ above are, for now:
+%     multiple choice    open     numeric
+%
+% --------------------------------------------------------------------
+% step 4: add the body of the question within
+% \QuestionBody{ZZZ}
+% Here you can use plain .tex commands. However DO NOT include figures
+% here; in case you need, use the associated field
+%
+% --------------------------------------------------------------------
+% step 5: ONLY IF NEEDED, add an image through
+% \QuestionImage{ZZZ}
+% where ZZZ will be the path of the image you want to show. If you
+% do not have images, do not insert this code
+%
+% --------------------------------------------------------------------
+% step 6.a - only for ``multiple choice'' questions: add the potential
+% answers through adding
+% \QuestionPotentialAnswers{ \answer ZZZ1 \answer \ZZZ2
+% \correctanswer ZZZ3 ... }
+% Note that you can put as many ``\answer'' and as many
+% ``\correctanswer'' as you wish. This field MUST be filled if you
+% have a ``multiple choice'' question
+%
+% --------------------------------------------------------------------
+% step 6.b - for the other types of questions: if you want, add the
+% potential
+% \QuestionCorrectAnswer{ZZZ}
+% \QuestionSolutions{ZZZ}
+% fields, where the ZZZ in the ``correct answer'' field should be the 
+% short final answer that likely the students should give at the end 
+% of the exercises, while the ``solutions'' field should contain the 
+% procedure used to arrive at computing the solution.
+% These fields are FACULTATIVE
+%
+% --------------------------------------------------------------------
+% step 7: if desired, add information the 'disclosability' of the
+% question, by adding and setting opportunely the fields:
+% \QuestionDisclosability{ZZZ}
+% \QuestionSolutionDisclosability{ZZZ}
+% The potential values for ZZZ above are, for now:
+%      only me       only teachers         everybody
+% If you do not specify, the default value will be 'everybody'
+%
+% --------------------------------------------------------------------
+% step 8: if you feel like, provide also some additional information
+% that you may want to share with either the colleagues or the students
+% by adding the remaining fields, opportunely filled. For example
+% \QuestionNotesForTheTeachers{ZZZ}
+% \QuestionNotesForTheStudents{ZZZ}
+% \QuestionFeedbackForTheStudents{ZZZ}
+% ... and all the other remaining ones
+% Note that it is NOT necessary to fill up these fields
+
+
+% URL of the current manual on how to define the taxonomy levels (with examples)
+% https://docs.google.com/document/d/1En-vn78G7Dcs0IaeFfGd0vht1_ISet01p9Nt-uszOTo/edit
+
+
 % versions logs
 % 0.1 (2020.09.07) -> first publicly released version
 % 0.2 (2020.09.19) -> added a field in the questions and added the taxonomy levels in the contents map 
+% 0.3 (2020.09.24) -> added the field 'correct answer' in the questions
+% 0.4 (2020.09.26) -> added a brief manual
+% 0.5 (2020.10.07) -> added a "language" field
+% 0.6 (2020.10.11) -> added some links and an empty template
+% 0.7 (2021.03.09) -> added a few fields to the questions
 
 
 % counter for the environment "indexed questions"
@@ -49,8 +133,9 @@
 
 
 % commands for indexing the contents
-\newcommand	{\QuestionAuthorEmail}				[1]	{}
+\newcommand	{\QuestionAuthorEmail}				[1]	{} % if there are more than one author, separate the emails with a comma
 \newcommand {\QuestionID}						[1]	{} % do not fill up by yourself - it will be compiled by the database
+\newcommand {\QuestionLanguage}	    			[1]	{} % specify only whether this is different from English
 \newcommand {\QuestionContentUnits}				[1]	{} % comma separated list
 \newcommand {\QuestionTaxonomyLevels}			[1]	{} % comma separated list, must be as many as the CUs
 \newcommand {\QuestionType}						[1]	{} % [ multiple choice | open | numeric ]
@@ -68,7 +153,17 @@
 	\fi
 }
 \newcommand {\QuestionPotentialAnswers}			[1]	{\begin{enumerate} #1 \end{enumerate}}
-\newcommand {\QuestionSolutions}				[1]
+\newcommand {\QuestionCorrectAnswer}			[1] % meant to be used in the cases ``open question'' and ``numerical question'' for a short description of what is the correct answer
+{
+	\ifshowsolutions
+		\ifx#1\empty
+			% do nothing
+		\else
+			Correct answer: #1
+		\fi
+	\fi
+}
+\newcommand {\QuestionSolutions}				[1] % meant to be used in the cases ``open question'' and ``numerical question'' for a long description of *how* to solve the question. May also be an image or an URL to an external resource
 {
 	\ifshowsolutions
 		\ifx#1\empty
@@ -78,11 +173,26 @@
 		\fi
 	\fi
 }													   % useful especially for open questions
-\newcommand {\QuestionNotesForTheTeachers}		[1]	{}
-\newcommand {\QuestionNotesForTheStudents}		[1]	{}
-\newcommand {\QuestionFeedbackForTheStudents}	[1]	{} % useful especially when using the questions in a LMS
-\newcommand {\QuestionDisclosability}			[1]	{} % [ only me, only teachers, everybody ]
-\newcommand {\QuestionSolutionDisclosability}	[1]	{} % [ only me, only teachers, everybody ]
+\newcommand {\QuestionSolutionsImage}			[1]	   % keep commented if unused
+{
+	\ifx#1\empty
+		% do nothing
+	\else
+		\begin{figure}[!htbp]
+			\centering
+			\includegraphics[width = 0.9\columnwidth]{#1}
+			\caption{Solutions relative to Question~\theQuestionsCounter.}
+		\end{figure}
+	\fi
+}
+\newcommand {\QuestionNotesForTheTeachers}		[1]	{} % in case you want to give some additional information to the teachers
+\newcommand {\QuestionNotesForTheStudents}		[1]	{} % in case you want to give some additional information to the students
+\newcommand {\QuestionFeedbackForTheStudents}	[1]	{} % text that should be displayed to the students after they have answered to the question, useful especially when using the questions in a LMS
+\newcommand {\QuestionDisclosability}			[1]	{} % [ only me, only teachers, only my institution, everybody ]
+\newcommand {\QuestionSolutionDisclosability}	[1]	{} % [ only me, only teachers, only my institution, everybody ]
+\newcommand {\QuestionNotationStandard}     	[1]	{} % to indicate which notation standard is used. E.g., ABC vs FGH for state space models; see the manuals in the portal for an updated list of notation standards
+
+% only useful for when one makes "multiple choice" questions
 \newcommand {\answer}							[0]	{\item}
 \newcommand {\correctanswer}					[0]	{\item \ifshowsolutions (correct) \fi }
 
@@ -288,294 +398,33 @@
 	\end{center}
 }
 
-=======
-% Current version: 0.2
-%
-% versions logs
-% 0.1 (2020.09.07) -> first publicly released version
-% 0.2 (2020.09.19) -> added a field in the questions and added the taxonomy levels in the contents map 
 
+% % EMPTY TEMPLATE
+% %
+% % Note: please delete the fields that you are not using 
+% %
+% \begin{IndexedQuestion}
+% %
+% % fields that MUST be filled up
+% \QuestionAuthorEmail{FILL ME}
+% \QuestionContentUnits{FILL ME} % comma separated list
+% \QuestionTaxonomyLevels{FILL ME} % comma separated list, must be as many as the CUs
+% \QuestionType{FILL ME} % options: [ multiple choice | open | numeric ]
+% \QuestionBody{FILL ME} % use plain latex code, and try to avoid user-defined commands
+% \QuestionPotentialAnswers{ \answer BLABLA1 \correctanswer BLABLA2 \answer BLABLA3 ... } % use this only with multiple choice questions. You can obviously change the order of correct vs wrong answers, have as many answers as you want, and add as many correct answers as you want
+% %
+% % fields that you may also skip filling up
+% \QuestionLanguage{FILL ME} % if not provided, then this means ``English''
+% \QuestionImage{FILL ME} % may also be a URL
+% \QuestionCorrectAnswer{FILL ME} % meant to be used in the cases ``open question'' and ``numerical question''; this field should contain a short description of what is the correct answer. May also be an URL or an image
+% \QuestionSolutions{FILL ME} % meant to be used in the cases ``open question'' and ``numerical question'' for a long description of *how* to solve the question
+% \QuestionSolutionsImage{FILL ME} % alternative way of providing a solution; may also be a URL
+% \QuestionNotesForTheTeachers{FILL ME} % some additional notes, in case you want to share them
+% \QuestionNotesForTheStudents{FILL ME} % some additional notes, in case you want to share them
+% \QuestionFeedbackForTheStudents{FILL ME} % useful especially when using the questions in a LMS
+% \QuestionDisclosability{FILL ME} % options: [ only me, only teachers, only my institution, everybody ]. If not provided, then this means ``everybody''
+% \QuestionSolutionDisclosability{FILL ME} % options: [ only me, only teachers, only my institution, everybody ]. If not provided, then this means ``everybody''
+% \QuestionNotationStandard{FILL ME} % see the manuals in the portal for an updated list of notation standards
+% %
+% \end{IndexedQuestion}
 
-% counter for the environment "indexed questions"
-\newcounter		{QuestionsCounter}
-\setcounter		{QuestionsCounter}	{0}
-
-
-\makeatletter
-	\@ifpackageloaded{beamerbasemodes}
-	{
-		% definition when compiling presentations 
-		\newenvironment*{IndexedQuestion}	[0]
-		{
-			\stepcounter{QuestionsCounter}
-			\begin{frame}[t]{Question \theQuestionsCounter}
-			\begingroup
-		}
-		{
-			\endgroup
-			\end{frame}
-		}
-	}
-	{
-		% definition when compiling A4-like documents
-		\newenvironment{IndexedQuestion}
-		{
-			\stepcounter{QuestionsCounter}
-			\begin{center}
-			\begin{tabular}{|p{0.9\textwidth}|}
-			\hline
-			\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-			\emph{\textbf{Question \theQuestionsCounter}} \vspace{0.1cm} \\
-			\\
-		}
-		{ 
-			\\
-			\hline
-			\end{tabular} 
-			\end{center}
-		}
-	}
-\makeatother
-
-
-% commands for indexing the contents
-\newcommand	{\QuestionAuthorEmail}				[1]	{}
-\newcommand {\QuestionID}						[1]	{} % do not fill up by yourself - it will be compiled by the database
-\newcommand {\QuestionContentUnits}				[1]	{} % comma separated list
-\newcommand {\QuestionTaxonomyLevels}			[1]	{} % comma separated list, must be as many as the CUs
-\newcommand {\QuestionType}						[1]	{} % [ multiple choice | open | numeric ]
-\newcommand {\QuestionBody}						[1]	{#1}
-\newcommand {\QuestionImage}					[1]	   % keep commented if unused
-{
-	\ifx#1\empty
-		% do nothing
-	\else
-		\begin{figure}[!htbp]
-			\centering
-			\includegraphics[width = 0.9\columnwidth]{#1}
-			\caption{Figure relative to Question~\theQuestionsCounter.}
-		\end{figure}
-	\fi
-}
-\newcommand {\QuestionPotentialAnswers}			[1]	{\begin{enumerate} #1 \end{enumerate}}
-\newcommand {\QuestionSolutions}				[1]
-{
-	\ifshowsolutions
-		\ifx#1\empty
-			% do nothing
-		\else
-			Solution: #1
-		\fi
-	\fi
-}													   % useful especially for open questions
-\newcommand {\QuestionNotesForTheTeachers}		[1]	{}
-\newcommand {\QuestionNotesForTheStudents}		[1]	{}
-\newcommand {\QuestionFeedbackForTheStudents}	[1]	{} % useful especially when using the questions in a LMS
-\newcommand {\QuestionDisclosability}			[1]	{} % [ only me, only teachers, everybody ]
-\newcommand {\QuestionSolutionDisclosability}	[1]	{} % [ only me, only teachers, everybody ]
-\newcommand {\answer}							[0]	{\item}
-\newcommand {\correctanswer}					[0]	{\item \ifshowsolutions (correct) \fi }
-
-
-%%% definition of the environment "content maps" and its ancillary ones %%%
-
-\makeatletter
-	\@ifpackageloaded{beamerbasemodes}
-	{
-		% definition when compiling presentations 
-		\newenvironment*{ContentsMap}	[0]
-		{
-			\begin{frame}[t]{Contents map}
-			\begingroup
-		}
-		{
-			\endgroup
-			\end{frame}
-		}
-	}
-	{
-		% definition when compiling normal documents 
-		\newenvironment*{ContentsMap}	[0]
-		{
-			\section*{Contents map}
-			\begingroup
-		}
-		{
-			\endgroup
-		}
-	}
-\makeatother
-
-\newenvironment{DevelopedContents}
-{
-	\begin{center}
-	\rowcolors
-	{2}					% index of the first row to be colored
-	{white!95!black}	% color of the first colored row (and the third, fifth, etc)
-	{}					% color of the second colored row (and the fourth, sixth, etc)
-	\begin{tabular}{|p{0.6\textwidth}p{0.3\textwidth}|}
-	\hline
-	\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-	\emph{\textbf{developed content units}} &
-	\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-	\emph{\textbf{taxonomy levels}} \\
-}
-{ 
-	\hline
-	\end{tabular} 
-	\end{center}
-}
-
-\newenvironment{PrerequisiteContents}
-{
-	\begin{center}
-	\rowcolors
-	{2}					% index of the first row to be colored
-	{white!95!black}	% color of the first colored row (and the third, fifth, etc)
-	{}					% color of the second colored row (and the fourth, sixth, etc)
-	\begin{tabular}{|p{0.6\textwidth}p{0.3\textwidth}|}
-	\hline
-	\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-	\emph{\textbf{prerequisite content units}} &
-	\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-	\emph{\textbf{taxonomy levels}} \\
-}
-{ 
-	\hline
-	\end{tabular} 
-	\end{center}
-}
-
-\makeatletter
-	\@ifpackageloaded{beamerbasemodes}
-	{
-		% definition when compiling presentations 
-		\newenvironment*{ContentsRelationships}	[0]
-		{
-			\begin{block}{Contents relationships}
-			\begingroup
-		}
-		{
-			\endgroup
-			\end{block}
-		}
-	}
-	{
-		% definition when compiling normal documents 
-		\newenvironment*{ContentsRelationships}	[0]
-		{
-			\subsection*{Contents relationships}
-			\begingroup
-		}
-		{
-			\endgroup
-		}
-	}
-\makeatother
-
-\newenvironment{WhatIsNecessaryForWhatRelationships}
-{
-	\begin{center}
-	\rowcolors
-	{2}					% index of the first row to be colored
-	{white!95!black}	% color of the first colored row (and the third, fifth, etc)
-	{}					% color of the second colored row (and the fourth, sixth, etc)
-	\begin{tabular}{|p{0.35\textwidth}p{0.10\textwidth}|p{0.35\textwidth}p{0.10\textwidth}|}
-	\hline
-	\multicolumn{4}{|c|}
-	{
-		\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-		\emph{\textbf{``to learn $x$ at t.l.\ $\alpha$ it is necessary to know $y$ at t.l.\ $\beta$'' relations}}
-	} \\
-}
-{ 
-	\hline
-	\end{tabular} 
-	\end{center}
-}
-
-\newenvironment{WhatIsUsefulForWhatRelationships}
-{
-	\begin{center}
-	\rowcolors
-	{2}					% index of the first row to be colored
-	{white!95!black}	% color of the first colored row (and the third, fifth, etc)
-	{}					% color of the second colored row (and the fourth, sixth, etc)
-	\begin{tabular}{|p{0.35\textwidth}p{0.10\textwidth}|p{0.35\textwidth}p{0.10\textwidth}|}
-	\hline
-	\multicolumn{4}{|c|}
-	{
-		\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-		\emph{\textbf{``to learn $x$ at t.l.\ $\alpha$ it is useful to know $y$ at t.l.\ $\beta$'' relations}}
-	} \\
-}
-{ 
-	\hline
-	\end{tabular} 
-	\end{center}
-}
-
-\newenvironment{WhatGeneralizesWhatRelationships}
-{
-	\begin{center}
-	\rowcolors
-	{2}					% index of the first row to be colored
-	{white!95!black}	% color of the first colored row (and the third, fifth, etc)
-	{}					% color of the second colored row (and the fourth, sixth, etc)
-	\begin{tabular}{|p{0.45\textwidth}|p{0.45\textwidth}|}
-	\hline
-	\multicolumn{2}{|c|}
-	{
-		\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-		\emph{\textbf{``$x$ is generalized by / contained in $y$'' relations}}
-	} \\
-}
-{ 
-	\hline
-	\end{tabular} 
-	\end{center}
-}
-
-\newenvironment{WhatIsASynonymOfWhatRelationships}
-{
-	\begin{center}
-	\rowcolors
-	{2}					% index of the first row to be colored
-	{white!95!black}	% color of the first colored row (and the third, fifth, etc)
-	{}					% color of the second colored row (and the fourth, sixth, etc)
-	\begin{tabular}{|p{0.45\textwidth}|p{0.45\textwidth}|}
-	\hline
-	\multicolumn{2}{|c|}
-	{
-		\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-		\emph{\textbf{``$x$ is a synonym of $y$'' relations}}
-	} \\
-}
-{ 
-	\hline
-	\end{tabular} 
-	\end{center}
-}
-
-\newenvironment{WhatIsDirectlyLogicallyConnectedToWhatRelationships}
-{
-	\begin{center}
-	\rowcolors
-	{2}					% index of the first row to be colored
-	{white!95!black}	% color of the first colored row (and the third, fifth, etc)
-	{}					% color of the second colored row (and the fourth, sixth, etc)
-	\begin{tabular}{|p{0.35\textwidth}p{0.10\textwidth}|p{0.35\textwidth}p{0.10\textwidth}|}
-	\hline
-	\multicolumn{4}{|c|}
-	{
-		\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-		\emph{\textbf{``$x$ at t.l.\ $\alpha$ is directly logically connected to $y$ at t.l.\ $\beta$'' relations}}
-	} \\
-}
-{ 
-	\hline
-	\end{tabular} 
-	\end{center}
-}
-
->>>>>>> 2d94842926ecc88e384ed8f7e31e15586e81dca7
