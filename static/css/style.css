@@ -7584,6 +7584,9 @@ body {
     top: 0;
     line-height: 24px; } }
 
+#profile-btn {
+  color: #fff; }
+
 .sidebar {
   order: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
