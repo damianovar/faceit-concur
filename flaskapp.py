@@ -10,6 +10,7 @@ from backend.user.models import User
 import db
 import os
 import uuid
+import time
 
 app = Flask(__name__)
 app.config.from_object("config.DevelopmentConfig")
@@ -95,15 +96,29 @@ def upload_tex():
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_requiered
 def submit_answer():
-    data, selection_data = db.list_question_objects_lite()
+    start = time.time()
+    data, selection_data = db.list_question_objects_lite_2()
+    end = time.time()
+    print(end - start)
+
     if request.method == "POST":
-        selection = request.form.get('id')
+        ml_selection = request.form.get('id')
+        selection = request.form.get('my_button')
+        print(selection)
         if selection:
             answer = request.form.get('answer')
             question_obj = db.get_question_by_obj_id(selection)
-            db.write_answer_to_mongo(question_obj, answer)
-
-            return render_template("answer_submitted_successfully.html", answer=answer,question=question_obj.question)
+            data = [[x] for x in question_obj.options]
+            idx_data = list(range(0, len(question_obj.options)))
+            return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=data, selection_data=idx_data, question_id_ = question_obj.id, question_text = question_obj.question)
+        elif ml_selection:
+            question_id = request.form.get('my_button_2')
+            answer = request.form.get('answer')
+            question_obj_2 = db.get_question_by_obj_id(question_id)
+            db.write_answer_to_mongo(question_obj_2, answer, ml_selection)
+            options_list = question_obj_2.options
+            display_answer = str(options_list[int(ml_selection)])
+            return render_template("answer_submitted_successfully.html", answer=display_answer,question=question_obj_2.question)
         else:
             return render_template("no_question_selected.html", title='Answer not submitted')
 

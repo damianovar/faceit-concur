@@ -1,6 +1,8 @@
 from mongoengine import connect
 from flask import session
 from backend.models.models import KC, Course, Question, Answer, Register
+from bson.objectid import ObjectId
+import time
 
 client = connect(db="KCMap",
                  username="developer",
@@ -28,8 +30,7 @@ def list_question_objects() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
-
-def list_question_objects_lite() -> Question:
+def list_question_objects_lite_2() -> Question:
     object_list = []
     selection_list = []
     for elements in Question.objects():
@@ -46,11 +47,27 @@ def list_question_objects_lite() -> Question:
             kc_name.append(kc.name)
         taxonomy_level = elements.kc_taxonomy
         list_item = []
-        list_item = [question, course_name]
+        list_item = [question, course_name, kc_name]
         object_list.append(list_item)
     return object_list, selection_list
 
-def write_answer_to_mongo(question, answer):
+
+def list_question_objects_lite() -> Question:
+    selection_list = Question.objects.all().values_list('id')
+    question_list = Question.objects.all().values_list('question')
+    #taxonomy_level_list = Question.objects.all().values_list('kc_taxonomy')
+    kc_list_obj_list = Question.objects.all().values_list('kc_list')
+    course_obj_list = Question.objects.all().values_list('course')
+    kc_list_name_list = [[y.name for y in x] for x in kc_list_obj_list]
+    course_name_list = [x.name if x is not None else 'empty' for x in course_obj_list]
+
+    #object_list = zip(question_list, course_name_list, kc_list_name_list, taxonomy_level_list)
+    object_list = zip(question_list, course_name_list, kc_list_name_list)
+
+    return object_list, selection_list
+
+
+def write_answer_to_mongo(question, txt_answer, selected_option):
     my_string = session["user"]
 
     username_str_start = my_string.find('username') + 9
@@ -62,12 +79,12 @@ def write_answer_to_mongo(question, answer):
     user_email = session["user"][email_str_start:email_str_end]
     user = Register.objects(email=user_email).first()
 
-    Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=answer, upsert=True)
-
+    Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=txt_answer, selected_option=selected_option, upsert=True)
     
-def get_question_by_obj_id(selections):
-    for ques in Question.objects():
-        db_id = str(ques.id)
-        if selections == db_id:
-            return ques
-    return "Didn't find the question!"
+
+def get_question_by_obj_id(question_id):
+    question_obj = Question.objects(id = str(question_id))
+    #question_obj = client.KCMap.question.find_one({"_id": ObjectId(question_id)})
+    return question_obj.get()
+
+

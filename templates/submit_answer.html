@@ -3,18 +3,19 @@
 {% block title %}Submit answer{% endblock %}
 {% block main %}
 
+
 <div class="container mb-2">
-  <h1>Select question and submit answer</h1>
+  <h1>Select the question you would like to answer</h1>
   <hr>
-  <form id="submit_answer_form"  method="POST">  
-  <td>Tip: Use available filter options to find appropriate questions</td><br>
+  <form id="submit_answer_form"  method="POST" onkeydown="return event.key != 'Enter';">  
+  <td>Tip: Use available filter options to find appropriate questions ("Course","Taxonomy")</td><br>
   <!--<form method="POST" id="download_form">-->
-    <table id="table" data-toggle="table" data-search="true" data-advanced-search="true" data-search-align="right"
-            data-show-columns="true" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
+    <table id="table" data-toggle="table" data-advanced-search="true" data-search="true" data-search-on-enter-key="false" data-search-align="right"
+            data-show-columns="false" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
             data-show-pagination-switch="true" data-filter-control="true" data-filter-show-clear="true"
             data-id-table="advancedTable" data-pagination="true" data-pagination-pre-text="Previous"
             data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
-            data-page-size=5 data-page-list="[5,10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
+            data-page-size=10 data-page-list="[10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
             data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
 
           <thead>
@@ -22,9 +23,10 @@
                 <th data-field="id" data-valign="middle" data-visible="false"></th>
                 <th data-field="question" data-sortable="true">Question</th>
                 <th data-field="course" data-sortable="true" data-filter-control="select">Course</th>
-                <th data-field="state" data-radio="true"></th>
-                <!--<th data-field="taxonomy" data-sortable="true" data-filter-control="input">Taxonomy</th>
-                <th data-field="taxonomy_level" data-sortable="true" data-filter-control="input">Taxonomy Level</th>-->
+                <th data-field="taxonomy" data-sortable="true" data-filter-control="select">Taxonomy</th>
+                <!--<th data-field="state" data-radio="true"></th>-->
+                <th data-field="select_button"></th>
+                <!--<th data-field="taxonomy_level" data-sortable="true" data-filter-control="input">Taxonomy Level</th>-->
 
             </tr>
         </thead>
@@ -36,19 +38,14 @@
                 {% for col in row %}
                 <td> {{ col }}</td>
                 {% endfor %}
-                <td></td>
-                <!--    <td><input class="form-check-input" type="checkbox" name="check" id="inlineCheckbox1" value="{{file}}">
+                <!--<td></td>-->
+                <td><button type="submit" id="button_2" class="btn btn-primary mt-2" name="my_button" value="{{ selection_data[loop.index0] }}">Select</button></td>
+                <!--<td><input class="form-check-input" type="checkbox" name="check" id="inlineCheckbox1" value="{{file}}">
                 <label class="form-check-label" for="inlineCheckbox1">&nbsp;</label></td> -->
             </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <br><br>
-    <b>Type in your answer and submit:</b><br>
-    <textarea rows="4" cols="80" name="answer"></textarea>
-    <br>
-    <button type="submit" id="dl-button" class="btn btn-primary mt-2">Submit</button>
   </form>
 </div>
 {% endblock %}
