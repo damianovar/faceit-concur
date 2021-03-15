@@ -7,7 +7,12 @@ import time
 client = connect(db="KCMap",
                  username="developer",
                  password="TTK4260",
-                 host="mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority")
+                 host="mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority",
+                 connectTimeoutMS=30000,
+                 socketTimeoutMS=None,
+                 socketKeepAlive=True,
+                 connect=False,
+                 maxPoolsize=1)
 
 def list_question_objects() -> Question:
     object_list = []
