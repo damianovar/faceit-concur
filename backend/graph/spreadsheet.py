@@ -26,7 +26,7 @@ def connect_to_spreadsheet(spreadhseet, worksheet):
     #basedir = Path("src/services/")
     basedir = Path().absolute()
     print(basedir)
-    data_json = basedir / "backend" / "graph" / "services"/ "client_secret.json"
+    data_json = basedir / "faceit-concur" /"backend" / "graph" / "services"/ "client_secret.json"
     # use creds to create a client to interact with the Google Drive API
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name(data_json, scope)
