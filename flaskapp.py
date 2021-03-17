@@ -5,7 +5,8 @@ from werkzeug.utils import secure_filename
 from backend.upload.upload_script import Upload
 from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
-from backend.user.models import User
+from backend.user.models import Account
+from backend.models.models import University
 
 import db
 import os
@@ -16,8 +17,6 @@ app.config.from_object("config.DevelopmentConfig")
 
 if not os.path.exists(app.config["TEX_UPLOADS"]):
     os.makedirs(app.config["TEX_UPLOADS"])
-
-# Decorators
 
 
 def login_requiered(f):
@@ -37,9 +36,12 @@ def index():
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    db.add_uni()
     form = RegistrationForm()
-    if form.validate_on_submit():
-        return User().signup(form)
+    form.university.choices = [universities.name for universities in University.objects()]
+    if request.method == 'POST' and form.validate():
+        if Account().signup(form):
+            return redirect('/')
     return render_template('register.html', title='Register', form=form)
 
 
@@ -47,7 +49,7 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        return User().login()
+        return Account().login()
         """ if form.email.data == 'admin@flask.com' and form.password.data == 'password':
             flash('You have been logged in!', 'success')
             return redirect(url_for('index'))
@@ -58,7 +60,7 @@ def login():
 
 @app.route("/logout")
 def signout():
-    return User().signout()
+    return Account().signout()
 
 
 def allowed_file(filename):
@@ -89,8 +91,8 @@ def upload_tex():
             else:
                 print("That file extension is not allowed")
                 return redirect(request.url)
-
     return render_template("upload_tex.html", title='Upload')
+
 
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_requiered

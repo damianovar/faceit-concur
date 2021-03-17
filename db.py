@@ -1,6 +1,7 @@
 from mongoengine import connect
 from flask import session
-from backend.models.models import KC, Course, Question, Answer, Register
+from backend.models.models import KC, Course, Question, Answer, Register, University, Country
+
 
 client = connect(db="KCMap",
                  username="developer",
@@ -71,3 +72,10 @@ def get_question_by_obj_id(selections):
         if selections == db_id:
             return ques
     return "Didn't find the question!"
+
+
+def add_uni():
+    if not University.objects(name="Otto-von-Guericke-Universität"):
+        c = Country.objects(name="Germany").first()
+        return University(name="Otto-von-Guericke-Universität", country=c).save()
+    return "Uni already exists!"
