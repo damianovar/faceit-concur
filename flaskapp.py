@@ -6,7 +6,8 @@ from backend.upload.upload_script import Upload
 from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
 from backend.user.models import User
-
+import backend.graph.visualization as vis
+import backend.graph.spreadsheet as ss
 import db
 import os
 import uuid
@@ -72,6 +73,15 @@ def allowed_file(filename):
     else:
         return False
 
+@app.route("/graphviz")
+def graphs():
+    lists = ss.read_course_category_tree("linear-algebra", "specification of the content units' hierarchies", 4)
+    nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
+    # Need to fetch the nodedata
+    # Need to fetch the edges
+    # Need to create a template for using this data
+    #data = {"nodes":nodes, "edges":edges}
+    return render_template("graphviz.html", title='Visualize graphs',nodes=nodes, edges=edges)
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_tex():
