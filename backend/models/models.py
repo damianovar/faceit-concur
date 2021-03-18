@@ -109,8 +109,10 @@ class Question(Document):
     #solution = StringField(required=True)
     author = ReferenceField(User, reverse_delete_rule=CASCADE, required=False)
     course = ReferenceField(Course, reverse_delete_rule=CASCADE, required=False)
+    course_name = StringField(required=False)
 
     kc_list = ListField(ReferenceField(KC, reverse_delete_rule=CASCADE), required=True)
+    kc_names_list = ListField(StringField(required=False))
     kc_taxonomy = ListField(required=False)
     correct_answer = ListField(required=True)
     options = ListField(required=True)

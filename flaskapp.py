@@ -121,7 +121,7 @@ def get_image(tex_name):
 @app.route("/downloads", methods=['GET', 'POST'])
 @login_requiered
 def downloads():
-    data, selection_data = db.list_question_objects()
+    data, selection_data = db.list_question_objects_2()
     if request.method == "POST":
         selection = request.form.getlist('id')
         if selection:
