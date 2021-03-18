@@ -97,35 +97,40 @@ def upload_tex():
 @login_requiered
 def submit_answer():
     start = time.time()
-    data, selection_data = db.list_question_objects_2()
+    data, selection_data = db.list_question_objects()
     end = time.time()
-    print(end - start)
+    #print(end - start)
 
+    # User type flag
     teacher = True
 
     if request.method == "POST":
-        ml_selection = request.form.get('id')
-        selection = request.form.get('my_button')
-        #print(selection)
-        if selection:
-            answer = request.form.get('answer')
-            question_obj = db.get_question_by_obj_id(selection)
-            data = [[x] for x in question_obj.options]
-            idx_data = list(range(0, len(question_obj.options)))
+        selected_question = request.form.get('question_button')
+        selected_multiple_choice_answer = request.form.get('id')
+
+        if selected_question:
+            selected_question_obj = db.get_question_by_obj_id(selected_question)
+            list_of_options = [[x] for x in selected_question_obj.options]
+            idx_list_for_options = list(range(0, len(selected_question_obj.options)))
             if teacher:
-                correct_answer = "The correct answer is: " + question_obj.correct_answer[0]
+                correct_answer = "The correct answer is: " + selected_question_obj.correct_answer[0]
             else:
                 correct_answer = " "
-            return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=data, selection_data=idx_data, question_id_ = question_obj.id, question_text = question_obj.question, correct_answer=correct_answer)
-        elif ml_selection:
-            question_id = request.form.get('my_button_2')
-            answer = request.form.get('answer')
-            perceived_difficulty = request.form.get('star')
-            question_obj_2 = db.get_question_by_obj_id(question_id)
-            db.write_answer_to_mongo(question_obj_2, answer, ml_selection, perceived_difficulty)
-            options_list = question_obj_2.options
-            display_answer = str(options_list[int(ml_selection)])
-            return render_template("answer_submitted_successfully.html", answer=display_answer,question=question_obj_2.question)
+
+            return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=list_of_options, 
+                                    selection_data=idx_list_for_options, question_id = selected_question_obj.id, question_text = selected_question_obj.question, correct_answer=correct_answer)
+
+        elif selected_multiple_choice_answer:
+            question_id = request.form.get('multiple_choice_button')
+            written_answer = request.form.get('written_answer')
+            perceived_difficulty = request.form.get('rating')
+            answered_question_obj = db.get_question_by_obj_id(question_id)
+            db.write_answer_to_mongo(answered_question_obj, written_answer, selected_multiple_choice_answer, perceived_difficulty)
+            options_list = answered_question_obj.options
+            display_answer = str(options_list[int(selected_multiple_choice_answer)])
+
+            return render_template("answer_submitted_successfully.html", answer=display_answer,question=answered_question_obj.question)
+
         else:
             return render_template("no_question_selected.html", title='Answer not submitted')
 

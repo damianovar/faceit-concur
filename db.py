@@ -14,7 +14,7 @@ client = connect(db="KCMap",
                  connect=False,
                  maxPoolsize=1)
 
-def list_question_objects() -> Question:
+def list_question_objects_old() -> Question:
     object_list = []
     selection_list = []
     for elements in Question.objects():
@@ -35,7 +35,14 @@ def list_question_objects() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
-def list_question_objects_2() -> Question:
+def list_question_objects() -> Question:
+    """
+        Goes through the question database and extracts the data into python lists
+
+        Returns two lists:
+        object_list - question text and misc "course name, CU , ..."
+        selection_list - MongoDB question object id's 
+    """
     object_list = []
     selection_list = []
     for elements in Question.objects():
@@ -49,23 +56,11 @@ def list_question_objects_2() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
-
-def list_question_objects_lite() -> Question:
-    selection_list = Question.objects.all().values_list('id')
-    question_list = Question.objects.all().values_list('question')
-    #taxonomy_level_list = Question.objects.all().values_list('kc_taxonomy')
-    kc_list_obj_list = Question.objects.all().values_list('kc_list')
-    course_obj_list = Question.objects.all().values_list('course')
-    kc_list_name_list = [[y.name for y in x] for x in kc_list_obj_list]
-    course_name_list = [x.name if x is not None else 'empty' for x in course_obj_list]
-
-    #object_list = zip(question_list, course_name_list, kc_list_name_list, taxonomy_level_list)
-    object_list = zip(question_list, course_name_list, kc_list_name_list)
-
-    return object_list, selection_list
-
-
 def write_answer_to_mongo(question, txt_answer, selected_option, perceived_difficulty):
+    """
+        Given a question object and an answer to the question updates the Answer collection with the provided answer.
+        If the question has already been answered by the same user, the answer is overridden, otherwise new answer object is crated.
+    """
     my_string = session["user"]
 
     username_str_start = my_string.find('username') + 9
@@ -77,17 +72,33 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
     user_email = session["user"][email_str_start:email_str_end]
     user = Register.objects(email=user_email).first()
 
+    # If difficulty is not rated, set the rating to -1
     if perceived_difficulty == None:
         perceived_difficulty = -1
 
     Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=txt_answer, selected_option=selected_option, perceived_difficulty=perceived_difficulty, upsert=True)
 
 
-    
-
 def get_question_by_obj_id(question_id):
+    """
+        Retrieves question object from Question collection given question-object id
+    """
     question_obj = Question.objects(id = str(question_id))
-    #question_obj = client.KCMap.question.find_one({"_id": ObjectId(question_id)})
     return question_obj.get()
 
+
+#def list_question_objects_old_v2() -> Question:
+#    """
+#        Doesn't work correctly, the index "id" to "question" is off by 1 for some reason
+#    """
+#    selection_list = Question.objects.all().values_list('id')
+#    question_list = Question.objects.all().values_list('question')
+#    taxonomy_level_list = Question.objects.all().values_list('kc_taxonomy')
+#    kc_list_obj_list = Question.objects.all().values_list('kc_list')
+#    course_obj_list = Question.objects.all().values_list('course')
+#    kc_list_name_list = [[y.name for y in x] for x in kc_list_obj_list]
+#    course_name_list = [x.name if x is not None else 'empty' for x in course_obj_list]
+#    
+#    object_list = zip(question_list, course_name_list, kc_list_name_list, taxonomy_level_list)
+#    return object_list, selection_list
 

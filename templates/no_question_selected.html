@@ -1,12 +1,12 @@
 {% extends "base/base.html" %}
-{% set active_page = "menu9" %}
+{% set active_page = "menu10" %}
 {% block title %}Submit answer{% endblock %}
 {% block main %}
 
 <div class="container mb-2">
-  <h1>Sorry, you forgot to select an option!</h1>
+  <h2>Sorry, you forgot to select an option!</h2>
   <hr>
-  <td>Your answer was not submitted, </td>
-  <td>go back to <a href="{{url_for('submit_answer')}}">main question page</a></td>  
+  <p>Your answer was not submitted, </p>
+  <i>Go back to <a href="{{url_for('submit_answer')}}">main question page</a></i> 
 </div>
 {% endblock %}
