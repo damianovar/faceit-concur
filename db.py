@@ -35,24 +35,17 @@ def list_question_objects() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
-def list_question_objects_lite_2() -> Question:
+def list_question_objects_2() -> Question:
     object_list = []
     selection_list = []
     for elements in Question.objects():
         selection_list.append(elements.id)
         question = elements.question
-        course = elements.course
-        if course is not None:
-            course_name = course.name
-        else:
-            course_name = 'empty'
-        kcs = elements.kc_list
-        kc_name = []
-        for kc in kcs:
-            kc_name.append(kc.name)
+        course_name = elements.course_name
+        kc_name = elements.kc_names_list
         taxonomy_level = elements.kc_taxonomy
         list_item = []
-        list_item = [question, course_name, kc_name]
+        list_item = [question, course_name, kc_name, taxonomy_level]
         object_list.append(list_item)
     return object_list, selection_list
 
@@ -72,7 +65,7 @@ def list_question_objects_lite() -> Question:
     return object_list, selection_list
 
 
-def write_answer_to_mongo(question, txt_answer, selected_option):
+def write_answer_to_mongo(question, txt_answer, selected_option, perceived_difficulty):
     my_string = session["user"]
 
     username_str_start = my_string.find('username') + 9
@@ -84,7 +77,12 @@ def write_answer_to_mongo(question, txt_answer, selected_option):
     user_email = session["user"][email_str_start:email_str_end]
     user = Register.objects(email=user_email).first()
 
-    Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=txt_answer, selected_option=selected_option, upsert=True)
+    if perceived_difficulty == None:
+        perceived_difficulty = -1
+
+    Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=txt_answer, selected_option=selected_option, perceived_difficulty=perceived_difficulty, upsert=True)
+
+
     
 
 def get_question_by_obj_id(question_id):

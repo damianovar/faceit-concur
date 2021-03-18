@@ -97,25 +97,32 @@ def upload_tex():
 @login_requiered
 def submit_answer():
     start = time.time()
-    data, selection_data = db.list_question_objects_lite_2()
+    data, selection_data = db.list_question_objects_2()
     end = time.time()
     print(end - start)
+
+    teacher = True
 
     if request.method == "POST":
         ml_selection = request.form.get('id')
         selection = request.form.get('my_button')
-        print(selection)
+        #print(selection)
         if selection:
             answer = request.form.get('answer')
             question_obj = db.get_question_by_obj_id(selection)
             data = [[x] for x in question_obj.options]
             idx_data = list(range(0, len(question_obj.options)))
-            return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=data, selection_data=idx_data, question_id_ = question_obj.id, question_text = question_obj.question)
+            if teacher:
+                correct_answer = "The correct answer is: " + question_obj.correct_answer[0]
+            else:
+                correct_answer = " "
+            return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=data, selection_data=idx_data, question_id_ = question_obj.id, question_text = question_obj.question, correct_answer=correct_answer)
         elif ml_selection:
             question_id = request.form.get('my_button_2')
             answer = request.form.get('answer')
+            perceived_difficulty = request.form.get('star')
             question_obj_2 = db.get_question_by_obj_id(question_id)
-            db.write_answer_to_mongo(question_obj_2, answer, ml_selection)
+            db.write_answer_to_mongo(question_obj_2, answer, ml_selection, perceived_difficulty)
             options_list = question_obj_2.options
             display_answer = str(options_list[int(ml_selection)])
             return render_template("answer_submitted_successfully.html", answer=display_answer,question=question_obj_2.question)

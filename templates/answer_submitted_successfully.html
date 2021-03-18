@@ -4,10 +4,26 @@
 {% block main %}
 
 <div class="container mb-2">
-  <h1>Answer submitted successfully!</h1>
+  <h2>Answer submitted successfully!</h2>
   <hr>
-  <p> Question &nbsp; &nbsp; &nbsp;:  <b> {{ question }} </b> </p>
-  <p> Your answer : <b> {{ answer }} </b> </p>
-  <td>Go back to <a href="{{url_for('submit_answer')}}">main question page</a></td>
+  <table border="0" width="100%" style="font-weight: bold;">
+    <col style="width:15%">
+    <col style="width:85%">
+    <thead>
+    <tr>
+      <td style="vertical-align:top">Question:</td>
+      <td>{{ question }} </td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>Your answer :</td>
+      <td>{{ answer }}</td>
+    </tr>
+    </tbody>
+  </table>
+  <br>
+  <i>Go back to <a href="{{url_for('submit_answer')}}">main question page</a></i>
 </div>
+
 {% endblock %}
