@@ -158,3 +158,41 @@ def read_kcs_from_csv(filepath, column_name):
 
 def read_kc_matrix_from_csv():
     raise NotImplementedError
+
+
+def upload_CU_file(fileName):
+    basedir = Path().absolute()
+    data_excel = basedir / "faceit-concur" / "testFile.xlsx"
+    data_json = basedir / "faceit-concur" /"backend" / "graph" / "services"/ "client_secret.json"
+    # use creds to create a client to interact with the Google Drive API
+    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    creds = ServiceAccountCredentials.from_json_keyfile_name(data_json, scope)
+    client = gspread.authorize(creds)
+    print(client.list_spreadsheet_files())
+    for spreadsheet in client.list_spreadsheet_files():
+        if spreadsheet['name'] == "testing":
+            client.del_spreadsheet(spreadsheet['id'])
+            
+    #if "testing" in client.list_spreadsheet_files():
+    #    client.del_spreadsheet("testing")
+
+    onlineSheet = client.create("testing")
+    #sheet = client.open("testing")
+
+
+
+    path = "testFile.xlsx"
+    spreadsheet_name = "testFile"
+
+    excelFile = pd.ExcelFile(data_excel, engine='openpyxl')
+    #sheet_map = {}
+    for name_of_sheet in excelFile.sheet_names:
+        dataframe = excelFile.parse(name_of_sheet)
+        worksheet = onlineSheet.add_worksheet(title=name_of_sheet, rows=str(dataframe.shape[0]), cols=str(dataframe.shape[1]))
+        print("Created a worksheet:", name_of_sheet)
+        dataframe.fillna('',inplace=True)
+        worksheet.update([dataframe.columns.values.tolist()] + dataframe.values.tolist())
+        #print(worksheet.get_all_values())
+    
+    print("Upload complete")
+

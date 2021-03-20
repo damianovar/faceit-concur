@@ -75,7 +75,8 @@ def allowed_file(filename):
 
 @app.route("/graphviz")
 def graphs():
-    lists = ss.read_course_category_tree("linear-algebra", "specification of the content units' hierarchies", 4)
+    ss.upload_CU_file("filename")
+    lists = ss.read_course_category_tree("testing", "specification of the content un", 4)
     nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
     # Need to fetch the nodedata
     # Need to fetch the edges
