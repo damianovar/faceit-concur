@@ -31,11 +31,6 @@ def connect_to_spreadsheet(spreadhseet, worksheet):
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name(data_json, scope)
     client = gspread.authorize(creds)
-    print("Files")
-    variabels = client.list_spreadsheet_files()
-    #client.create("testing")
-    for thing in variabels:
-        print(thing["name"])
 
     # Find a workbook by name and open the first sheet
     # Make sure you use the right name here.
@@ -160,24 +155,41 @@ def read_kc_matrix_from_csv():
     raise NotImplementedError
 
 
-def upload_CU_file(fileName):
+def connect_to_CU_database():
     basedir = Path().absolute()
-    data_excel = basedir / "faceit-concur" / "testFile.xlsx"
     data_json = basedir / "faceit-concur" /"backend" / "graph" / "services"/ "client_secret.json"
-    # use creds to create a client to interact with the Google Drive API
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name(data_json, scope)
-    client = gspread.authorize(creds)
-    print(client.list_spreadsheet_files())
-    for spreadsheet in client.list_spreadsheet_files():
-        if spreadsheet['name'] == "testing":
-            client.del_spreadsheet(spreadsheet['id'])
-            
-    #if "testing" in client.list_spreadsheet_files():
-    #    client.del_spreadsheet("testing")
+    return gspread.authorize(creds)
 
+
+def delete_CU_file(CU_name) -> None:
+    client = connect_to_CU_database() 
+
+    for spreadsheet in client.list_spreadsheet_files():
+        if spreadsheet['name'] == CU_name:
+            client.del_spreadsheet(spreadsheet['id'])
+
+def get_available_CU_files() -> list:
+    client = connect_to_CU_database()
+    spreadsheets_json_files = client.list_spreadsheet_files()
+    spreadsheet_list = []
+    for sheet in spreadsheet_list:
+       spreadsheet_list.append(sheet["name"])
+    return spreadsheet_list
+
+def upload_CU_file(filename) -> None:
+
+    client = connect_to_CU_database()
+
+    basedir = Path().absolute()
+    data_excel = basedir / "faceit-concur" / "testFile.xlsx"
+
+    delete_CU_file("testing")
+
+    print("Files:")
+    print(get_available_CU_files())
     onlineSheet = client.create("testing")
-    #sheet = client.open("testing")
 
 
 
@@ -185,7 +197,6 @@ def upload_CU_file(fileName):
     spreadsheet_name = "testFile"
 
     excelFile = pd.ExcelFile(data_excel, engine='openpyxl')
-    #sheet_map = {}
     for name_of_sheet in excelFile.sheet_names:
         dataframe = excelFile.parse(name_of_sheet)
         worksheet = onlineSheet.add_worksheet(title=name_of_sheet, rows=str(dataframe.shape[0]), cols=str(dataframe.shape[1]))
