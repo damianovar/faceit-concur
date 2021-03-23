@@ -1,5 +1,5 @@
 class Config(object):
-    DEBUG = False
+    DEBUG = True
     TESTING = False
     SECRET_KEY = "c9d652aa9c50c0bf0a4f5af2bd297cea"
 

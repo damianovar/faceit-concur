@@ -1,11 +1,12 @@
-from flask import Flask, render_template, url_for, redirect, request, send_file, send_from_directory, abort, session, jsonify
+from flask import Flask, render_template, url_for, redirect, request, send_from_directory, abort, session, jsonify
 from functools import wraps
 from werkzeug.utils import secure_filename
 
 from backend.upload.upload_script import Upload
 from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
-from backend.user.models import User
+from backend.user.models import Account
+from backend.models.models import University
 
 import db
 import os
@@ -16,8 +17,6 @@ app.config.from_object("config.DevelopmentConfig")
 
 if not os.path.exists(app.config["TEX_UPLOADS"]):
     os.makedirs(app.config["TEX_UPLOADS"])
-
-# Decorators
 
 
 def login_requiered(f):
@@ -37,9 +36,13 @@ def index():
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    db.add_uni()
     form = RegistrationForm()
-    if form.validate_on_submit():
-        return User().signup(form)
+    form.university.choices = [
+        universities.name for universities in University.objects()]
+    if request.method == 'POST' and form.validate():
+        if Account().signup(form):
+            return redirect('/')
     return render_template('register.html', title='Register', form=form)
 
 
@@ -47,18 +50,13 @@ def register():
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        return User().login()
-        """ if form.email.data == 'admin@flask.com' and form.password.data == 'password':
-            flash('You have been logged in!', 'success')
-            return redirect(url_for('index'))
-        else:
-            flash('Login Unsuccessful. Please check username and password', 'danger') """
+        return Account().login()
     return render_template('login.html', title='Login', form=form)
 
 
 @app.route("/logout")
 def signout():
-    return User().signout()
+    return Account().signout()
 
 
 def allowed_file(filename):
@@ -89,8 +87,8 @@ def upload_tex():
             else:
                 print("That file extension is not allowed")
                 return redirect(request.url)
-
     return render_template("upload_tex.html", title='Upload')
+
 
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_requiered
@@ -103,7 +101,7 @@ def submit_answer():
             question_obj = db.get_question_by_obj_id(selection)
             db.write_answer_to_mongo(question_obj, answer)
 
-            return render_template("answer_submitted_successfully.html", answer=answer,question=question_obj.question)
+            return render_template("answer_submitted_successfully.html", answer=answer, question=question_obj.question)
         else:
             return render_template("no_question_selected.html", title='Answer not submitted')
 
