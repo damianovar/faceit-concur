@@ -7443,6 +7443,9 @@ body {
   padding-top: 53px;
   overflow-x: hidden; }
 
+.container-fluid, .container-sm, .container-md, .container-lg, .container-xl {
+  height: 100vh; }
+
 .container {
   padding: 1rem 0rem; }
 
