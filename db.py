@@ -1,3 +1,5 @@
+from typing import List
+
 from mongoengine import connect
 from flask import session
 from backend.models.models import KC, Course, Question, Answer, Register, University, Country
@@ -5,13 +7,14 @@ from backend.models.models import KC, Course, Question, Answer, Register, Univer
 
 client = connect(db="KCMap",
                  username="developer",
-                 password="TTK4260",
-                 host="mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority",
+                 password="bruxellesmagdeburgpadovatrondheimuppsala",
+                 host="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority",
                  connectTimeoutMS=30000,
                  socketTimeoutMS=None,
                  socketKeepAlive=True,
                  connect=False,
                  maxPoolsize=1)
+
 
 def list_question_objects() -> Question:
     object_list = []
@@ -20,19 +23,16 @@ def list_question_objects() -> Question:
         selection_list.append(elements.id)
         question = elements.question
         course = elements.course
-        if course is not None:
-            course_name = course.name
-        else:
-            course_name = 'empty'
+        course_name = course.name if course is not None else 'empty'
         kcs = elements.kc_list
         kc_name = []
         for kc in kcs:
             kc_name.append(kc.name)
         taxonomy_level = elements.kc_taxonomy
-        list_item = []
         list_item = [question, course_name, kc_name, taxonomy_level]
         object_list.append(list_item)
     return object_list, selection_list
+
 
 def list_question_objects_2() -> Question:
     object_list = []
@@ -43,10 +43,10 @@ def list_question_objects_2() -> Question:
         course_name = elements.course_name
         kc_name = elements.kc_names_list
         taxonomy_level = elements.kc_taxonomy
-        list_item = []
         list_item = [question, course_name, kc_name, taxonomy_level]
         object_list.append(list_item)
     return object_list, selection_list
+
 
 def list_question_objects_lite() -> Question:
     object_list = []
@@ -57,10 +57,10 @@ def list_question_objects_lite() -> Question:
         course_name = elements.course_name
         kc_name = elements.kc_names_list
         taxonomy_level = elements.kc_taxonomy
-        list_item = []
         list_item = [question, course_name]
         object_list.append(list_item)
     return object_list, selection_list
+
 
 def write_answer_to_mongo(question, answer):
     my_string = session["user"]
