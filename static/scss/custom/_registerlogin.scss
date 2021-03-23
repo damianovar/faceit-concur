@@ -1,34 +1,101 @@
-.signup-form{
+.signup-form {
     background: #333333;
-    background: linear-gradient(270deg, #333333 0%, #555555 100% );
+    background: linear-gradient(270deg, #333333 0%, #555555 100%);
     border-radius: 0;
-    box-shadow: 0 2px 15px 4px rgba(152,162,179,0.7), 0 1px 5px -2px rgba(152, 162, 179, 0.3);
+    box-shadow: 0 2px 15px 4px rgba(152, 162, 179, 0.7), 0 1px 5px -2px rgba(152, 162, 179, 0.3);
     width: 35rem;
 }
 
-.register-label{
+.login-form {
+    background: #333333;
+    background: linear-gradient(270deg, #333333 0%, #555555 100%);
+    border-radius: 0;
+    box-shadow: 0 2px 15px 4px rgba(152, 162, 179, 0.7), 0 1px 5px -2px rgba(152, 162, 179, 0.3);
+    width: 35rem;
+}
+
+.register-label {
     font-size: 1.2rem;
     font-weight: 200;
     display: inline-block;
     width: 100%;
-    color: #FFF;
+    color: #fff;
 }
 
-.register-btn{
+.login-label {
+    font-size: 1.2rem;
+    font-weight: 200;
+    display: inline-block;
+    width: 100%;
+    color: #fff;
+}
+
+.register-btn {
     border: 1px solid #ff5500;
-    background-color: #FFF;
+    background-color: #fff;
     border-radius: 2rem;
     padding: 0.5rem 3rem 0.4rem 3rem;
     color: #ff5500;
     font-weight: bold;
     transition: transform 80ms ease-in;
     box-shadow: 0 2px 4px 4px rgba(46, 50, 58, 0.3), 0 1px 5px -2px rgba(25, 36, 56, 0.3);
-    &:hover{
+    &:hover {
         background-color: #ff5500;
-        color: #FFF;
+        color: #fff;
     }
 }
 
-.check-account{
+.login-btn {
+    border: 1px solid #ff5500;
+    background-color: #fff;
+    border-radius: 2rem;
+    padding: 0.5rem 3rem 0.4rem 3rem;
+    color: #ff5500;
+    font-weight: bold;
+    transition: transform 80ms ease-in;
+    box-shadow: 0 2px 4px 4px rgba(46, 50, 58, 0.3), 0 1px 5px -2px rgba(25, 36, 56, 0.3);
+    &:hover {
+        background-color: #ff5500;
+        color: #fff;
+    }
+}
+
+.check-account {
     color: #acb4bb;
+}
+
+.form-control {
+    border-radius: 0.1rem !important;
+}
+
+.custom-control-label {
+    position: relative;
+    margin-bottom: 0;
+    vertical-align: top;
+    font-size: 1rem;
+    font-weight: 200;
+    line-height: 1.9rem;
+    color: #fff;
+}
+.custom-control-label::before {
+    position: absolute;
+    top: 0.25rem;
+    left: -1.5rem;
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    pointer-events: none;
+    content: "";
+    background-color: #fff;
+    border: #adb5bd solid 1px;
+}
+.custom-control-label::after {
+    position: absolute;
+    top: 0.25rem;
+    left: -1.5rem;
+    display: block;
+    width: 1.25rem;
+    height: 1.25rem;
+    content: "";
+    background: no-repeat 50% / 50% 50%;
 }

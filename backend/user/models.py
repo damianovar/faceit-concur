@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, flash, redirect, session
+from flask import Flask, jsonify, request, flash, redirect, session, url_for
 from passlib.hash import pbkdf2_sha256
 from backend.models.models import User, University
 
@@ -32,7 +32,7 @@ class Account:
 
     def signout(self):
         session.clear()
-        return redirect('/')
+        return redirect(url_for('index'))
 
     def login(self):
         user = User.objects(email=request.form.get('email')).first()
@@ -42,5 +42,6 @@ class Account:
             self.start_session(user.to_json())
             return redirect('/')
         else:
-            flash('Invalid Username or Password!', 'danger')
+            flash('Invalid Email or Password!', 'danger')
+            return redirect(url_for('login'))
         return jsonify({"error": "Invalid login credentials "}), 401

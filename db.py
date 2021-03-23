@@ -29,6 +29,19 @@ def list_question_objects() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
+def list_question_objects_2() -> Question:
+    object_list = []
+    selection_list = []
+    for elements in Question.objects():
+        selection_list.append(elements.id)
+        question = elements.question
+        course_name = elements.course_name
+        kc_name = elements.kc_names_list
+        taxonomy_level = elements.kc_taxonomy
+        list_item = []
+        list_item = [question, course_name, kc_name, taxonomy_level]
+        object_list.append(list_item)
+    return object_list, selection_list
 
 def list_question_objects_lite() -> Question:
     object_list = []
@@ -36,15 +49,8 @@ def list_question_objects_lite() -> Question:
     for elements in Question.objects():
         selection_list.append(elements.id)
         question = elements.question
-        course = elements.course
-        if course is not None:
-            course_name = course.name
-        else:
-            course_name = 'empty'
-        kcs = elements.kc_list
-        kc_name = []
-        for kc in kcs:
-            kc_name.append(kc.name)
+        course_name = elements.course_name
+        kc_name = elements.kc_names_list
         taxonomy_level = elements.kc_taxonomy
         list_item = []
         list_item = [question, course_name]
@@ -65,7 +71,7 @@ def write_answer_to_mongo(question, answer):
 
     Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=answer, upsert=True)
 
-    
+
 def get_question_by_obj_id(selections):
     for ques in Question.objects():
         db_id = str(ques.id)

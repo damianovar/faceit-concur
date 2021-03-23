@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, send_file, send_from_directory, abort, session, jsonify
+from flask import Flask, render_template, url_for, redirect, request, send_from_directory, abort, session, jsonify
 from functools import wraps
 from werkzeug.utils import secure_filename
 
@@ -38,7 +38,8 @@ def index():
 def register():
     db.add_uni()
     form = RegistrationForm()
-    form.university.choices = [universities.name for universities in University.objects()]
+    form.university.choices = [
+        universities.name for universities in University.objects()]
     if request.method == 'POST' and form.validate():
         if Account().signup(form):
             return redirect('/')
@@ -50,11 +51,6 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         return Account().login()
-        """ if form.email.data == 'admin@flask.com' and form.password.data == 'password':
-            flash('You have been logged in!', 'success')
-            return redirect(url_for('index'))
-        else:
-            flash('Login Unsuccessful. Please check username and password', 'danger') """
     return render_template('login.html', title='Login', form=form)
 
 
@@ -105,7 +101,7 @@ def submit_answer():
             question_obj = db.get_question_by_obj_id(selection)
             db.write_answer_to_mongo(question_obj, answer)
 
-            return render_template("answer_submitted_successfully.html", answer=answer,question=question_obj.question)
+            return render_template("answer_submitted_successfully.html", answer=answer, question=question_obj.question)
         else:
             return render_template("no_question_selected.html", title='Answer not submitted')
 
