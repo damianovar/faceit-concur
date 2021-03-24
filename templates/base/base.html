@@ -2,22 +2,15 @@
 <html lang="en">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-  <script src="https://kit.fontawesome.com/19a8240af4.js" crossorigin="anonymous"></script>
-
-  {% if title %}
-  <title>UserInterface - {{ title }}</title>
+  {% block head %} {% include "base/partials/head.html" %} {% endblock %} {%
+  if title %}
+  <title>FaceIt - {{ title }}</title>
   {% else %}
-  <title>UserInterface</title>
+  <title>FaceIt</title>
   {% endif %}
 </head>
 
 <body>
-
   <nav
     class="navbar bg-primary navbar-icon-top navbar-expand flex-column flex-md-row p-0 shadow navbar-custom fixed-top">
     <a class="navbar-brand col-md-2 mr-0" href="#">.#.</a>
@@ -29,9 +22,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item {{ 'active' if active_page == 'menu1' else '' }}">
-          <a class="nav-link" href="{{url_for('index') }}">
-            Home
-          </a>
+          <a class="nav-link" href="{{url_for('index') }}"> Home </a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -39,31 +30,35 @@
             Dropdown
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="https://drive.google.com/file/d/13ihYK6Zo7YwZflL0-PC7RQXXmSEJm2uV/view?usp=sharing">manual</a>
+            <a class="dropdown-item"
+              href="https://drive.google.com/file/d/13ihYK6Zo7YwZflL0-PC7RQXXmSEJm2uV/view?usp=sharing">manual</a>
           </div>
         </li>
       </ul>
-      <ul class="navbar-nav ">
+      <ul class="navbar-nav">
+        <button id="profile-btn" class="btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle"
+            viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+            <path fill-rule="evenodd"
+              d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+          </svg>
+        </button>
+      </ul>
+      <ul class="navbar-nav">
         {% if session['logged_in'] %}
         <li class="nav-item">
           <p class="login-text">You are currently logged in.</p>
         </li>
         <li class="nav-item login-item">
-          <a href="/logout" class="nav-link">
-            Sign Out
-          </a>
+          <a href="/logout" class="nav-link"> Sign Out </a>
         </li>
         {% else %}
         <li class="nav-item login-item {{ 'active' if active_page == 'menu3' else '' }}">
-          <a class="nav-link " href="{{url_for('login') }}">
-            Login
-          </a>
+          <a class="nav-link" href="{{url_for('login') }}"> Login </a>
         </li>
         <li class="nav-item login-item {{ 'active' if active_page == 'menu4' else '' }}">
-          <a class="nav-link " href="{{url_for('register') }}">
-            Register
-            
-          </a>
+          <a class="nav-link" href="{{url_for('register') }}"> Register </a>
         </li>
         {% endif %}
       </ul>
@@ -72,21 +67,19 @@
 
   <!-- Container -->
   <div class="container-fluid">
-    <div class="row flex-xl-nowrap flex-fill ">
+    <div class="row flex-xl-nowrap flex-fill h-100">
       <div class="col-md-2 bg-secondary sidebar">
         <!-- Search form -->
         <ul class="nav flex-column sticky-top sticky-offset">
           <li>
-            <form class="form-inline d-flex justify-content-center px-0 mt-2 mb-4 ">
+            <form class="form-inline d-flex justify-content-center px-0 mt-2 mb-4">
               <input class="form-control form-control-underlined mr-3 w-75" type="text" placeholder="Search"
-                aria-label="Search">
+                aria-label="Search" />
               <i class="fa fa-search text-white" aria-hidden="true"></i>
             </form>
           </li>
           <li class="nav-item {{ 'active' if active_page == 'menu5' else '' }}">
-            <a class="nav-link" href="{{url_for('upload_tex') }}">
-              Upload
-            </a>
+            <a class="nav-link" href="{{url_for('upload_tex') }}"> Upload </a>
           </li>
           <li class="nav-item {{ 'active' if active_page == 'menu6' else '' }}">
             <a class="nav-link" href="{{url_for('downloads') }}">
@@ -100,17 +93,19 @@
           </li>
         </ul>
       </div>
-      <div class="col-md-9 mt-2 ml-4">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
-          {{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-        {% block main %}{% endblock %}
+      <div class="col-md-10 mt-4 ml-4">
+   
+          <div class="h-100 content-container" id="content">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+              {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+              {% endif %}
+              {% endwith %}
+              {% block main %}{% endblock %}
+          </div>
+
       </div>
     </div>
   </div>
@@ -133,6 +128,7 @@
   <script src="/static/js/bootstrap-table/extension/bootstrap-table-filter-control.min.js"></script>
   <script src="/static/js/bootstrap-table/extension/bootstrap-table-toolbar.min.js"></script>
   <script src="/static/js/selected-file.js"></script>
+<<<<<<< HEAD
 
 
   <script type="text/javascript"
@@ -155,6 +151,8 @@
   }
   </style>
 
+=======
+>>>>>>> main
 </body>
 
 </html>

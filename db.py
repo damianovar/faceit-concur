@@ -1,8 +1,13 @@
 from mongoengine import connect
 from flask import session
+<<<<<<< HEAD
 from backend.models.models import KC, Course, Question, Answer, Register
 from bson.objectid import ObjectId
 import time
+=======
+from backend.models.models import KC, Course, Question, Answer, Register, University, Country
+
+>>>>>>> main
 
 client = connect(db="KCMap",
                  username="developer",
@@ -35,9 +40,25 @@ def list_question_objects_old() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
+<<<<<<< HEAD
 def list_question_objects() -> Question:
     """
         Goes through the question database and extracts the data into python lists
+=======
+def list_question_objects_2() -> Question:
+    object_list = []
+    selection_list = []
+    for elements in Question.objects():
+        selection_list.append(elements.id)
+        question = elements.question
+        course_name = elements.course_name
+        kc_name = elements.kc_names_list
+        taxonomy_level = elements.kc_taxonomy
+        list_item = []
+        list_item = [question, course_name, kc_name, taxonomy_level]
+        object_list.append(list_item)
+    return object_list, selection_list
+>>>>>>> main
 
         Returns two lists:
         object_list - question text and misc "course name, CU , ..."
@@ -102,3 +123,20 @@ def get_question_by_obj_id(question_id):
 #    object_list = zip(question_list, course_name_list, kc_list_name_list, taxonomy_level_list)
 #    return object_list, selection_list
 
+<<<<<<< HEAD
+=======
+
+def get_question_by_obj_id(selections):
+    for ques in Question.objects():
+        db_id = str(ques.id)
+        if selections == db_id:
+            return ques
+    return "Didn't find the question!"
+
+
+def add_uni():
+    if not University.objects(name="Otto-von-Guericke-Universität"):
+        c = Country.objects(name="Germany").first()
+        return University(name="Otto-von-Guericke-Universität", country=c).save()
+    return "Uni already exists!"
+>>>>>>> main
