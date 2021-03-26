@@ -36,6 +36,7 @@ def list_question_objects() -> Question:
 
 
 def list_question_objects_2() -> Question:
+    """Return an object list and a list of selections"""
 
     # TODO: give this function a better name please :P
     object_list = []
@@ -52,6 +53,7 @@ def list_question_objects_2() -> Question:
 
 
 def list_question_objects_lite() -> Question:
+    """Return an object list and a list of selections"""
 
     # TODO: Okay now you're just out of names :P
     object_list = []
