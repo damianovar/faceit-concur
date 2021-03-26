@@ -88,7 +88,12 @@ def write_answer_to_mongo(question, answer):
         user_name=user_name, answer=answer, upsert=True)
 
 
-def get_question_by_obj_id(selections):
+def get_question_by_obj_id(selections) -> str:
+    """
+    Get a question if object id matches.
+
+    str selections
+    """
     for ques in Question.objects():
         db_id = str(ques.id)
         if selections == db_id:

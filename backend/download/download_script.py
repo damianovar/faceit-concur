@@ -14,9 +14,9 @@ class Download:
     # TODO: why can't this just be functions??
     def get_questions_by_selection(selections) -> Question:
         """
+        Get questions based on a list of object ids.
 
-
-        selections
+        List[str] selections
 
         return obj 
         """
