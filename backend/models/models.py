@@ -15,7 +15,6 @@ class Country(Document):
         return queryset.order_by('+name')
 
 
-
 class University(Document):
     name = StringField(max_length=100, required=True)
     country = ReferenceField(
@@ -55,6 +54,7 @@ class User(Document):
     def objects(doc_cls, queryset):
         return queryset.order_by('+last_name')
 
+
 class Register(Document):
     username = StringField(required=True, max_length=50)
     email = StringField(required=True, max_length=50)
@@ -63,6 +63,7 @@ class Register(Document):
     @queryset_manager
     def objects(doc_cls, queryset):
         return queryset.order_by('+email')
+
 
 class KC(Document):
     name = StringField(max_length=150, required=True)

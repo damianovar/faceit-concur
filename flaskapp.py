@@ -1,3 +1,5 @@
+"""Entry Point."""
+
 from flask import Flask, render_template, url_for, redirect, request, send_from_directory, abort, session, jsonify
 from functools import wraps
 from werkzeug.utils import secure_filename
@@ -20,6 +22,11 @@ if not os.path.exists(app.config["TEX_UPLOADS"]):
 
 
 def login_requiered(f):
+    """
+    Check if user is logged in.
+
+    function f
+    """
     @wraps(f)
     def wrap(*args, **kwargs):
         if 'logged_in' in session:
@@ -31,11 +38,13 @@ def login_requiered(f):
 
 @app.route("/")
 def index():
+    """Return homepage."""
     return render_template('index.html', title='Home')
 
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
+    """Return a page for registering a user."""
     db.add_uni()
     form = RegistrationForm()
     form.university.choices = [
@@ -48,6 +57,7 @@ def register():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
+    """Redirect a user to the logged in page if user credentials are correct."""
     form = LoginForm()
     if form.validate_on_submit():
         return Account().login()
@@ -56,10 +66,18 @@ def login():
 
 @app.route("/logout")
 def signout():
+    """Sign out a user."""
     return Account().signout()
 
 
 def allowed_file(filename):
+    """
+    Check if filename is valid.
+
+    str filename
+
+    return bool
+    """
     if not "." in filename:
         return False
 
@@ -73,6 +91,7 @@ def allowed_file(filename):
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_tex():
+    """Upload a tex-file."""
     if request.method == "POST":
         if request.files:
             zipf = request.files["zipf"]
@@ -93,6 +112,7 @@ def upload_tex():
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_requiered
 def submit_answer():
+    """Check if user answered a question and redirect accordingly."""
     data, selection_data = db.list_question_objects_lite()
     if request.method == "POST":
         selection = request.form.get('id')
@@ -110,6 +130,13 @@ def submit_answer():
 
 @app.route("/get-tex/<tex_name>", methods=['GET', 'POST'])
 def get_image(tex_name):
+    """
+    Get a image to store for a question.
+
+    str tex_name
+
+    return image
+    """
     try:
         return send_from_directory(app.config["CLIENT_TEX"], filename=tex_name, as_attachment=True)
     except FileNotFoundError:
@@ -119,6 +146,7 @@ def get_image(tex_name):
 @app.route("/downloads", methods=['GET', 'POST'])
 @login_requiered
 def downloads():
+    """Let a user download questions."""
     data, selection_data = db.list_question_objects_2()
     if request.method == "POST":
         selection = request.form.getlist('id')
@@ -134,6 +162,11 @@ def downloads():
 
 @app.after_request
 def add_headers(response):
+    """
+    Add headers to a response message.
+
+    return str response
+    """
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers',
                          'Content-Type,Authorization')
