@@ -1,4 +1,19 @@
 class Config(object):
+    """
+    Base class for storing configuration data.
+
+    bool DEBUG
+    bool TESTING
+    str SECRET_KEY
+    str DB_NAME
+    str DB_USERNAME
+    str DB_PASSWORD
+    str TEX_UPLOADS
+    str ALLOWED_EXTENSIONS
+    int MAX_CONTENT_LENGTH
+    bool SESSION_COOKIE_SECURE
+    """
+
     DEBUG = True
     TESTING = False
     SECRET_KEY = "c9d652aa9c50c0bf0a4f5af2bd297cea"
@@ -15,10 +30,21 @@ class Config(object):
 
 
 class ProductionConfig(Config):
+    """Configurations for production."""
     pass
 
 
 class DevelopmentConfig(Config):
+    """
+    Configurations for development.
+
+    bool DEBUG
+    str DB_NAME
+    str DB_USERNAME
+    str DB_PASSWORD
+    str DB_HOST
+    bool SESSION_COOKIE_SECURE
+    """
     DEBUG = True
 
     DB_NAME = "KCMap"
@@ -30,6 +56,15 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
+    """
+    Configurations for testing.
+
+    bool TESTING
+    str DB_NAME
+    str DB_USERNAME
+    str DB_PASSWORD
+    bool SESSION_COOKIE_SECURE
+    """
     TESTING = True
 
     DB_NAME = "development-db"
