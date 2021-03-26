@@ -17,6 +17,7 @@ client = connect(db="KCMap",
 
 
 def list_question_objects() -> Question:
+    """Return an object list and a list of selections"""
     object_list = []
     selection_list = []
     for elements in Question.objects():
@@ -35,6 +36,8 @@ def list_question_objects() -> Question:
 
 
 def list_question_objects_2() -> Question:
+
+    # TODO: give this function a better name please :P
     object_list = []
     selection_list = []
     for elements in Question.objects():
@@ -49,6 +52,8 @@ def list_question_objects_2() -> Question:
 
 
 def list_question_objects_lite() -> Question:
+
+    # TODO: Okay now you're just out of names :P
     object_list = []
     selection_list = []
     for elements in Question.objects():
@@ -63,6 +68,9 @@ def list_question_objects_lite() -> Question:
 
 
 def write_answer_to_mongo(question, answer):
+    """
+    Retrieve an answer and send it to the database.
+    """
     my_string = session["user"]
 
     username_str_start = my_string.find('username') + 9
@@ -74,7 +82,8 @@ def write_answer_to_mongo(question, answer):
     user_email = session["user"][email_str_start:email_str_end]
     user = Register.objects(email=user_email).first()
 
-    Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=answer, upsert=True)
+    Answer.objects(question=question, user=user).update_one(
+        user_name=user_name, answer=answer, upsert=True)
 
 
 def get_question_by_obj_id(selections):
@@ -86,6 +95,10 @@ def get_question_by_obj_id(selections):
 
 
 def add_uni():
+    """
+    Add a university to the database.
+    """
+    # TODO: Remove default name after checking if this works.
     if not University.objects(name="Otto-von-Guericke-Universität"):
         c = Country.objects(name="Germany").first()
         return University(name="Otto-von-Guericke-Universität", country=c).save()
