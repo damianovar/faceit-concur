@@ -110,7 +110,23 @@ def read_course_category_tree(spreadsheet, worksheet, num_of_subtopics: int):
             topic_cols = [ws.col_values(col+1)]
         else:
             topic_cols.append(ws.col_values(col+1))
+
+    # Find the largest column
+    desired_size = 0
+    for col in topic_cols:
+        desired_size = max(desired_size, len(col))
+    
+    for iterator in range(len(topic_cols)):
+        topic_cols[iterator] = augment_column(topic_cols[iterator], desired_size)
+
+
     return topic_cols
+
+
+def augment_column(column, desired_size):
+    for i in range(desired_size - len(column)):
+        column.append('')
+    return column
 
 
 def read_cu_relations(spreadsheet: str, worksheet: str):
@@ -178,18 +194,13 @@ def get_available_CU_files() -> list:
        spreadsheet_list.append(sheet["name"])
     return spreadsheet_list
 
-def upload_CU_file(filename) -> None:
+def upload_CU_file(file) -> None:
 
     client = connect_to_CU_database()
 
-    basedir = Path().absolute()
-    data_excel = basedir / "faceit-concur" / "test-sheet-for-Iver-A.xlsx"
-
-    delete_CU_file("test-sheet-for-Iver-A")
-
-    print("Files:")
-    print(get_available_CU_files())
-    onlineSheet = client.create("test-sheet-for-Iver-A")
+    data_excel = file
+    delete_CU_file(file.filename[:-5])
+    onlineSheet = client.create(file.filename[:-5])
 
 
     excelFile = pd.ExcelFile(data_excel, engine='openpyxl')
@@ -204,3 +215,8 @@ def upload_CU_file(filename) -> None:
     
     print("Upload complete")
 
+
+
+def delete_all_files():
+    client = connect_to_CU_database()
+    #delete_CU_file("temp")

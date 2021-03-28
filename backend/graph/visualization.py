@@ -332,6 +332,9 @@ def get_nodes_and_edges_cu_hierarchies(lists):
     :param lists:
     :return:
     """
+
+    print("Lists:", lists, "\n")
+
     trans_mat = tuple(zip(*lists))
     col_size = len(trans_mat)
     num_of_cols = len(trans_mat[0])
