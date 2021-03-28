@@ -97,6 +97,13 @@ def graph_list():
     return render_template("graphlist.html", title="Graph list", CU_files=available_CU_files)
 
 
+@app.route("/upload_excel")
+def upload_excel():
+    
+    return render_template("upload_excel.html", title="Upload Excel")
+
+
+
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_tex():
