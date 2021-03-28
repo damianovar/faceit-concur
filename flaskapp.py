@@ -97,9 +97,21 @@ def graph_list():
     return render_template("graphlist.html", title="Graph list", CU_files=available_CU_files)
 
 
-@app.route("/upload_excel")
+@app.route("/upload_excel", methods=["GET", "POST"])
 def upload_excel():
-    
+    if request.method == "POST":
+        if request.files:
+            excel_file = request.files["xlsx"]
+            if excel_file.filename == "":
+                print("No filename")
+                return redirect(request.url)
+            if excel_file.filename[-5:] == ".xlsx":
+                ss.upload_CU_file(excel_file)
+                return redirect(request.url)
+            else:
+                print("That file extension is not allowed")
+                return redirect(request.url)
+            
     return render_template("upload_excel.html", title="Upload Excel")
 
 
