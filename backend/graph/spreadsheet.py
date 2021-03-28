@@ -174,7 +174,7 @@ def get_available_CU_files() -> list:
     client = connect_to_CU_database()
     spreadsheets_json_files = client.list_spreadsheet_files()
     spreadsheet_list = []
-    for sheet in spreadsheet_list:
+    for sheet in spreadsheets_json_files:
        spreadsheet_list.append(sheet["name"])
     return spreadsheet_list
 
@@ -183,24 +183,21 @@ def upload_CU_file(filename) -> None:
     client = connect_to_CU_database()
 
     basedir = Path().absolute()
-    data_excel = basedir / "faceit-concur" / "testFile.xlsx"
+    data_excel = basedir / "faceit-concur" / "test-sheet-for-Iver-A.xlsx"
 
-    delete_CU_file("testing")
+    delete_CU_file("test-sheet-for-Iver-A")
 
     print("Files:")
     print(get_available_CU_files())
-    onlineSheet = client.create("testing")
+    onlineSheet = client.create("test-sheet-for-Iver-A")
 
-
-
-    path = "testFile.xlsx"
-    spreadsheet_name = "testFile"
 
     excelFile = pd.ExcelFile(data_excel, engine='openpyxl')
     for name_of_sheet in excelFile.sheet_names:
         dataframe = excelFile.parse(name_of_sheet)
         worksheet = onlineSheet.add_worksheet(title=name_of_sheet, rows=str(dataframe.shape[0]), cols=str(dataframe.shape[1]))
         print("Created a worksheet:", name_of_sheet)
+        print("Shape:", dataframe.shape[0], dataframe.shape[1])
         dataframe.fillna('',inplace=True)
         worksheet.update([dataframe.columns.values.tolist()] + dataframe.values.tolist())
         #print(worksheet.get_all_values())

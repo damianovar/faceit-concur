@@ -73,16 +73,30 @@ def allowed_file(filename):
     else:
         return False
 
-@app.route("/graphviz")
-def graphs():
+@app.route("/graphviz/<sheet>/")
+def graphs(sheet):
     ss.upload_CU_file("filename")
-    lists = ss.read_course_category_tree("testing", "specification of the content un", 4)
+    #lists = ss.read_course_category_tree("linear-algebra", "specification of the content units' hierarchies", 4)
+    #lists = ss.read_course_category_tree("Course_content_signals", "specification of the content un", 4)
+    #print("Lists:",lists)
+    print()
+    #nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
+    print()
+    #lists = ss.read_course_category_tree("testing", "specification of the content un", 4)
+    lists = ss.read_course_category_tree(sheet, "specification of the content un", 4)
+    print("Lists:",lists)
+    print()
     nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
-    # Need to fetch the nodedata
-    # Need to fetch the edges
-    # Need to create a template for using this data
-    #data = {"nodes":nodes, "edges":edges}
+    print()
+    #print("Values:",nodes)
     return render_template("graphviz.html", title='Visualize graphs',nodes=nodes, edges=edges)
+
+@app.route("/graphlist")
+def graph_list():
+    available_CU_files = ss.get_available_CU_files()
+    return render_template("graphlist.html", title="Graph list", CU_files=available_CU_files)
+
+
 
 @app.route("/upload", methods=["GET", "POST"])
 def upload_tex():

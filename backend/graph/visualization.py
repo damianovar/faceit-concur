@@ -335,7 +335,7 @@ def get_nodes_and_edges_cu_hierarchies(lists):
     trans_mat = tuple(zip(*lists))
     col_size = len(trans_mat)
     num_of_cols = len(trans_mat[0])
-
+    print("Trans matrix",trans_mat)
     g = Network(height="1500px", width="75%", bgcolor="#222222",
                 font_color="white", directed=True)
 
@@ -348,7 +348,7 @@ def get_nodes_and_edges_cu_hierarchies(lists):
     p0, p1, p2 = None, None, None
     color = "#FFFFFF"
     g.add_node(n_id="Linear Algebra", label="Linear Algebra", color="FF0000", shape="ellipse", value=6)
-
+    
     for elem in trans_mat:
         c += 1
         if c != 1 and c != col_size:
