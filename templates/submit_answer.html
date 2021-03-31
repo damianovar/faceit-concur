@@ -1,4 +1,4 @@
-{% extends "base/base.html" %}
+{% extends "base/new_base.html" %}
 {% set active_page = "menu7" %}
 {% block title %}Submit answer{% endblock %}
 {% block main %}
@@ -7,7 +7,7 @@
   <h2>Select the question you would like to answer</h2>
   <hr>
   <form id="submit_answer_form"  method="POST" onkeydown="return event.key != 'Enter';">  
-  <td>Tip: Use available selection options ("Course","CU") to find desired questions </td><br>
+  <td>Tip: Use available selection options ("Course","CU",...) to find desired questions </td><br>
   <!--<form method="POST" id="download_form">-->
     <table id="table" data-toggle="table" data-advanced-search="true" data-search="true" data-search-on-enter-key="false" data-search-align="right"
             data-show-columns="false" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
@@ -23,7 +23,7 @@
                 <th data-field="question" data-sortable="true">Question</th>
                 <th data-field="course" data-sortable="true" data-filter-control="select">Course</th>
                 <th data-field="taxonomy" data-sortable="true" data-filter-control="select">CU</th>
-                <th data-field="taxonomy_level" data-sortable="true" data-filter-control="select">CU Level</th>
+                <th data-field="taxonomy_level" data-sortable="true" data-filter-control="select">Taxonomy Level</th>
                 <!--<th data-field="state" data-radio="true"></th>-->
                 <th data-field="select_button"></th>
             </tr>

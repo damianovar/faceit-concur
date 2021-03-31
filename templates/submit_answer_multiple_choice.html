@@ -1,4 +1,4 @@
-{% extends "base/base.html" %}
+{% extends "base/new_base.html" %}
 {% set active_page = "menu8" %}
 {% block title %}Submit answer{% endblock %}
 {% block main %}
@@ -7,9 +7,13 @@
 <div class="container mb-2">
   <h2>Answer by selecting one of the options and submitting</h2>
   <hr>
-  <b> {{ question_text }} </b>
-  <form id="submit_answer_form_multiple_choice"  method="POST">  
-  <!--<form method="POST" id="download_form">-->
+  <b> {{ question_text }} </b> 
+  <br><br>
+  <img src="data:;base64,{{ question_image }}" style="max-width: calc(100% - 20px);"/>
+
+  <!--$('#ItemPreview').attr('src', `data:image/png;base64,${yourByteArrayAsBase64}`);-->
+
+  <form method="POST" id="download_form">
     <table id="table" data-toggle="table" data-search="false" data-advanced-search="false" data-search-align="right"
             data-show-columns="false" data-show-toggle="false" data-show-refresh="false" data-show-fullscreen="false"
             data-show-pagination-switch="false" data-filter-control="false" data-filter-show-clear="false"

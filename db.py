@@ -1,13 +1,9 @@
 from mongoengine import connect
 from flask import session
-<<<<<<< HEAD
-from backend.models.models import KC, Course, Question, Answer, Register
 from bson.objectid import ObjectId
 import time
-=======
-from backend.models.models import KC, Course, Question, Answer, Register, University, Country
+from backend.models.models import KC, Course, Question, Answer, Register, University, Country, User
 
->>>>>>> main
 
 client = connect(db="KCMap",
                  username="developer",
@@ -40,25 +36,9 @@ def list_question_objects_old() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
-<<<<<<< HEAD
 def list_question_objects() -> Question:
     """
         Goes through the question database and extracts the data into python lists
-=======
-def list_question_objects_2() -> Question:
-    object_list = []
-    selection_list = []
-    for elements in Question.objects():
-        selection_list.append(elements.id)
-        question = elements.question
-        course_name = elements.course_name
-        kc_name = elements.kc_names_list
-        taxonomy_level = elements.kc_taxonomy
-        list_item = []
-        list_item = [question, course_name, kc_name, taxonomy_level]
-        object_list.append(list_item)
-    return object_list, selection_list
->>>>>>> main
 
         Returns two lists:
         object_list - question text and misc "course name, CU , ..."
@@ -99,6 +79,44 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
 
     Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=txt_answer, selected_option=selected_option, perceived_difficulty=perceived_difficulty, upsert=True)
 
+def get_user_role():
+    my_string = session["user"]
+
+    username_str_start = my_string.find('username') + 9
+    username_str_end = my_string.find('email') - 4
+    email_str_start = my_string.find('email') + 9
+    email_str_end = my_string.find('password') - 4
+
+    user_name = session["user"][username_str_start:username_str_end]
+    user_email = session["user"][email_str_start:email_str_end]
+    user = User.objects(email=user_email).first()
+
+    return user.role
+
+def upload_image_to_question(question_id):
+    question_id = "5f72f0e58373664b8505ea6b"
+    question_obj = Question.objects(id = str(question_id)).first()
+    with open('3x3_matrix.png', 'rb') as fd:
+        question_obj.image.put(fd, content_type = 'image/png')
+    question_obj.save()
+    print("UPLOADED")
+    return
+
+def get_question_image(question_id):
+    import sys
+    from PIL import Image
+    from io import BytesIO
+    import base64
+
+    question_obj = Question.objects(id = str(question_id)).first()
+    #IMAGE = base64.b64encode(question_obj.image.read())
+    IMAGE = base64.b64encode(question_obj.image.read()).decode("utf-8")
+    #stream = BytesIO(IMAGE)
+    #image = Image.open(stream).convert("RGBA")
+    #stream.close()
+    #print(marmot.image.content_type)
+
+    return IMAGE
 
 def get_question_by_obj_id(question_id):
     """
@@ -106,6 +124,12 @@ def get_question_by_obj_id(question_id):
     """
     question_obj = Question.objects(id = str(question_id))
     return question_obj.get()
+
+def add_uni():
+    if not University.objects(name="Otto-von-Guericke-Universität"):
+        c = Country.objects(name="Germany").first()
+        return University(name="Otto-von-Guericke-Universität", country=c).save()
+    return "Uni already exists!"
 
 
 #def list_question_objects_old_v2() -> Question:
@@ -122,21 +146,3 @@ def get_question_by_obj_id(question_id):
 #    
 #    object_list = zip(question_list, course_name_list, kc_list_name_list, taxonomy_level_list)
 #    return object_list, selection_list
-
-<<<<<<< HEAD
-=======
-
-def get_question_by_obj_id(selections):
-    for ques in Question.objects():
-        db_id = str(ques.id)
-        if selections == db_id:
-            return ques
-    return "Didn't find the question!"
-
-
-def add_uni():
-    if not University.objects(name="Otto-von-Guericke-Universität"):
-        c = Country.objects(name="Germany").first()
-        return University(name="Otto-von-Guericke-Universität", country=c).save()
-    return "Uni already exists!"
->>>>>>> main

@@ -99,8 +99,15 @@ def submit_answer():
     end = time.time()
     #print(end - start)
 
+
+    #db.upload_image_to_question()
+
     # User type flag
-    teacher = True
+    current_user_role = db.get_user_role()
+    if current_user_role == 'Admin' or current_user_role == 'Teacher':
+        teacher = True
+    else:
+        teacher = False
 
     if request.method == "POST":
         selected_question = request.form.get('question_button')
@@ -115,8 +122,10 @@ def submit_answer():
             else:
                 correct_answer = " "
 
+            question_image = db.get_question_image(selected_question_obj.id)
+
             return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=list_of_options, 
-                                    selection_data=idx_list_for_options, question_id = selected_question_obj.id, question_text = selected_question_obj.question, correct_answer=correct_answer)
+                                    selection_data=idx_list_for_options, question_id = selected_question_obj.id, question_text = selected_question_obj.question, correct_answer=correct_answer, question_image=question_image)
 
         elif selected_multiple_choice_answer:
             question_id = request.form.get('multiple_choice_button')
@@ -129,10 +138,6 @@ def submit_answer():
 
             return render_template("answer_submitted_successfully.html", answer=display_answer,question=answered_question_obj.question)
 
-<<<<<<< HEAD
-=======
-            return render_template("answer_submitted_successfully.html", answer=answer, question=question_obj.question)
->>>>>>> main
         else:
             return render_template("no_question_selected.html", title='Answer not submitted')
 
@@ -150,7 +155,7 @@ def get_image(tex_name):
 @app.route("/downloads", methods=['GET', 'POST'])
 @login_requiered
 def downloads():
-    data, selection_data = db.list_question_objects_2()
+    data, selection_data = db.list_question_objects()
     if request.method == "POST":
         selection = request.form.getlist('id')
         if selection:
