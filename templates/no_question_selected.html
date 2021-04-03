@@ -6,7 +6,6 @@
 <div class="container mb-2">
   <h2>Sorry, you forgot to select an option!</h2>
   <hr>
-  <p>Your answer was not submitted, </p>
-  <i>Go back to <a href="{{url_for('submit_answer')}}">main question page</a></i> 
+  <input type="button" class="btn btn-primary mt-2" value="Go back!" onclick="history.back(-1)" />
 </div>
 {% endblock %}

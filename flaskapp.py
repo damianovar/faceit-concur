@@ -13,6 +13,8 @@ import os
 import uuid
 import time
 
+import json
+
 app = Flask(__name__)
 app.config.from_object("config.DevelopmentConfig")
 
@@ -94,6 +96,122 @@ def upload_tex():
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_requiered
 def submit_answer():
+    data, selection_data = db.list_question_objects()
+    if request.method == "POST":
+        selected_question = request.form.get('question_button')
+        messages = json.dumps({"selected_question": selected_question})
+        return redirect(url_for('answer_selected_question', messages=messages))
+    else:
+        return render_template("submit_answer.html", title='Submit Answer', data=data, selection_data=selection_data)
+
+
+@app.route("/submit_answer/answer_selected_question", methods=["GET", "POST"])
+@login_requiered
+def answer_selected_question():
+    messages = request.args['messages']
+    selected_question = json.loads(messages)['selected_question']
+
+    if request.method == "POST":
+        selected_multiple_choice_answer = request.form.get('id')
+        question_id = request.form.get('multiple_choice_button')
+        written_answer = request.form.get('written_answer')
+        perceived_difficulty = request.form.get('rating')
+
+        if not selected_multiple_choice_answer:
+            return render_template("no_question_selected.html", title='Answer not submitted')
+        else:
+            messages = json.dumps({"selected_multiple_choice_answer": selected_multiple_choice_answer, 
+                                "question_id": question_id, 
+                                "written_answer": written_answer, 
+                                "perceived_difficulty": perceived_difficulty})
+
+            return redirect(url_for('submitted',messages=messages))
+    else:
+        # User type flag
+        current_user_role = db.get_user_role()
+        if current_user_role == 'Admin' or current_user_role == 'Teacher':
+            teacher = True
+        else:
+            teacher = False
+        selected_question_obj = db.get_question_by_obj_id(selected_question)
+        list_of_options = [[x] for x in selected_question_obj.options]
+        idx_list_for_options = list(range(0, len(selected_question_obj.options)))
+        if teacher:
+            correct_answer = "The correct answer is: " + selected_question_obj.correct_answer[0]
+        else:
+            correct_answer = None
+
+        question_image = db.get_question_image(selected_question_obj.id)
+
+        return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=list_of_options, selection_data=idx_list_for_options, 
+                                question_id = selected_question_obj.id, question_text = selected_question_obj.question, correct_answer=correct_answer, question_image=question_image)
+
+
+@app.route("/submit_answer/submitted", methods=["GET", "POST"])
+@login_requiered
+def submitted():
+    messages = request.args['messages']
+    selected_multiple_choice_answer = json.loads(messages)['selected_multiple_choice_answer']
+    question_id = json.loads(messages)['question_id'] 
+    written_answer = json.loads(messages)['written_answer'] 
+    perceived_difficulty = json.loads(messages)['perceived_difficulty'] 
+
+    answered_question_obj = db.get_question_by_obj_id(question_id)
+    db.write_answer_to_mongo(answered_question_obj, written_answer, selected_multiple_choice_answer, perceived_difficulty)
+    options_list = answered_question_obj.options
+    display_answer = str(options_list[int(selected_multiple_choice_answer)])
+
+    data, selection_data = db.list_question_objects()
+    info_plot = db.make_bar_plot(data, selection_data)
+    perceived_difficulty = db.get_perceived_difficulty(question_id)
+
+    return render_template("answer_submitted_successfully.html", answer=display_answer,question=answered_question_obj.question, plot=info_plot, perceived_difficulty=perceived_difficulty)
+
+@app.route("/get-tex/<tex_name>", methods=['GET', 'POST'])
+def get_image(tex_name):
+    try:
+        return send_from_directory(app.config["CLIENT_TEX"], filename=tex_name, as_attachment=True)
+    except FileNotFoundError:
+        abort(404)
+
+
+@app.route("/downloads", methods=['GET', 'POST'])
+@login_requiered
+def downloads():
+    data, selection_data = db.list_question_objects()
+    if request.method == "POST":
+        selection = request.form.getlist('id')
+        if selection:
+            zip_file_name = 'questions' + str(uuid.uuid4()) + '.zip'
+            file_name = 'questions' + str(uuid.uuid4()) + '.tex'
+            download = Download.get_questions_by_selection(selection)
+            Download.zip_download(download, zip_file_name, file_name)
+            return send_from_directory("static/clients/zip", zip_file_name, as_attachment=True)
+        return redirect(request.url)
+    return render_template('downloads.html', title='Downloads', data=data, selection_data=selection_data)
+
+
+@app.after_request
+def add_headers(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type,Authorization')
+    return response
+
+
+if __name__ == '__main__':
+    app.run()
+
+
+
+
+"""
+# Old submit_answer() 
+# In this version the whole submitting process is handeled in one function
+
+@app.route("/submit_answer", methods=["GET", "POST"])
+@login_requiered
+def submit_answer():
     start = time.time()
     data, selection_data = db.list_question_objects()
     end = time.time()
@@ -145,39 +263,4 @@ def submit_answer():
             return render_template("no_question_selected.html", title='Answer not submitted')
 
     return render_template("submit_answer.html", title='Submit Answer', data=data, selection_data=selection_data)
-
-
-@app.route("/get-tex/<tex_name>", methods=['GET', 'POST'])
-def get_image(tex_name):
-    try:
-        return send_from_directory(app.config["CLIENT_TEX"], filename=tex_name, as_attachment=True)
-    except FileNotFoundError:
-        abort(404)
-
-
-@app.route("/downloads", methods=['GET', 'POST'])
-@login_requiered
-def downloads():
-    data, selection_data = db.list_question_objects()
-    if request.method == "POST":
-        selection = request.form.getlist('id')
-        if selection:
-            zip_file_name = 'questions' + str(uuid.uuid4()) + '.zip'
-            file_name = 'questions' + str(uuid.uuid4()) + '.tex'
-            download = Download.get_questions_by_selection(selection)
-            Download.zip_download(download, zip_file_name, file_name)
-            return send_from_directory("static/clients/zip", zip_file_name, as_attachment=True)
-        return redirect(request.url)
-    return render_template('downloads.html', title='Downloads', data=data, selection_data=selection_data)
-
-
-@app.after_request
-def add_headers(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers',
-                         'Content-Type,Authorization')
-    return response
-
-
-if __name__ == '__main__':
-    app.run()
+"""

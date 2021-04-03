@@ -91,15 +91,7 @@ def get_user_role():
         Accesses the session data and retrives the current user's role
         The role is returned as a string: "Admin", "Teacher" or "Student"
     """
-    session_data_string = session["user"]
-
-    email_str_start = session_data_string.find('email') + 9
-    email_str_end = session_data_string.find('password') - 4
-
-    user_email = session["user"][email_str_start:email_str_end]
-    user = User.objects(email=user_email).first()
-
-    return user.role
+    return get_user().role
 
 def get_user():
     """
@@ -159,7 +151,7 @@ def get_perceived_difficulty(question_id):
     if len(perceived_difficulty_list) > 0:
         print(perceived_difficulty_list)
         perceived_difficulty_list_valid = [item for item in perceived_difficulty_list if item != None and item >= 0]
-        perceived_difficulty = np.mean(np.array(perceived_difficulty_list_valid))
+        perceived_difficulty = np.format_float_positional(np.mean(np.array(perceived_difficulty_list_valid)),1)
     else:
         perceived_difficulty = 0
     return perceived_difficulty
