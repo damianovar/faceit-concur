@@ -120,12 +120,12 @@ def submit_answer():
             if teacher:
                 correct_answer = "The correct answer is: " + selected_question_obj.correct_answer[0]
             else:
-                correct_answer = " "
+                correct_answer = None
 
             question_image = db.get_question_image(selected_question_obj.id)
 
-            return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=list_of_options, 
-                                    selection_data=idx_list_for_options, question_id = selected_question_obj.id, question_text = selected_question_obj.question, correct_answer=correct_answer, question_image=question_image)
+            return render_template("submit_answer_multiple_choice.html", title='Submit Answer', data=list_of_options, selection_data=idx_list_for_options, 
+                                    question_id = selected_question_obj.id, question_text = selected_question_obj.question, correct_answer=correct_answer, question_image=question_image)
 
         elif selected_multiple_choice_answer:
             question_id = request.form.get('multiple_choice_button')
@@ -136,7 +136,10 @@ def submit_answer():
             options_list = answered_question_obj.options
             display_answer = str(options_list[int(selected_multiple_choice_answer)])
 
-            return render_template("answer_submitted_successfully.html", answer=display_answer,question=answered_question_obj.question)
+            info_plot = db.make_bar_plot(data, selection_data)
+            perceived_difficulty = db.get_perceived_difficulty(question_id)
+
+            return render_template("answer_submitted_successfully.html", answer=display_answer,question=answered_question_obj.question, plot=info_plot, perceived_difficulty=perceived_difficulty)
 
         else:
             return render_template("no_question_selected.html", title='Answer not submitted')

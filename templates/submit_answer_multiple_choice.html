@@ -8,10 +8,11 @@
   <h2>Answer by selecting one of the options and submitting</h2>
   <hr>
   <b> {{ question_text }} </b> 
-  <br><br>
-  <img src="data:;base64,{{ question_image }}" style="max-width: calc(100% - 20px);"/>
 
-  <!--$('#ItemPreview').attr('src', `data:image/png;base64,${yourByteArrayAsBase64}`);-->
+  {% if question_image != None %}
+  <br><br>
+  <img src="data:;base64,{{ question_image }}" style="max-width: calc(100% - 20px);" alt=""/>
+  {% endif %}
 
   <form method="POST" id="download_form">
     <table id="table" data-toggle="table" data-search="false" data-advanced-search="false" data-search-align="right"
@@ -43,8 +44,11 @@
     </table>
 
     <br>
+    
+    {% if correct_answer != None %}
     <i> {{ correct_answer }} </i>
-    <br><br><br>
+    <br><br>
+    {% endif %}
 
     <style>
       .txt-center {
