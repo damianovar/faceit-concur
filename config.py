@@ -26,7 +26,7 @@ class DevelopmentConfig(Config):
     DB_PASSWORD = "bruxellesmagdeburgpadovatrondheimuppsala"
     DB_HOST = "mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority"
 
-    ## old data base
+    ## old database
     #DB_PASSWORD = "TTK4260"
     #DB_HOST = "mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority"
 
