@@ -25,7 +25,7 @@
   <br>
   <i>The Average perceived difficulty of this question [1-5] is: {{ perceived_difficulty }} </i>
   <br><br>
-  <i>Go back to <a href="{{url_for('submit_answer')}}">main question page</a></i>
+  <i>Go back to <a href="{{url_for('show_questions')}}">main question page</a></i>
   {% if plot != None %}
   <br><br>
   <img src="data:;base64,{{ plot }}" style="max-width: calc(80% - 20px);" alt=""\>

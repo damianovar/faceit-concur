@@ -11,7 +11,6 @@ import base64
 import numpy as np
 from collections import Counter
 
-
 client = connect(db="KCMap",
                  username="developer",
                  password="TTK4260",
@@ -43,13 +42,12 @@ def list_question_objects_old() -> Question:
         object_list.append(list_item)
     return object_list, selection_list
 
-def list_question_objects() -> Question:
+def list_question_objects():
     """
-        Goes through the question database and extracts the data into python lists
-
-        Returns two lists:
-        object_list - question text and misc "course name, CU , ..."
-        selection_list - MongoDB question object id's 
+        Goes through the Question collection on the MongoDB server and extracts the data into python lists
+ 
+        object_list -> question text and question attributes
+        selection_list -> question IDs
     """
     object_list = []
     selection_list = []
@@ -59,7 +57,8 @@ def list_question_objects() -> Question:
         course_name = elements.course_name
         kc_name = elements.kc_names_list
         taxonomy_level = elements.kc_taxonomy
-        list_item = []
+        if course_name is None:
+            course_name = 'empty'
         list_item = [question, course_name, kc_name, taxonomy_level]
         object_list.append(list_item)
     return object_list, selection_list
@@ -67,7 +66,7 @@ def list_question_objects() -> Question:
 def write_answer_to_mongo(question, txt_answer, selected_option, perceived_difficulty):
     """
         Given a question object and an answer to that question the function updates the Answer collection with the provided answer.
-        If the question has already been answered by the same user, the answer is overridden, otherwise a new answer object is crated.
+        If the question has already been answered by the same user, the answer is overridden, otherwise a new answer object is added to collection.
     """
     session_data_string = session["user"]
 
@@ -86,14 +85,8 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
 
     Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=txt_answer, selected_option=selected_option, perceived_difficulty=perceived_difficulty, upsert=True)
 
-def get_user_role():
-    """
-        Accesses the session data and retrives the current user's role
-        The role is returned as a string: "Admin", "Teacher" or "Student"
-    """
-    return get_user().role
 
-def get_user():
+def get_user_obj():
     """
         Accesses the session data and retrives the current user obj
     """
@@ -106,6 +99,12 @@ def get_user():
     user = User.objects(email=user_email).first()
 
     return user
+
+def get_user_role():
+    """
+        Retrives user role and returns it as a string: "Admin", "Teacher" or "Student"
+    """
+    return get_user_obj().role
 
 def get_question_image(question_id):
     """
@@ -120,12 +119,10 @@ def get_question_image(question_id):
     question_obj = Question.objects(id = str(question_id)).first()
 
     image_raw = question_obj.image.read()
-
-    if image_raw is not None:
-        base64_image = base64.b64encode(image_raw).decode("utf-8")
-    else:
+    if image_raw is None:
         return None
 
+    base64_image = base64.b64encode(image_raw).decode("utf-8")
     return base64_image
 
 def get_question_by_obj_id(question_id):
@@ -135,18 +132,19 @@ def get_question_by_obj_id(question_id):
     question_obj = Question.objects(id = str(question_id)).first()
     return question_obj
 
-def add_uni():
-    if not University.objects(name="Otto-von-Guericke-Universität"):
-        c = Country.objects(name="Germany").first()
-        return University(name="Otto-von-Guericke-Universität", country=c).save()
-    return "Uni already exists!"
+def get_answer_options_from_question_obj(selected_question_obj):
+    """
+        For a given question object, returns a list of answer options with a list of corresponding indices
+    """
+    list_of_options = [[x] for x in selected_question_obj.options]
+    idx_list_for_options = list(range(0, len(selected_question_obj.options)))
+    return list_of_options, idx_list_for_options
 
-def get_answers_data():
-    answered_questions_list = Answer.objects(user=get_user()).values_list('question')
-    answered_questions_course_names = [x.course_name if x is not None else 'empty' for x in answered_questions_list]
-    return answered_questions_course_names
-
-def get_perceived_difficulty(question_id):
+def get_avg_perceived_difficulty(question_id):
+    """
+        Given question ID, looks up the Answer collection and retrieves all recorded perceived difficulty scores for that question
+        Returns the average perceived difficulty score
+    """
     perceived_difficulty_list = Answer.objects(question=get_question_by_obj_id(question_id)).values_list('perceived_difficulty')
     if len(perceived_difficulty_list) > 0:
         print(perceived_difficulty_list)
@@ -157,15 +155,20 @@ def get_perceived_difficulty(question_id):
     return perceived_difficulty
     
 
-def make_bar_plot(data, selection_data):
+def make_bar_plot(question_data):
+    """
+        Example function which retrives desired data, in this case number of total questions and number of unanswered questions by the current user
+        and creates a matplotlib barplot based on that data. The barplot is returned as a base64 byte string which is easy to display in HTML
+    """
     course_data = []
-    for row in data:
+    for row in question_data:
         course_data.append(row[1])
 
     unique_courses_names = list(Counter(course_data).keys()) # equals to list(set(words))
     unique_courses_instances = Counter(course_data).values() # counts the elements' frequency
 
-    answered_questions_course_names = get_answers_data()
+    answered_questions_list = Answer.objects(user=get_user_obj()).values_list('question')
+    answered_questions_course_names = [x.course_name if x is not None else 'empty' for x in answered_questions_list]
 
     unique_answered_courses_instances = [0] * len(unique_courses_names)
     for course_name in answered_questions_course_names:
@@ -180,10 +183,8 @@ def make_bar_plot(data, selection_data):
     width = 0.30  # the width of the bars
 
     fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width/2, Total, width, label='Total')
-    rects2 = ax.bar(x + width/2, Answered, width, label='Answered')
-
-    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.bar(x - width/2, Total, width, label='Total')
+    ax.bar(x + width/2, Answered, width, label='Answered')
     ax.set_ylabel('Number of questions')
     ax.set_xlabel('Courses')
     ax.set_title('Answered question per course')
@@ -191,7 +192,6 @@ def make_bar_plot(data, selection_data):
     ax.set_xticklabels(labels)
     ax.legend()
     ax.grid()
-
     fig.tight_layout()
 
     figfile = BytesIO()
@@ -201,7 +201,14 @@ def make_bar_plot(data, selection_data):
     figdata_png = base64.b64encode(figfile.read()).decode("utf-8")
     return figdata_png
 
-# Utility function, opens locally stored png image and uploads it to mongodb Question collection 
+def add_uni():
+    if not University.objects(name="Otto-von-Guericke-Universität"):
+        c = Country.objects(name="Germany").first()
+        return University(name="Otto-von-Guericke-Universität", country=c).save()
+    return "Uni already exists!"
+
+
+# Test/Utility function, opens locally stored png image and uploads it to mongodb Question collection given question id 
 def upload_image_to_question(question_id):
     question_id = "5f72f0e58373664b8505ea6b"
     question_obj = Question.objects(id = str(question_id)).first()
@@ -210,3 +217,4 @@ def upload_image_to_question(question_id):
     question_obj.save()
     print("UPLOADED")
     return
+

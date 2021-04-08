@@ -8,7 +8,6 @@
   <hr>
   <form id="submit_answer_form"  method="POST" onkeydown="return event.key != 'Enter';">  
   <td>Tip: Use available selection options ("Course","CU",...) to find desired questions </td><br>
-  <!--<form method="POST" id="download_form">-->
     <table id="table" data-toggle="table" data-advanced-search="true" data-search="true" data-search-on-enter-key="false" data-search-align="right"
             data-show-columns="false" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
             data-show-pagination-switch="true" data-filter-control="true" data-filter-show-clear="true"
@@ -32,13 +31,10 @@
             {% for row in data %}
             <tr>
                 <td> {{ selection_data[loop.index0] }}</td>
-                <!--<td><input type="checkbox" name="box" id = {{loop.index}} value="{{loop.index}}"></td>-->
                 {% for col in row %}
                 <td> {{ col }} </td>
                 {% endfor %}
                 <td><button type="submit" id="button_7" class="btn btn-primary mt-2" name="question_button" value="{{ selection_data[loop.index0] }}">Select</button></td>
-                <!--<td><input class="form-check-input" type="checkbox" name="check" id="inlineCheckbox1" value="{{file}}">
-                <label class="form-check-label" for="inlineCheckbox1">&nbsp;</label></td> -->
             </tr>
             {% endfor %}
         </tbody>
