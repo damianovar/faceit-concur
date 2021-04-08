@@ -1,0 +1,15 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu9" %}
+{% block main %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      {{session['logged_in']}}
+      {{session['user']}}
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
