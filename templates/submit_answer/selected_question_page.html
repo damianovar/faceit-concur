@@ -1,0 +1,124 @@
+{% extends "base/new_base.html" %}
+{% set active_page = "menu8" %}
+{% block title %}Submit answer{% endblock %}
+{% block main %}
+
+
+<div class="container mb-2">
+  <h2>Answer by selecting one of the options and submitting</h2>
+  <hr>
+  <b> {{ question_text }} </b> 
+
+  {% if question_image != None %}
+  <br><br>
+  <img src="data:;base64,{{ question_image }}" style="max-width: calc(100% - 20px);" alt=""/>
+  {% endif %}
+
+  <form method="POST" id="download_form">
+    <table id="table" data-toggle="table" data-search="false" data-advanced-search="false" data-search-align="right"
+            data-show-columns="false" data-show-toggle="false" data-show-refresh="false" data-show-fullscreen="false"
+            data-show-pagination-switch="false" data-filter-control="false" data-filter-show-clear="false"
+            data-id-table="advancedTable" data-pagination="false" data-pagination-pre-text="Previous"
+            data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
+            data-page-size=5 data-page-list="[5,10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
+            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
+          <thead>
+            <tr>
+                <th data-field="id" data-valign="middle" data-visible="false"></th>
+                <th data-field="question" data-sortable="true">Options</th>
+                <th data-field="state" data-radio="true"></th>
+                <!--<th data-field="taxonomy_level" data-sortable="true" data-filter-control="input">Taxonomy Level</th>-->
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td> {{ selection_data[loop.index0] }}</td>
+                {% for col in row %}
+                <td> {{ col }}</td>
+                {% endfor %}
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <br>
+    
+    {% if correct_answer != None %}
+    <i> {{ correct_answer }} </i>
+    <br><br>
+    {% endif %}
+
+    <style>
+      .txt-center {
+        text-align: center;
+      }
+      .hide {
+        display: none;
+      }
+      .clear {
+        float: none;
+        clear: both;
+      }
+      .rating {
+          width: 155px;
+          unicode-bidi: bidi-override;
+          direction: rtl;
+          text-align: center;
+          position: relative;
+      }
+      .rating > label {
+          float: right;
+          display: inline;
+          padding: 0;
+          margin: 0;
+          position: relative;
+          width: 1.5em;
+          font-size: 20.5px;
+          cursor: pointer;
+          color: #000;
+      }
+      .rating > label:hover,
+      .rating > label:hover ~ label,
+      .rating > input.radio-btn:checked ~ label {
+          color: transparent;
+      }
+      .rating > label:hover:before,
+      .rating > label:hover ~ label:before,
+      .rating > input.radio-btn:checked ~ label:before,
+      .rating > input.radio-btn:checked ~ label:before {
+          float: right;
+          content: "\25C9";
+          width: 1.3em;
+          font-size: 25.5px;
+          position: absolute;
+          top: -0.1em;
+          color: #ff5500;
+      }
+    </style>
+
+    <b>How difficulty was the question? 1 - easy, 5 - hard</b>
+    <div class="rating">
+      <input id="rating5" name="rating" type="radio" value="5" class="radio-btn hide" />
+      <label for="rating5" >⑤</label>
+      <input id="rating4" name="rating" type="radio" value="4" class="radio-btn hide" />
+      <label for="rating4" >④</label>
+      <input id="rating3" name="rating" type="radio" value="3" class="radio-btn hide" />
+      <label for="rating3" >③</label>
+      <input id="rating2" name="rating" type="radio" value="2" class="radio-btn hide" />
+      <label for="rating2" >②</label>
+      <input id="rating1" name="rating" type="radio" value="1" class="radio-btn hide" />
+      <label for="rating1" >①</label>
+      <div class="clear"></div>
+    </div>
+            
+    <br>
+    <b>Add a comment if desired and submit:</b><br>
+    <textarea rows="4" cols="80" name="written_answer"></textarea>
+    <br>
+    <button type="submit" id="button_8" class="btn btn-primary mt-2" name="multiple_choice_button" value="{{question_id}}">Submit</button>
+
+  </form>
+</div>
+{% endblock %}

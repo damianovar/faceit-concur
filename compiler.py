@@ -10,6 +10,7 @@ This script does 3 things:
 # Map scss source files to css destination files
 sass_map = {"static/scss/style.scss": "static/css/style.css"}
 
+
 def compile_sass_to_css(sass_map):
 
     print("Compiling scss to css:")

@@ -1,15 +1,9 @@
 # user.py
 from mongoengine import *
 import datetime
-import uuid
-"""
-from database.models.country import Country
-from database.models.course import Course
-from database.models.university import University
-"""
 
 CONFIDENCE = ('VERY LOW', 'LOW', 'MEDIUM', 'HIGH', 'VERY HIGH')
-POSITION = ('STUDENT', 'PROFESSOR', 'OTHER')
+POSITION = ('Student', 'Teacher', 'Admin')
 
 
 class Country(Document):
@@ -20,9 +14,6 @@ class Country(Document):
     def objects(doc_cls, queryset):
         return queryset.order_by('+name')
 
-    @queryset_manager
-    def objectss(doc_cls, queryset):
-        return queryset.order_by('_id')
 
 
 class University(Document):
@@ -32,7 +23,7 @@ class University(Document):
 
     @queryset_manager
     def objects(doc_cls, queryset):
-        return queryset.order_by('+country')
+        return queryset.order_by('+name')
 
 
 class Course(Document):
@@ -47,15 +38,16 @@ class Course(Document):
 
 
 class User(Document):
-    #userid = UUIDField(primary_key=True)
     first_name = StringField(required=True, max_length=50)
     middle_name = StringField(required=False, max_length=50)
-    last_name = StringField(required=True, max_length=50,
-                            unique_with='first_name')
+    last_name = StringField(required=True, max_length=50)
+    username = StringField(required=True, max_length=50, unique=True)
+    email = StringField(required=True, max_length=50, unique=True)
+    password = StringField(required=True, max_length=100)                   
     nationality = ReferenceField(
-        Country, reverse_delete_rule=CASCADE, required=True)
-    position = StringField(choices=POSITION)
-    university = ReferenceField(University, reverse_delete_rule=CASCADE)
+        Country, reverse_delete_rule=CASCADE, required=False)
+    role = StringField(choices=POSITION)
+    university = ReferenceField(University, reverse_delete_rule=CASCADE, required=True)
     courses = ListField(ReferenceField(
         Course, reverse_delete_rule=CASCADE), required=False)
 
@@ -64,7 +56,6 @@ class User(Document):
         return queryset.order_by('+last_name')
 
 class Register(Document):
-    #userid = UUIDField(primary_key=True)
     username = StringField(required=True, max_length=50)
     email = StringField(required=True, max_length=50)
     password = StringField(required=True, max_length=100)
@@ -109,8 +100,10 @@ class Question(Document):
     #solution = StringField(required=True)
     author = ReferenceField(User, reverse_delete_rule=CASCADE, required=False)
     course = ReferenceField(Course, reverse_delete_rule=CASCADE, required=False)
+    course_name = StringField(required=False)
 
     kc_list = ListField(ReferenceField(KC, reverse_delete_rule=CASCADE), required=True)
+    kc_names_list = ListField(StringField(required=False))
     kc_taxonomy = ListField(required=False)
     correct_answer = ListField(required=True)
     options = ListField(required=True)
@@ -133,9 +126,11 @@ class Question(Document):
 
 class Answer(Document):
     question = ReferenceField(Question, reverse_delete_rule=CASCADE, required=True)
-    user = ReferenceField(Register, reverse_delete_rule=CASCADE, required=True)
+    user = ReferenceField(User, reverse_delete_rule=CASCADE, required=True)
     user_name = StringField(unique=False, required=True)
+    selected_option = StringField(unique=False, required=True)
     answer = StringField(unique=False, required=True)
+    perceived_difficulty = IntField(unique=False, required=True)
 
     @queryset_manager
     def objects(doc_cls, queryset):

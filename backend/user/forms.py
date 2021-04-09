@@ -1,9 +1,13 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, SelectField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 
 class RegistrationForm(FlaskForm):
+    first_name = StringField('First Name', validators=[DataRequired(), Length(min=2, max=30)])
+    last_name = StringField('Last Name', validators=[DataRequired(), Length(min=2, max=30)])
+    university = SelectField('University', validators=[DataRequired()])
+    role = SelectField(u'Role', choices=['Student', 'Teacher', 'Admin'])
     username = StringField('Username',
                            validators=[DataRequired(), Length(min=2, max=20)])
     email = StringField('Email',
@@ -24,4 +28,4 @@ class LoginForm(FlaskForm):
 
 
 class DownloadForm(FlaskForm):
-    submit = SubmitField('Senden')
+    submit = SubmitField('Send')

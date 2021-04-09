@@ -1,0 +1,44 @@
+{% extends "base/new_base.html" %}
+{% set active_page = "menu7" %}
+{% block title %}Submit answer{% endblock %}
+{% block main %}
+
+<div class="container mb-2">
+  <h2>Select the question you would like to answer</h2>
+  <hr>
+  <form id="submit_answer_form"  method="POST" onkeydown="return event.key != 'Enter';">  
+  <td>Tip: Use available selection options ("Course","CU",...) to find desired questions </td><br>
+    <table id="table" data-toggle="table" data-advanced-search="true" data-search="true" data-search-on-enter-key="false" data-search-align="right"
+            data-show-columns="false" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
+            data-show-pagination-switch="true" data-filter-control="true" data-filter-show-clear="true"
+            data-id-table="advancedTable" data-pagination="true" data-pagination-pre-text="Previous"
+            data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
+            data-page-size=10 data-page-list="[10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
+            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
+
+          <thead>
+            <tr>
+                <th data-field="id" data-valign="middle" data-visible="false"></th>
+                <th data-field="question" data-sortable="true">Question</th>
+                <th data-field="course" data-sortable="true" data-filter-control="select">Course</th>
+                <th data-field="taxonomy" data-sortable="true" data-filter-control="select">CU</th>
+                <th data-field="taxonomy_level" data-sortable="true" data-filter-control="select">Taxonomy Level</th>
+                <!--<th data-field="state" data-radio="true"></th>-->
+                <th data-field="select_button"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td> {{ selection_data[loop.index0] }}</td>
+                {% for col in row %}
+                <td> {{ col }} </td>
+                {% endfor %}
+                <td><button type="submit" id="button_7" class="btn btn-primary mt-2" name="question_button" value="{{ selection_data[loop.index0] }}">Select</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+  </form>
+</div>
+{% endblock %}
