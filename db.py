@@ -171,7 +171,15 @@ def make_bar_plot(question_data):
     unique_courses_instances = Counter(course_data).values() # counts the elements' frequency
 
     answered_questions_list = Answer.objects(user=get_user_obj()).values_list('question')
-    answered_questions_course_names = [x.course_name if x is not None else 'empty' for x in answered_questions_list]
+    
+    answered_questions_course_names = []
+    for item in answered_questions_list:
+        if item.course_name is not None:
+            answered_questions_course_names.append(item.course_name)
+        else:
+            answered_questions_course_names.append('empty')
+
+    #answered_questions_course_names = [item.course_name if item is not None else 'empty' for item in answered_questions_list]
 
     unique_answered_courses_instances = [0] * len(unique_courses_names)
     for course_name in answered_questions_course_names:
