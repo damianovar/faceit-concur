@@ -1,0 +1,13 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu9" %}
+{% block title %}Upload{% endblock %}
+{% block main %}
+
+
+<h1>Select a course to visualize</h1>
+<ol>
+{% for sheet in CU_files %} 
+<li><button type="button" onclick="window.location.href='{{ url_for('graphs', sheet=sheet)}}';">{{sheet}}</button> </li>
+{% endfor %}
+</ol>
+{% endblock %}

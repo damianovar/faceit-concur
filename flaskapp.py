@@ -5,6 +5,11 @@ from werkzeug.utils import secure_filename
 from backend.upload.upload_script import Upload
 from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
+
+from backend.user.models import User
+import backend.graph.visualization as vis
+import backend.graph.spreadsheet as ss
+
 from backend.user.models import Account
 from backend.models.models import University
 
@@ -73,6 +78,54 @@ def allowed_file(filename):
         return True
     else:
         return False
+
+@app.route("/graphviz/<sheet>/")
+def graphs(sheet):
+    #ss.upload_CU_file("filename")
+    #lists = ss.read_course_category_tree("linear-algebra", "specification of the content units' hierarchies", 4)
+    #lists = ss.read_course_category_tree("Course_content_signals", "specification of the content un", 4)
+    #print("Lists:",lists)
+    #print()
+    #nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
+    #print()
+    #lists = ss.read_course_category_tree("testing", "specification of the content un", 4)
+    lists = ss.read_course_category_tree(sheet, "content units hierarchies", 5)
+    #print("Lists:",lists)
+    #print()
+    nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
+    print()
+    print("Nodes", nodes, "\n")
+    print("Edges:", edges, "\n")
+    #print()
+    #print("Values:",nodes)
+    return render_template("graphviz.html", title='Visualize graphs',nodes=nodes, edges=edges)
+
+@app.route("/graphlist")
+def graph_list():
+    ss.delete_all_files()
+    available_CU_files = ss.get_available_CU_files()
+    return render_template("graphlist.html", title="Graph list", CU_files=available_CU_files)
+
+
+@app.route("/upload_excel", methods=["GET", "POST"])
+def upload_excel():
+    if request.method == "POST":
+        if request.files:
+            excel_file = request.files["xlsx"]
+            if excel_file.filename == "":
+                print("No filename")
+                return redirect(request.url)
+            if excel_file.filename[-5:] == ".xlsx":
+                print("Working file upload")
+                ss.upload_CU_file(excel_file)
+                return redirect(request.url)
+            else:
+                print("That file extension is not allowed")
+                return redirect(request.url)
+            
+    return render_template("upload_excel.html", title="Upload Excel")
+
+
 
 
 @app.route("/upload", methods=["GET", "POST"])
