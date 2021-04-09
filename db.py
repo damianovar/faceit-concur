@@ -13,7 +13,7 @@ import base64
 import numpy as np
 from collections import Counter
 
-## old data base
+## old database
 #password="TTK4260",
 #host="mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority",
 
