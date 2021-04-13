@@ -1,4 +1,5 @@
 """Entry Point."""
+from typing import *
 
 from flask import Flask, render_template, url_for, redirect, request, send_from_directory, abort, session, jsonify
 from functools import wraps
@@ -37,7 +38,7 @@ def login_requiered(f):
 
 
 @app.route("/")
-def index():
+def index() -> Any:
     """Return homepage."""
     return render_template('index.html', title='Home')
 
@@ -158,6 +159,18 @@ def downloads():
             return send_from_directory("static/clients/zip", zip_file_name, as_attachment=True)
         return redirect(request.url)
     return render_template('downloads.html', title='Downloads', data=data, selection_data=selection_data)
+
+
+@app.route("/game", methods=['GET', 'POST'])
+@login_requiered
+def game() -> Any:
+    """Let user play game to map out a course"""
+    data, sel_data = db.list_question_objects_2()
+    if request.method == "POST":
+        # User has now mapped something and we got a list/matrix of questions to store
+        # Need to send what we've got back to database and possibly map out
+        return redirect(request.url) # ?
+    return render_template("game.html", title="Game", data=data, selection_data=sel_data)
 
 
 @app.after_request
