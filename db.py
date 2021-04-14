@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 from mongoengine import connect
 from flask import session
@@ -35,7 +35,7 @@ def list_question_objects() -> Question:
     return object_list, selection_list
 
 
-def list_question_objects_2() -> Question:
+def list_question_objects_2() -> Tuple[List[list], list]:
     """Return an object list and a list of selections"""
 
     # TODO: give this function a better name please :P

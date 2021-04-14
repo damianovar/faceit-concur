@@ -164,11 +164,18 @@ def downloads():
 @app.route("/game", methods=['GET', 'POST'])
 @login_requiered
 def game() -> Any:
+    # List of cu's
+    # list of previous mapping if exists
+    new_cu_matrix = []
     """Let user play game to map out a course"""
     data, sel_data = db.list_question_objects_2()
     if request.method == "POST":
         # User has now mapped something and we got a list/matrix of questions to store
         # Need to send what we've got back to database and possibly map out
+
+        if request.form['btn_value'] == 1:
+            pass
+
         return redirect(request.url) # ?
     return render_template("game.html", title="Game", data=data, selection_data=sel_data)
 
