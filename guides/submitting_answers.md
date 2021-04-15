@@ -12,4 +12,4 @@ The information carried from page to page, such as the selected question id and 
 To display an image in HTML without having to store it locally on the server one can save the image in cache as a byte64 string and send it directly to HTML page.
 This method can be used both to retrieve and display images from the MongoDB database as well as creating and displaying custom plots. The encoding/decoding examples can be found in functions *get_question_image(question_id)* and *make_bar_plot(question_data)* both in the *faceit-concur/db.py* file.
 
-[Back to main README](../README.md)
+[Back to main README](../)
