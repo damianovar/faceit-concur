@@ -114,10 +114,6 @@ def get_question_image(question_id):
         Loads in image from the question object given by the question id 
         and returns the decoded image as base64 byte string.
     """
-    import sys
-    from PIL import Image
-    from io import BytesIO
-    import base64
 
     question_obj = Question.objects(id = str(question_id)).first()
 
@@ -125,6 +121,7 @@ def get_question_image(question_id):
     if image_raw is None:
         return None
 
+    # Turn the image into a base64 byte string (decoded using utf-8 charset)
     base64_image = base64.b64encode(image_raw).decode("utf-8")
     return base64_image
 
@@ -179,8 +176,6 @@ def make_bar_plot(question_data):
         else:
             answered_questions_course_names.append('empty')
 
-    #answered_questions_course_names = [item.course_name if item is not None else 'empty' for item in answered_questions_list]
-
     unique_answered_courses_instances = [0] * len(unique_courses_names)
     for course_name in answered_questions_course_names:
         idx = unique_courses_names.index(course_name)
@@ -193,6 +188,7 @@ def make_bar_plot(question_data):
     x = np.arange(len(labels))  # the label locations
     width = 0.30  # the width of the bars
 
+    # Create barplot
     fig, ax = plt.subplots()
     ax.bar(x - width/2, Total, width, label='Total')
     ax.bar(x + width/2, Answered, width, label='Answered')
@@ -209,6 +205,7 @@ def make_bar_plot(question_data):
     plt.savefig(figfile, format='png')
     figfile.seek(0)  # rewind to beginning of file
     
+    # Turn the figure into a base64 byte string (decoded using utf-8 charset)
     figdata_png = base64.b64encode(figfile.read()).decode("utf-8")
     return figdata_png
 
