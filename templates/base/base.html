@@ -91,6 +91,9 @@
               Submit Answer
             </a>
           </li>
+
+          
+
           <li class="nav-item {{ 'active' if active_page == 'menu8' else '' }}">
             <a class="nav-link" href="{{url_for('upload_excel') }}">
               Upload Excel files
@@ -99,8 +102,17 @@
           <li class="nav-item {{ 'active' if active_page == 'menu9' else '' }}">
             <a class="nav-link" href="{{url_for('graph_list') }}">
               Graphlist
+
             </a>
           </li>
+          
+          <li class="nav-item {{ 'active' if active_page == 'menu10' else '' }}">
+            <a class="nav-link" href="{{url_for('game') }}">
+              Play Game
+            </a>
+         </li>
+              
+              
         </ul>
       </div>
       <div class="col-md-10 mt-4 ml-4">
