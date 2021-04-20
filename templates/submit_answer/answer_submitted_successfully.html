@@ -1,0 +1,35 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu9" %}
+{% block title %}Submit answer{% endblock %}
+{% block main %}
+
+<div class="container mb-2">
+  <h2>Answer submitted successfully!</h2>
+  <hr>
+  <table border="0" width="100%" >
+    <col style="width:15%">
+    <col style="width:85%">
+    <thead>
+    <tr>
+      <td style="vertical-align:top">Question:</td>
+      <td>{{ question }} </td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>Your answer :</td>
+      <td>{{ answer }}</td>
+    </tr>
+    </tbody>
+  </table>
+  <br>
+  <i>The Average perceived difficulty of this question [1-5] is: {{ perceived_difficulty }} </i>
+  <br><br>
+  <i>Go back to <a href="{{url_for('show_questions')}}">main question page</a></i>
+  {% if plot != None %}
+  <br><br>
+  <img src="data:;base64,{{ plot }}" style="max-width: calc(80% - 20px);" alt=""\>
+  {% endif %}
+</div>
+
+{% endblock %}

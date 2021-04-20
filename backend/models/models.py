@@ -125,9 +125,11 @@ class Question(Document):
 
 class Answer(Document):
     question = ReferenceField(Question, reverse_delete_rule=CASCADE, required=True)
-    user = ReferenceField(Register, reverse_delete_rule=CASCADE, required=True)
+    user = ReferenceField(User, reverse_delete_rule=CASCADE, required=True)
     user_name = StringField(unique=False, required=True)
+    selected_option = StringField(unique=False, required=True)
     answer = StringField(unique=False, required=True)
+    perceived_difficulty = IntField(unique=False, required=True)
 
     @queryset_manager
     def objects(doc_cls, queryset):

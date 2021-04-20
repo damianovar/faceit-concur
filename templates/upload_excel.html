@@ -1,0 +1,30 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu8" %}
+{% block title %}Upload{% endblock %}
+{% block main %}
+
+<div class="container">
+    <div class="row">
+      <div class="col">
+  
+        <h1>Upload Excel-file</h1>
+        <hr>
+  
+        <form action="/upload_excel" method="POST" enctype="multipart/form-data">
+  
+          <div class="form-group">
+            <label>Select image</label>
+            <div class="custom-file">
+              <input type="file" class="custom-file-input" name="xlsx" id="xlsx" data-multiple-caption="{count} files selected" multiple>
+              <label class="custom-file-label" for="xlsx">Select Excel file...</label>
+            </div>
+          </div>
+  
+          <button type="submit" class="btn btn-primary">Upload</button>
+  
+        </form>
+  
+      </div>
+    </div>
+  </div>
+{% endblock %}
