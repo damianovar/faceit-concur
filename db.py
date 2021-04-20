@@ -2,18 +2,28 @@ from typing import List, Tuple
 
 from mongoengine import connect
 from flask import session
-from backend.models.models import KC, Course, Question, Answer, Register, University, Country
+from backend.models.models import (
+    KC,
+    Course,
+    Question,
+    Answer,
+    Register,
+    University,
+    Country,
+)
 
 
-client = connect(db="KCMap",
-                 username="developer",
-                 password="bruxellesmagdeburgpadovatrondheimuppsala",
-                 host="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority",
-                 connectTimeoutMS=30000,
-                 socketTimeoutMS=None,
-                 socketKeepAlive=True,
-                 connect=False,
-                 maxPoolsize=1)
+client = connect(
+    db="KCMap",
+    username="developer",
+    password="bruxellesmagdeburgpadovatrondheimuppsala",
+    host="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority",
+    connectTimeoutMS=30000,
+    socketTimeoutMS=None,
+    socketKeepAlive=True,
+    connect=False,
+    maxPoolsize=1,
+)
 
 
 def list_question_objects() -> Question:
@@ -24,7 +34,7 @@ def list_question_objects() -> Question:
         selection_list.append(elements.id)
         question = elements.question
         course = elements.course
-        course_name = course.name if course is not None else 'empty'
+        course_name = course.name if course is not None else "empty"
         kcs = elements.kc_list
         kc_name = []
         for kc in kcs:
@@ -75,17 +85,18 @@ def write_answer_to_mongo(question, answer):
     """
     my_string = session["user"]
 
-    username_str_start = my_string.find('username') + 9
-    username_str_end = my_string.find('email') - 4
-    email_str_start = my_string.find('email') + 9
-    email_str_end = my_string.find('password') - 4
+    username_str_start = my_string.find("username") + 9
+    username_str_end = my_string.find("email") - 4
+    email_str_start = my_string.find("email") + 9
+    email_str_end = my_string.find("password") - 4
 
     user_name = session["user"][username_str_start:username_str_end]
     user_email = session["user"][email_str_start:email_str_end]
     user = Register.objects(email=user_email).first()
 
     Answer.objects(question=question, user=user).update_one(
-        user_name=user_name, answer=answer, upsert=True)
+        user_name=user_name, answer=answer, upsert=True
+    )
 
 
 def get_question_by_obj_id(selections) -> str:
@@ -101,12 +112,30 @@ def get_question_by_obj_id(selections) -> str:
     return "Didn't find the question!"
 
 
-def add_uni():
+def get_course(name):
+    cu_list = []
+    for c in Course.objects():
+        if name == c.name:
+            cus = c.cus
+            for cu in cus:
+                cu_list.append(cu.name)
+            return cu_list
+    return
+
+
+def manually_add_stuff():
+
     """
     Add a university to the database.
     """
     # TODO: Remove default name after checking if this works.
+    if not Course.objects(name="Operating Systems"):
+        return Course(name="Operating Systems", code="TDT4186", semester="V21").save()
     if not University.objects(name="Otto-von-Guericke-Universität"):
         c = Country.objects(name="Germany").first()
         return University(name="Otto-von-Guericke-Universität", country=c).save()
     return "Uni already exists!"
+
+
+def get_amount_of_cus_in_course(course: str) -> int:
+    return len(Course.objects(name=course).first().cus)
