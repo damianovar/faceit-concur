@@ -26,7 +26,7 @@ import matrix
 import os
 import uuid
 import random
-import numpy
+import numpy as np
 
 
 app = Flask(__name__)
@@ -205,19 +205,34 @@ def game() -> Any:
 
     # matrix_cp =
     course = Course.objects(name="Operating Systems").first()
-    user = User.objects(first_name="Jørgen", last_name="Fagervik").first()
+    user = User.objects(first_name="Jøren", last_name="Fagervik").first()
     user_matrix = matrix.get_matrix(user, course, cu_amount)
-    print(user_matrix)
     # if not np.array_equal(user_matrix, matrix_cp):
 
     # List of cu's
     cu1 = None
     cu2 = None
 
+    reshaped_user_matrix = np.fromiter(matrix.reshape_for_db(user_matrix), float)
+    unused_cu_indeces = np.where(reshaped_user_matrix == -1)
+    unused_cu_indeces = unused_cu_indeces[0]
+
     cu_list = db.get_course("Operating Systems")
-    while cu1 == cu2:
-        cu1 = random.choice(cu_list)
-        cu2 = random.choice(cu_list)
+    # unused_cu_list = np.take(cu_list, unused_cu_indeces)
+
+    cu_vectors = ((x, y) for x in cu_list for y in cu_list)
+    cu_tuple_list = []
+    cu_number = 0
+    for u, v in cu_vectors:
+        if cu_number in unused_cu_indeces:
+            cu_tuple_list.append([u, v])
+        cu_number += 1
+
+    # print(np.take(cu_tuple_list, unused_cu_indeces))
+
+    cu_tuple = random.choice(cu_tuple_list)
+    cu1 = cu_tuple[0]
+    cu2 = cu_tuple[1]
 
     cu1_index = cu_list.index(cu1)
     cu2_index = cu_list.index(cu2)
@@ -225,28 +240,43 @@ def game() -> Any:
     print(cu1_index, cu2_index)
     question_string = f"How important is {cu1} to {cu2}?"
 
-    # list of previous mapping if exists
-    init_matrix = matrix.init_matrix(3)
-
     new_cu_matrix = []
     """Let user play game to map out a course"""
-    data, sel_data = db.list_question_objects_2()
+    # data, sel_data = db.list_question_objects_2()
     if request.method == "POST":
-        # User has now mapped something and we got a list/matrix of questions to store
-        # Need to send what we've got back to database and possibly map out
 
-        if request.form["btn_value"] == 1:
-            pass
+        # Update matrix based on buttonclicks
+        if request.form["btn_value"] == "1":
+            user_matrix[cu1_index][cu2_index] = 0.1
+        elif request.form["btn_value"] == "2":
+            user_matrix[cu1_index][cu2_index] = 0.2
+        elif request.form["btn_value"] == "3":
+            user_matrix[cu1_index][cu2_index] = 0.3
+        elif request.form["btn_value"] == "4":
+            user_matrix[cu1_index][cu2_index] = 0.4
+        elif request.form["btn_value"] == "5":
+            user_matrix[cu1_index][cu2_index] = 0.5
+        elif request.form["btn_value"] == "6":
+            user_matrix[cu1_index][cu2_index] = 0.6
+        elif request.form["btn_value"] == "7":
+            user_matrix[cu1_index][cu2_index] = 0.7
+        elif request.form["btn_value"] == "8":
+            user_matrix[cu1_index][cu2_index] = 0.8
+        elif request.form["btn_value"] == "9":
+            user_matrix[cu1_index][cu2_index] = 0.9
+        elif request.form["btn_value"] == "10":
+            user_matrix[cu1_index][cu2_index] = 1.0
 
-        return redirect(request.url)  # ?
+        elif request.form["btn_value"] == "-1":
+            user_matrix[cu1_index][cu2_index] = -1.0
+
+        return redirect(request.url)
 
     return render_template(
         "game.html",
         course="Operating Systems",
         code="TDT4186",
         title="Game",
-        data=data,
-        selection_data=sel_data,
         question_string=question_string,
     )
 

@@ -4,7 +4,7 @@
 <div class="container mb-2">
   <h1>Welcome to the mapping game!</h1>
 
-  <form action="game.html" method="POST" id="game_answer_form">
+  <form action="game" method="POST" id="game_answer_form">
     <h2>{{course}} ({{code}}):</h2>
     <br />
     <h2>{{question_string}}</h2>
@@ -30,11 +30,10 @@
         </button>
         {% endfor %}
         <button
-          id="bdk"
           class="btn btn-outline-secondary"
           type="submit"
-          name="btnDK"
-          value="0"
+          name="btn_value"
+          value="-1"
         >
           Don't know
         </button>
