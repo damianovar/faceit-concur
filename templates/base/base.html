@@ -1,176 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    {% block head %} {% include "base/partials/head.html" %} {% endblock %} {%
+    if title %}
+    <title>FaceIt - {{ title }}</title>
+    {% else %}
+    <title>FaceIt</title>
+    {% endif %}
+  </head>
 
-<head>
-  {% block head %} {% include "base/partials/head.html" %} {% endblock %} {%
-  if title %}
-  <title>FaceIt - {{ title }}</title>
-  {% else %}
-  <title>FaceIt</title>
-  {% endif %}
-</head>
+  <body>
+    <nav
+      class="navbar bg-primary navbar-icon-top navbar-expand flex-column flex-md-row p-0 shadow navbar-custom fixed-top"
+    >
+      <a class="navbar-brand col-md-2 mr-0" href="#">.#.</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-<body>
-  <nav
-    class="navbar bg-primary navbar-icon-top navbar-expand flex-column flex-md-row p-0 shadow navbar-custom fixed-top">
-    <a class="navbar-brand col-md-2 mr-0" href="#">.#.</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item {{ 'active' if active_page == 'menu1' else '' }}">
-          <a class="nav-link" href="{{url_for('index') }}"> Home </a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-            Dropdown
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item"
-              href="https://drive.google.com/file/d/13ihYK6Zo7YwZflL0-PC7RQXXmSEJm2uV/view?usp=sharing">manual</a>
-          </div>
-        </li>
-      </ul>
-      <ul class="navbar-nav">
-        <button id="profile-btn" class="btn">
-          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-person-circle"
-            viewBox="0 0 16 16">
-            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
-            <path fill-rule="evenodd"
-              d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
-          </svg>
-        </button>
-      </ul>
-      <ul class="navbar-nav">
-        {% if session['logged_in'] %}
-        <li class="nav-item">
-          <p class="login-text">You are currently logged in.</p>
-        </li>
-        <li class="nav-item login-item">
-          <a href="/logout" class="nav-link"> Sign Out </a>
-        </li>
-        {% else %}
-        <li class="nav-item login-item {{ 'active' if active_page == 'menu3' else '' }}">
-          <a class="nav-link" href="{{url_for('login') }}"> Login </a>
-        </li>
-        <li class="nav-item login-item {{ 'active' if active_page == 'menu4' else '' }}">
-          <a class="nav-link" href="{{url_for('register') }}"> Register </a>
-        </li>
-        {% endif %}
-      </ul>
-    </div>
-  </nav>
-
-  <!-- Container -->
-  <div class="container-fluid">
-    <div class="row flex-xl-nowrap flex-fill h-100">
-      <div class="col-md-2 bg-secondary sidebar">
-        <!-- Search form -->
-        <ul class="nav flex-column sticky-top sticky-offset">
-          <li>
-            <form class="form-inline d-flex justify-content-center px-0 mt-2 mb-4">
-              <input class="form-control form-control-underlined mr-3 w-75" type="text" placeholder="Search"
-                aria-label="Search" />
-              <i class="fa fa-search text-white" aria-hidden="true"></i>
-            </form>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item {{ 'active' if active_page == 'menu1' else '' }}">
+            <a class="nav-link" href="{{url_for('index') }}"> Home </a>
           </li>
-          <li class="nav-item {{ 'active' if active_page == 'menu5' else '' }}">
-            <a class="nav-link" href="{{url_for('upload_tex') }}"> Upload </a>
-          </li>
-          <li class="nav-item {{ 'active' if active_page == 'menu6' else '' }}">
-            <a class="nav-link" href="{{url_for('downloads') }}">
-              Download
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="navbarDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Dropdown
             </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a
+                class="dropdown-item"
+                href="https://drive.google.com/file/d/13ihYK6Zo7YwZflL0-PC7RQXXmSEJm2uV/view?usp=sharing"
+                >manual</a
+              >
+            </div>
           </li>
-          <li class="nav-item {{ 'active' if active_page == 'menu7' else '' }}">
-            <a class="nav-link" href="{{url_for('show_questions') }}">
-              Submit Answer
-            </a>
+        </ul>
+        <ul class="navbar-nav">
+          <button id="profile-btn" class="btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="25"
+              height="25"
+              fill="currentColor"
+              class="bi bi-person-circle"
+              viewBox="0 0 16 16"
+            >
+              <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+              <path
+                fill-rule="evenodd"
+                d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"
+              />
+            </svg>
+          </button>
+        </ul>
+        <ul class="navbar-nav">
+          {% if session['logged_in'] %}
+          <li class="nav-item">
+            <p class="login-text">You are currently logged in.</p>
           </li>
-
-          
-
-          <li class="nav-item {{ 'active' if active_page == 'menu8' else '' }}">
-            <a class="nav-link" href="{{url_for('upload_excel') }}">
-              Upload Excel files
-            </a>
+          <li class="nav-item login-item">
+            <a href="/logout" class="nav-link"> Sign Out </a>
           </li>
-          <li class="nav-item {{ 'active' if active_page == 'menu9' else '' }}">
-            <a class="nav-link" href="{{url_for('graph_list') }}">
-              Graphlist
-
-            </a>
+          {% else %}
+          <li
+            class="nav-item login-item {{ 'active' if active_page == 'menu3' else '' }}"
+          >
+            <a class="nav-link" href="{{url_for('login') }}"> Login </a>
           </li>
-          
-          <li class="nav-item {{ 'active' if active_page == 'menu10' else '' }}">
-            <a class="nav-link" href="{{url_for('game') }}">
-              Play Game
-            </a>
-         </li>
-              
-              
+          <li
+            class="nav-item login-item {{ 'active' if active_page == 'menu4' else '' }}"
+          >
+            <a class="nav-link" href="{{url_for('register') }}"> Register </a>
+          </li>
+          {% endif %}
         </ul>
       </div>
-      <div class="col-md-10 mt-4 ml-4">
-   
-          <div class="h-100 content-container" id="content">
-              {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-              {% for category, message in messages %}
-              <div class="alert alert-{{ category }}">{{ message }}</div>
-              {% endfor %}
-              {% endif %}
-              {% endwith %}
-              {% block main %}{% endblock %}
-          </div>
+    </nav>
 
+    <!-- Container -->
+    <div class="container-fluid">
+      <div class="row flex-xl-nowrap flex-fill h-100">
+        <div class="col-md-2 bg-secondary sidebar">
+          <!-- Search form -->
+          <ul class="nav flex-column sticky-top sticky-offset">
+            <li>
+              <form
+                class="form-inline d-flex justify-content-center px-0 mt-2 mb-4"
+              >
+                <input
+                  class="form-control form-control-underlined mr-3 w-75"
+                  type="text"
+                  placeholder="Search"
+                  aria-label="Search"
+                />
+                <i class="fa fa-search text-white" aria-hidden="true"></i>
+              </form>
+            </li>
+            <li
+              class="nav-item {{ 'active' if active_page == 'menu5' else '' }}"
+            >
+              <a class="nav-link" href="{{url_for('upload_tex') }}"> Upload </a>
+            </li>
+            <li
+              class="nav-item {{ 'active' if active_page == 'menu6' else '' }}"
+            >
+              <a class="nav-link" href="{{url_for('downloads') }}">
+                Download
+              </a>
+            </li>
+            <li
+              class="nav-item {{ 'active' if active_page == 'menu7' else '' }}"
+            >
+              <a class="nav-link" href="{{url_for('show_questions') }}">
+                Submit Answer
+              </a>
+            </li>
+
+            <li
+              class="nav-item {{ 'active' if active_page == 'menu8' else '' }}"
+            >
+              <a class="nav-link" href="{{url_for('upload_excel') }}">
+                Upload Excel files
+              </a>
+            </li>
+            <li
+              class="nav-item {{ 'active' if active_page == 'menu9' else '' }}"
+            >
+              <a class="nav-link" href="{{url_for('graph_list') }}">
+                Graphlist
+              </a>
+            </li>
+
+            <li
+              class="nav-item {{ 'active' if active_page == 'menu10' else '' }}"
+            >
+              <a class="nav-link" href="{{url_for('game') }}"> Play Game </a>
+            </li>
+          </ul>
+        </div>
+        <div class="col-md-10 mt-4 ml-4">
+          <div class="h-100 content-container" id="content">
+            {% with messages = get_flashed_messages(with_categories=true) %} {%
+            if messages %} {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %} {% endif %} {% endwith %} {% block main %}{% endblock
+            %}
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.5.1.min.js"
-    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-    crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
-  <!-- Bootstrap 4 Autocomplete -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap-4-autocomplete/dist/bootstrap-4-autocomplete.min.js"
-    crossorigin="anonymous"></script>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.min.js"
+      integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Bootstrap 4 Autocomplete -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap-4-autocomplete/dist/bootstrap-4-autocomplete.min.js"
+      crossorigin="anonymous"
+    ></script>
 
-  <script src="/static/js/bootstrap-table/bootstrap-table.min.js"></script>
-  <script src="/static/js/bootstrap-table/extension/bootstrap-table-filter-control.min.js"></script>
-  <script src="/static/js/bootstrap-table/extension/bootstrap-table-toolbar.min.js"></script>
-  <script src="/static/js/selected-file.js"></script>
+    <script src="/static/js/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/static/js/bootstrap-table/extension/bootstrap-table-filter-control.min.js"></script>
+    <script src="/static/js/bootstrap-table/extension/bootstrap-table-toolbar.min.js"></script>
+    <script src="/static/js/selected-file.js"></script>
 
-  <script type="text/javascript"
-  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-  </script>
-  <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-      tex2jax: {
-        inlineMath: [['$','$'], ['\\(','\\)']],
-        ignoreClass: "math-editor" // put this here
+    <script
+      type="text/javascript"
+      src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+    ></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [['$','$'], ['\\(','\\)']],
+          ignoreClass: "math-editor" // put this here
+        }
+      });
+    </script>
+
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/fonts.css"
+    />
+    <style>
+      body {
+        font-family: "Computer Modern Sans", sans-serif;
       }
-    });
-  </script>
-
-  <link rel="stylesheet" type="text/css"
-      href="https://cdn.rawgit.com/dreampulse/computer-modern-web-font/master/fonts.css">
-  <style>
-  body {
-    font-family: "Computer Modern Sans", sans-serif;
-  }
-  </style>
-
-</body>
-
+    </style>
+  </body>
 </html>
