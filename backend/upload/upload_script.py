@@ -2,7 +2,7 @@ import pandas as pd
 import re
 import zipfile
 from TexSoup import TexSoup  # , TokenWithPosition
-from backend.models.models import Question, KC
+from backend.models.models import Question, CU
 from backend.upload.state import State
 
 # ---------------- HELPER METHODS ------------------
@@ -11,41 +11,265 @@ __alphabet__ = "abcdefghij"
 state = State()  # GLOBAL STATE - make into a singleton
 
 
-def get_field(token_name, frame_contents):
-    for token in frame_contents:
+# class to extract the questions from the zip files uploaded
+# in the portal and to save them in the database
+class Upload:
+
+    def register_question(file_path):
+
+        # convert the file in questions
+        questions = zip_of_tex_files_to_questions(file_path)
+
+        # for each of them, save it
+        for q in questions:
+            q.save()
+
+
+def zip_of_tex_files_to_questions(zipf):
+    """
+    Parse a latex-file and a pandas dataframe table
+    @:param: file (.tex), latex file with questions
+    @:return: a list of Question objects
+    """
+
+    # storage allocation
+    questions = []
+
+    # get the various files within the zip file uploaded in the portal
+    zip_file = zipfile.ZipFile(zipf)
+    file_list = zip_file.namelist()
+
+    # check each of such files independently
+    for current_file in file_list:
+
+        # check things only if you have a .tex file
+        if current_file[-4:] == '.tex':
+
+            # read the file
+            zfile = zip_file.open(current_file)
+            data = zfile.read().decode('UTF-8')
+
+            # create an ad-hoc object to search, navigate, and modify the LaTeX document.
+            # Here each frame is an environment "\begin{smt} ... \end{smt}"
+            tex = TexSoup(data)
+            frames = list(tex.children)
+
+            # check every "\begin{smt} ... \end{smt}" in the .tex
+            # file under investigation
+            for frame in frames: 
+
+                # check things only if it is an "IndexedQuestion"
+                if frame.name == 'IndexedQuestion':
+
+                    # get the .tex string
+                    tex_frame_contents = list(frame.children)
+
+                    # convert the .tex string into the object for the database
+                    q = tex_string_to_question(tex_frame_contents)
+
+                    # add it to the list
+                    questions.append(q)
+
+                    # debug
+                    print("added question {}".format(len(questions)))
+                    q.print()
+
+                # debug
+                print("finished processing frame {}".format(frame.name))
+
+            # end if the file is a .tex file
+
+        # debug
+        print("finished processing file {}".format(current_file))
+
+    return questions
+
+
+
+# method to convert the text within a
+# \begin{IndexedQuestion} ... \end{IndexedQuestion}
+# frame into a "Question" object
+#
+def tex_string_to_question(tex_frame_contents):
+    # Current version: 0.12
+
+    # allocate the object before getting the various fields
+    q = Question()
+
+    content_units              = str(get_field("QuestionContentUnits", tex_frame_contents))[1:-1]
+    q.content_units            = content_units.replace(' ,', ',').replace(', ', ',').split(",")
+
+    taxonomy_levels            = str(get_field("QuestionTaxonomyLevels", tex_frame_contents))[1:-1]
+    q.taxonomy_levels          = taxonomy_levels.replace(' ,', ',').replace(', ', ',').replace(' ', '').split(",")
+
+    q.body                     = get_question_body(tex_frame_contents)
+
+    q.body_image               = get_image(tex_frame_contents, file_list, "QuestionBodyImage")
+
+    q.question_type            = str(get_field("QuestionType", tex_frame_contents))[1:-1]
+
+    potential_answers, correct_answers   = \
+        get_answers_for_multiple_choice_questions(tex_frame_contents, question_type)
+    q.potential_answers        = potential_answers
+    q.correct_answers          = correct_answers
+
+    q.solutions                = str(get_field("QuestionSolutions", tex_frame_contents))[1:-1]
+
+    q.solutions_image          = get_image(tex_frame_contents, file_list, "QuestionSolutionsImage")
+
+    q.authors                  = state.user
+
+    q.notes_for_the_teacher    = str(get_field("QuestionNotesForTheTeachers", tex_frame_contents))[1:-1]
+
+    q.notes_for_the_student    = str(get_field("QuestionNotesForTheStudents", tex_frame_contents))[1:-1]
+
+    q.feedback_for_the_student = str(get_field("QuestionFeedbackForTheStudents", tex_frame_contents))[1:-1]
+
+    q.question_disclosability  = str(get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
+
+    q.solution_disclosability  = str(get_field("QuestionSolutionDisclosability", tex_frame_contents))[1:-1]
+
+    q.language                 = str(get_field("QuestionLanguage", tex_frame_contents))[1:-1]
+
+    q.notation_standard        = str(get_field("QuestionNotationStandard", tex_frame_contents))[1:-1]
+
+    # sanity check
+    assert is_question_type_well_defined(q.question_type), \
+           "WARNING -- question {} has a ill-defined question type. \
+           Check the .tex template!".format(q.question_counter)
+
+    # return the object
+    return q
+
+
+
+def get_field(token_name, tex_frame_contents):
+    """
+    Check whether a specific token_name is in the
+    tex_frame_contents string. If so returns the contents
+    in tex_frame_contents that refer to that token
+    """
+    for token in tex_frame_contents:
         if token.name == token_name:
-            return [token.args[0] for token in frame_contents if token.name == token_name][0]
+            return [token.args[0] for token in tex_frame_contents if token.name == token_name][0]
     return {None}
 
 
-def get_question(frame_contents):
-    """
-    Ugly function to format the question
-    :param frame_contents:
-    :return: question in string format
-    """
-    q = [str(token) for token in frame_contents if token.name == "QuestionBody"][0] \
-        .replace("\\QuestionBody{", "")[:-1]
 
+def get_question_body(tex_frame_contents):
+    """
+    Ugly function to format the question body
+    :param tex_frame_contents:
+    :return: question_body in string format
+    """
+    q = [str(token) for token in tex_frame_contents if token.name == "QuestionBody"][0] \
+        .replace("\\QuestionBody{", "")[:-1]
     q = re.sub("[\n\t]", "", q)
     q = re.sub('\s{2,}', ' ', q)
     q = q.replace('$$', "$")
-    q = q.replace("\Reals", "")  # LaTex commands not identified by qti
     q = q.replace(r"\bm", "")
     q = q.replace("\qquad", "")
     q = q.replace(" $", "$")  # remove spacing to avoid problems with math
-    # q = q.replace("includegraphics")
-    # print(q)
 
-    # .strip("\n\t\t").strip("\n\t")\
-    # .replace("$\n\t\t", " $").replace("\n\t$", "$").strip("$")
+    # remove LaTex commands that are not identified by qti
+    q = q.replace("\Reals", "")
+
+    # remove other things
+    q = q.replace("\\begin{small}", "")
+    q = q.replace("\\end{small}", "")
+    q = q.replace("\\begin{footnotesize}", "")
+    q = q.replace("\\end{footnotesize}", "")
 
     return q
 
 
+def get_image(tex_frame_contents, file_list, field_name):
+    """
+    Parameters
+    ----------
+    tex_frame_contents : str
+        the string within the
+        \begin{IndexedQuestion} ... \end{IndexedQuestion}
+        environment
+    file_list : str
+        list of the files included in the .zip file uploaded
+        in the portal
+    field_name : str
+        either "QuestionBodyImage" or "QuestionSolutionsImage"
+    """
+
+    # initialization
+    image = None
+
+    # get the name of the image
+    image_string = str(get_field(field_name, tex_frame_contents))[1:-1]
+
+    if image_string != 'None':
+        image_string = re.findall(r'{(?:[^{}])*}', image_string)
+        for fil in file_list:
+            if fil == image_string[0][1:-1]:
+                image = zip_file.open(fil)
+
+    return image
+
+
+def get_answers_for_multiple_choice_questions(tex_frame_contents, question_type):
+
+    # if the question is not of the right type then return immediately
+    if question_type != "multiple choice":
+        potential_answers = correct_answers = None
+        return potential_answers, correct_answers
+        
+    # answers = str(get_field("QuestionAnswers", tex_frame_contents))[1:-1]
+    answers_i = 3  # Usually where the framecontents is
+    # in case first field is \vspace or another setting instead
+    if "\QuestionPotentialAnswers" not in str(tex_frame_contents[answers_i]):
+        for i, field in enumerate(tex_frame_contents):
+            if "\QuestionPotentialAnswers" in str(field):
+                answers_i = i
+                break
+    answers = format_answers(
+        [token for token in tex_frame_contents[answers_i]])
+
+    potential_answers = []
+    correct_answers   = []
+    for i, entry in enumerate(answers):
+
+        if '\\answer' in entry:
+            potential_answers.append(answers[i + 1])
+
+        elif '\\correctanswer' in entry:
+            potential_answers.append(answers[i + 1])
+            correct_answers.append(answers[i + 1])
+
+    # separator = " , "
+    # #potential_answers = separator.join(potential_answers)
+    # correct_answers = separator.join(correct_answers)
+
+    return potential_answers, correct_answers
+
+
+def is_question_type_well_defined(question_type):
+    if question_type in ["multiple choice", "open", "numeric"]:
+
+        # debug
+        print('well-defined question type: {}'.format(question_type))
+
+        return true
+
+    else:
+
+        # debug
+        print('!!! ILL-DEFINED QUESTION TYPE: {}'.format(question_type))
+
+        return true
+
+
+
 def format_answers(answers):
     """
-    Modifies list of TexNodes and TokenWithPosition to a pure string list
+    Modifies the list of TexNodes and TokenWithPosition
+    into a pure string list
     :param answers: list of possible answers
     :return: new list with answers
     """
@@ -69,185 +293,10 @@ def format_answers(answers):
             formatted_answers.append(elem)
         else:  #
             answer += elem
+
     # Need to append last alternative as well
     formatted_answers.append(answer)
 
     return formatted_answers
 
 
-def parse_tex(zipf):
-    """
-    Parse from latex-file to a pandas dataframe table
-    @:param: file (.tex), latex file with questions
-    @:return: table, pandas dataframe table categorized
-    """
-    zip_file = zipfile.ZipFile(zipf)
-    file_list = zip_file.namelist()
-
-    for file in file_list:
-        if file[-4:] == '.tex':
-            file = zip_file.open(file)
-            data = file.read().decode('UTF-8')
-            tex = TexSoup(data)
-            frames = list(tex.children)
-            table = pd.DataFrame()
-            counter = 1
-            for frame in frames:
-                print(frame.name)
-                if frame.name == 'IndexedQuestion':
-                    frame_contents = list(frame.children)
-                    # Was used to deal with inconsistent frame setups (use of small environment for entire frame)
-                    if len(frame_contents) == 1 and frame_contents[0].name == 'small':
-                        frame_contents = list(frame_contents[0].children)
-
-                    # question = frame.args[0].value.split(' ')[-1].replace('Q', '')
-                    # question = str(get_field("QuestionBody", frame_contents))[1:-1]
-
-                    author_email = str(
-                        get_field("QuestionAuthorEmail", frame_contents))[1:-1]
-                    KCs = str(get_field("QuestionContentUnits", frame_contents))[
-                        1:-1]
-                    KCs = KCs.split(",")
-                    KCTaxonomies = str(
-                        get_field("QuestionTaxonomyLevels", frame_contents))[1:-1]
-                    # print(KCTaxonomies)
-                    # KCTaxonomies = eval(KCTaxonomies)
-                    KCTaxonomies = KCTaxonomies.replace(' ', '').split(",")
-                    QuestionType = str(
-                        get_field("QuestionType", frame_contents))[1:-1]
-                    notes_teacher = str(
-                        get_field("QuestionNotesForTheTeachers", frame_contents))[1:-1]
-                    notes_student = str(
-                        get_field("QuestionNotesForTheStudents", frame_contents))[1:-1]
-                    feedback_stud = str(
-                        get_field("QuestionFeedbackForTheStudents", frame_contents))[1:-1]
-                    question_disclosa = str(
-                        get_field("QuestionDisclosability", frame_contents))[1:-1]
-                    solution_disclosa = str(
-                        get_field("QuestionSolutionDisclosability", frame_contents))[1:-1]
-                    question_image_string = str(
-                        get_field("QuestionImage", frame_contents))[1:-1]
-
-                    question_image = None
-                    if question_image_string != 'None':
-                        question_image_string = re.findall(r'{(?:[^{}])*}',question_image_string)
-                        for fil in file_list:
-                            if fil == question_image_string[0][1:-1]:
-                                question_image = zip_file.open(fil)
-        
-                    image = question_image
-                    question = get_question(frame_contents)
-
-                    # answers = str(get_field("QuestionAnswers", frame_contents))[1:-1]
-
-                    answers_i = 3  # Usually where the framecontents is
-
-                    # in case first field is \vspace or another setting instead
-                    if "\QuestionPotentialAnswers" not in str(frame_contents[answers_i]):
-                        for i, field in enumerate(frame_contents):
-                            if "\QuestionPotentialAnswers" in str(field):
-                                answers_i = i
-                                break
-                    answers = format_answers(
-                        [token for token in frame_contents[answers_i]])
-
-                    ans = []
-                    cor_ans = []
-                    for i, entry in enumerate(answers):
-
-                        if '\\answer' in entry:
-                            ans.append(answers[i + 1])
-
-                        elif '\\correctanswer' in entry:
-                            ans.append(answers[i + 1])
-                            cor_ans.append(answers[i + 1])
-
-                    # separator = " , "
-                    # #ans = separator.join(ans)
-                    # cor_ans = separator.join(cor_ans)
-
-                    row = pd.DataFrame({'author_mail': author_email,
-                                        'question_number': int(counter),
-                                        'question': question,
-                                        'KCs': [KCs],
-                                        'KCTaxonomies': [KCTaxonomies],
-                                        'Notesforteacher': notes_teacher,
-                                        'Notesforstudent': notes_student,
-                                        'feedbackforstudent': feedback_stud,
-                                        'question_disclosability': question_disclosa,
-                                        'solution_disclosability': solution_disclosa,
-                                        'Question_type': [QuestionType],
-                                        'correct_answer': [cor_ans],
-                                        'options': [ans],
-                                        'question_image': [image]
-                                        },
-                                       index=[0])
-                    table = table.append(row, ignore_index=True)
-                    counter += 1
-            return table
-
-
-def find_kc(name: str) -> KC:
-    return KC.objects(name=name).first()
-
-
-def add_kc(name, courses=None) -> KC:
-    # TODO: Courses is actually a single course here, should probably get both course list and course itself
-    if courses:
-        return KC(name=name, courses=[courses]).save()
-    else:
-        return KC(name=name, courses=[]).save()
-
-
-def add_question(question_number, question, author, course, kc_list, kc_taxonomy, correct_answer, options,
-                 author_email=None, QuestionType=None, notes_teacher=None, notes_student=None,
-                 feedback_student=None, question_disclosability=None, solution_disclosability=None, test=None, image=None) -> Question:
-    return Question(question_number=question_number, question=question, author=author, course=course, kc_list=kc_list, kc_taxonomy=kc_taxonomy, correct_answer=correct_answer, options=options,
-                    author_email=author_email, QuestionType=QuestionType, notes_teacher=notes_teacher, notes_student=notes_student,
-                    feedback_student=feedback_student, question_disclosability=question_disclosability, solution_disclosability=solution_disclosability, test=test, image=image).save()
-
-
-# ---------------- EXECUTION METHOD ------------------
-class Upload:
-    def register_question(file_path):
-
-        author = state.user
-        tab = parse_tex(file_path)
-        for i in range(len(tab)):
-            question_number = tab.question_number[i]
-            question = tab.question[i]
-            kc_list = []
-            for kc in tab.KCs[i]:
-                kc_l = find_kc(kc)
-                if not kc_l:
-                    kc_l = add_kc(kc, state.course)
-                kc_list.append(kc_l)
-
-            kc_taxonomy = tab.KCTaxonomies[i]
-            correct_answer = tab.correct_answer[i]
-            options = tab.options[i]
-            author_email = tab.author_mail[i]
-            question_type = tab.Question_type[i]
-            notes_teacher = tab.Notesforteacher[i]
-            notes_student = tab.Notesforstudent[i]
-            feedback_student = tab.feedbackforstudent[i]
-            question_disclosability = tab.question_disclosability[i]
-            solution_disclosability = tab.solution_disclosability[i]
-            question_img = tab.question_image[i]
-
-            add_question(question_number=question_number,
-                         question=question,
-                         author=author,
-                         course=state.course,
-                         kc_list=kc_list,
-                         kc_taxonomy=kc_taxonomy,
-                         correct_answer=correct_answer,
-                         options=options,
-                         author_email=author_email,
-                         QuestionType=question_type,
-                         notes_teacher=notes_teacher,
-                         notes_student=notes_student,
-                         feedback_student=feedback_student,
-                         question_disclosability=question_disclosability,
-                         solution_disclosability=solution_disclosability,
-                         image=question_img)

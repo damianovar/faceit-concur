@@ -11,7 +11,7 @@ import backend.graph.visualization as vis
 import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
-from backend.models.models import University
+from backend.models.models import Institution
 
 import db
 import os
@@ -45,10 +45,10 @@ def index():
 
 @app.route("/register", methods=['GET', 'POST'])
 def register():
-    db.add_uni()
+    db.add_institution()
     form = RegistrationForm()
-    form.university.choices = [
-        universities.name for universities in University.objects()]
+    form.institution.choices = [
+        institutions.name for institutions in Institution.objects()]
     if request.method == 'POST' and form.validate():
         if Account().signup(form):
             return redirect('/')

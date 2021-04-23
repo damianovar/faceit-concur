@@ -1,6 +1,6 @@
 % MANUAL: HOW TO WRITE YOUR QUESTIONS IN A DATABASE-FRIENDLY MANNER
 %
-% Current version: 0.7
+% Current version: 0.12
 %
 % --------------------------------------------------------------------
 % step 1: surround individual question within
@@ -11,7 +11,6 @@
 % --------------------------------------------------------------------
 % step 2: add the information within the IndexedQuestion environment.
 % More specifically, add
-% \QuestionAuthorEmail{ZZZ}
 % \QuestionContentUnits{ZZZ}
 % \QuestionTaxonomyLevels{ZZZ}
 % For the last two items, check the provided manuals on how to define
@@ -28,13 +27,18 @@
 % step 4: add the body of the question within
 % \QuestionBody{ZZZ}
 % Here you can use plain .tex commands. However DO NOT include figures
-% here; in case you need, use the associated field
+% here; in case you need, use the associated field. Also DO NOT use
+% self-defined commands! Plain LaTeX, please
 %
 % --------------------------------------------------------------------
 % step 5: ONLY IF NEEDED, add an image through
-% \QuestionImage{ZZZ}
-% where ZZZ will be the path of the image you want to show. If you
-% do not have images, do not insert this code
+% \QuestionBodyImage{ZZZ}
+% (or \QuestionBodyImage[float]{ZZZ}, with float between 0 and 1.0)
+% where ZZZ will be the path of the image you want to show and the
+% optional float, if included, specifying the width of the inserted
+% image. If you do not have images, it is kind of meaningful to do not
+% insert this code (even if inserting a "\QuestionBodyImage{ZZZ}" won't
+% produce any output)
 %
 % --------------------------------------------------------------------
 % step 6.a - only for ``multiple choice'' questions: add the potential
@@ -48,19 +52,21 @@
 % --------------------------------------------------------------------
 % step 6.b - for the other types of questions: if you want, add the
 % potential
-% \QuestionCorrectAnswer{ZZZ}
 % \QuestionSolutions{ZZZ}
 % fields, where the ZZZ in the ``correct answer'' field should be the 
 % short final answer that likely the students should give at the end 
 % of the exercises, while the ``solutions'' field should contain the 
 % procedure used to arrive at computing the solution.
+% One may also specify the solutions using the field
+% \QuestionSolutionsImage[optional]{image-path}
+% The optional parameter defines the width of the image.
 % These fields are FACULTATIVE
 %
 % --------------------------------------------------------------------
 % step 7: if desired, add information the 'disclosability' of the
 % question, by adding and setting opportunely the fields:
 % \QuestionDisclosability{ZZZ}
-% \QuestionSolutionDisclosability{ZZZ}
+% \QuestionSolutionsDisclosability{ZZZ}
 % The potential values for ZZZ above are, for now:
 %      only me       only teachers         everybody
 % If you do not specify, the default value will be 'everybody'
@@ -81,13 +87,23 @@
 
 
 % versions logs
-% 0.1 (2020.09.07) -> first publicly released version
-% 0.2 (2020.09.19) -> added a field in the questions and added the taxonomy levels in the contents map 
-% 0.3 (2020.09.24) -> added the field 'correct answer' in the questions
-% 0.4 (2020.09.26) -> added a brief manual
-% 0.5 (2020.10.07) -> added a "language" field
-% 0.6 (2020.10.11) -> added some links and an empty template
-% 0.7 (2021.03.09) -> added a few fields to the questions
+% 
+% REMEMBER TO SYNCRONIZE ALSO:
+% - "class Question(Document)" in backend/models/models.py
+% - "def tex_string_to_question(tex_frame_contents)" in backend/upload/upload_script.py
+%
+% 0.1  (2020.09.07) -> first publicly released version
+% 0.2  (2020.09.19) -> added a field in the questions and added the taxonomy levels in the contents map 
+% 0.3  (2020.09.24) -> added the field 'correct answer' in the questions
+% 0.4  (2020.09.26) -> added a brief manual
+% 0.5  (2020.10.07) -> added a "language" field
+% 0.6  (2020.10.11) -> added some links and an empty template
+% 0.7  (2021.03.09) -> added a few fields to the questions
+% 0.8  (2021.03.17) -> removed a bug on the ``XImages'' fields
+% 0.9  (2021.03.22) -> added an option so that one may, if desired, specify the width of the images. Changed QuestionSolutionDisclosability into QuestionSolutionsDisclosability
+% 0.10 (2021.03.25) -> removed the QuestionCorrectAnswer field, since obsolete, and changed QuestionImage in QuestionBodyImage
+% 0.11 (2021.03.29) -> added the possibility of having pre-defined a \LessonNumber command so to individualize the appearance of the QuestionsCounter index
+% 0.12 (2021.03.29) -> modified the behavior of 'AuthorsEmails'
 
 
 % counter for the environment "indexed questions"
@@ -102,7 +118,14 @@
 		\newenvironment*{IndexedQuestion}	[0]
 		{
 			\stepcounter{QuestionsCounter}
-			\begin{frame}[t]{Question \theQuestionsCounter}
+			\begin{frame}[t]
+			{
+    			\ifx\LessonNumber\undefined
+    			    Question \theQuestionsCounter
+    			\else
+                    Question \LessonNumber.\theQuestionsCounter
+                \fi
+            }
 			\begingroup
 		}
 		{
@@ -119,10 +142,14 @@
 			\begin{tabular}{|p{0.9\textwidth}|}
 			\hline
 			\cellcolor{white!90!black} % requires \usepackage[table]{xcolor}
-			\emph{\textbf{Question \theQuestionsCounter}} \vspace{0.1cm} \\
+			\ifx\LessonNumber\undefined
+			    \emph{\textbf{Question \theQuestionsCounter}} \vspace{0.1cm} \\
+			\else
+                \emph{\textbf{Question \LessonNumber.\theQuestionsCounter}} \vspace{0.1cm} \\
+            \fi
 			\\
 		}
-		{ 
+		{
 			\\
 			\hline
 			\end{tabular} 
@@ -133,69 +160,64 @@
 
 
 % commands for indexing the contents
-\newcommand	{\QuestionAuthorEmail}				[1]	{} % if there are more than one author, separate the emails with a comma
-\newcommand {\QuestionID}						[1]	{} % do not fill up by yourself - it will be compiled by the database
 \newcommand {\QuestionLanguage}	    			[1]	{} % specify only whether this is different from English
 \newcommand {\QuestionContentUnits}				[1]	{} % comma separated list
 \newcommand {\QuestionTaxonomyLevels}			[1]	{} % comma separated list, must be as many as the CUs
 \newcommand {\QuestionType}						[1]	{} % [ multiple choice | open | numeric ]
-\newcommand {\QuestionBody}						[1]	{#1}
-\newcommand {\QuestionImage}					[1]	   % keep commented if unused
+\newcommand {\QuestionBody}						[1]	{#1} % in plain LaTeX -- avoid using self-defined commands
+\newcommand {\QuestionBodyImage}				[2][]  % better to keep commented if unused
 {
-	\ifx#1\empty
-		% do nothing
-	\else
-		\begin{figure}[!htbp]
-			\centering
-			\includegraphics[width = 0.9\columnwidth]{#1}
-			\caption{Figure relative to Question~\theQuestionsCounter.}
-		\end{figure}
+   	\ifx#2\empty
+   	    % do nothing
+   	\else
+     	\ifx#1\empty
+    		$\;$ \\
+    		\includegraphics[width = 0.9\columnwidth]{#2}
+    	\else
+    		$\;$ \\
+    		\includegraphics[width = #1\columnwidth]{#2}
+    	\fi
 	\fi
 }
-\newcommand {\QuestionPotentialAnswers}			[1]	{\begin{enumerate} #1 \end{enumerate}}
-\newcommand {\QuestionCorrectAnswer}			[1] % meant to be used in the cases ``open question'' and ``numerical question'' for a short description of what is the correct answer
+\newcommand {\QuestionPotentialAnswers}			[1]	{\begin{enumerate} #1 \end{enumerate}} % meant to be used in the case ``multiple choice''. Will include a series of ``\answer'' and ``\correctanswer''
+\newcommand {\QuestionSolutions}				[1] % meant to be used in the cases ``open question'' and ``numerical question'' for a long description of *how* to solve the question. May also be an URL to an external resource
 {
 	\ifshowsolutions
 		\ifx#1\empty
 			% do nothing
 		\else
-			Correct answer: #1
-		\fi
-	\fi
-}
-\newcommand {\QuestionSolutions}				[1] % meant to be used in the cases ``open question'' and ``numerical question'' for a long description of *how* to solve the question. May also be an image or an URL to an external resource
-{
-	\ifshowsolutions
-		\ifx#1\empty
-			% do nothing
-		\else
-			Solution: #1
+			\textbf{\underline{Solution:}} #1
 		\fi
 	\fi
 }													   % useful especially for open questions
-\newcommand {\QuestionSolutionsImage}			[1]	   % keep commented if unused
+\newcommand {\QuestionSolutionsImage}			[2][]  % better to keep commented if unused
 {
-	\ifx#1\empty
-		% do nothing
-	\else
-		\begin{figure}[!htbp]
-			\centering
-			\includegraphics[width = 0.9\columnwidth]{#1}
-			\caption{Solutions relative to Question~\theQuestionsCounter.}
-		\end{figure}
+   	\ifx#2\empty
+   	    % do nothing
+   	\else
+     	\ifx#1\empty
+    		$\;$ \\
+    		\includegraphics[width = 0.9\columnwidth]{#2}
+    	\else
+    		$\;$ \\
+    		\includegraphics[width = #1\columnwidth]{#2}
+    	\fi
 	\fi
 }
 \newcommand {\QuestionNotesForTheTeachers}		[1]	{} % in case you want to give some additional information to the teachers
 \newcommand {\QuestionNotesForTheStudents}		[1]	{} % in case you want to give some additional information to the students
 \newcommand {\QuestionFeedbackForTheStudents}	[1]	{} % text that should be displayed to the students after they have answered to the question, useful especially when using the questions in a LMS
 \newcommand {\QuestionDisclosability}			[1]	{} % [ only me, only teachers, only my institution, everybody ]
-\newcommand {\QuestionSolutionDisclosability}	[1]	{} % [ only me, only teachers, only my institution, everybody ]
+\newcommand {\QuestionSolutionsDisclosability}	[1]	{} % [ only me, only teachers, only my institution, everybody ]
 \newcommand {\QuestionNotationStandard}     	[1]	{} % to indicate which notation standard is used. E.g., ABC vs FGH for state space models; see the manuals in the portal for an updated list of notation standards
 
 % only useful for when one makes "multiple choice" questions
 \newcommand {\answer}							[0]	{\item}
-\newcommand {\correctanswer}					[0]	{\item \ifshowsolutions (correct) \fi }
+\newcommand {\correctanswer}					[0]	{\item \ifshowsolutions \textbf{(\underline{correct})} \fi }
 
+% fields that should NOT be compiled by the users
+\newcommand	{\QuestionAuthorsEmails}			[1]	{} % do not fill up by yourself - it will be compiled by the database
+\newcommand {\QuestionID}						[1]	{} % do not fill up by yourself - it will be compiled by the database
 
 %%% definition of the environment "content maps" and its ancillary ones %%%
 
@@ -406,25 +428,39 @@
 % \begin{IndexedQuestion}
 % %
 % % fields that MUST be filled up
-% \QuestionAuthorEmail{FILL ME}
 % \QuestionContentUnits{FILL ME} % comma separated list
 % \QuestionTaxonomyLevels{FILL ME} % comma separated list, must be as many as the CUs
 % \QuestionType{FILL ME} % options: [ multiple choice | open | numeric ]
 % \QuestionBody{FILL ME} % use plain latex code, and try to avoid user-defined commands
-% \QuestionPotentialAnswers{ \answer BLABLA1 \correctanswer BLABLA2 \answer BLABLA3 ... } % use this only with multiple choice questions. You can obviously change the order of correct vs wrong answers, have as many answers as you want, and add as many correct answers as you want
+% %
+% % field that must be filled up only with multiple choice questions.
+% You can obviously change the order of correct vs wrong answers,
+% have as many answers as you want, and add as many correct answers as you want
+% \QuestionPotentialAnswers{ \answer BLABLA1 \correctanswer BLABLA2 \answer BLABLA3 ... }
 % %
 % % fields that you may also skip filling up
 % \QuestionLanguage{FILL ME} % if not provided, then this means ``English''
-% \QuestionImage{FILL ME} % may also be a URL
-% \QuestionCorrectAnswer{FILL ME} % meant to be used in the cases ``open question'' and ``numerical question''; this field should contain a short description of what is the correct answer. May also be an URL or an image
-% \QuestionSolutions{FILL ME} % meant to be used in the cases ``open question'' and ``numerical question'' for a long description of *how* to solve the question
-% \QuestionSolutionsImage{FILL ME} % alternative way of providing a solution; may also be a URL
+% \QuestionBodyImage[OPTIONAL WIDTH]{FILL ME}
+% \QuestionSolutions{FILL ME} % meant to be used in the cases ``open question'' and ``numerical question'' for a long description of the correct answer and ideally *how* to solve the question. May also be a URL
+% \QuestionSolutionsImage[OPTIONAL WIDTH]{FILL ME} % alternative way of providing a solution
 % \QuestionNotesForTheTeachers{FILL ME} % some additional notes, in case you want to share them
 % \QuestionNotesForTheStudents{FILL ME} % some additional notes, in case you want to share them
 % \QuestionFeedbackForTheStudents{FILL ME} % useful especially when using the questions in a LMS
 % \QuestionDisclosability{FILL ME} % options: [ only me, only teachers, only my institution, everybody ]. If not provided, then this means ``everybody''
-% \QuestionSolutionDisclosability{FILL ME} % options: [ only me, only teachers, only my institution, everybody ]. If not provided, then this means ``everybody''
+% \QuestionSolutionsDisclosability{FILL ME} % options: [ only me, only teachers, only my institution, everybody ]. If not provided, then this means ``everybody''
 % \QuestionNotationStandard{FILL ME} % see the manuals in the portal for an updated list of notation standards
 % %
+% \end{IndexedQuestion}
+%
+% Note: if you have defined somewhere the command \LessonNumber then the .pdf
+% will display ``Question \LessonNumber.\QuestionNumber''. This is useful to
+% have question codes that are unique across different lessons in a course
+
+% \begin{IndexedQuestion}
+% 	\QuestionContentUnits{<++>}
+% 	\QuestionTaxonomyLevels{<++>}
+% 	\QuestionType{<++>}
+% 	\QuestionBody{<++>}
+% 	\QuestionPotentialAnswers{<++>}
 % \end{IndexedQuestion}
 
