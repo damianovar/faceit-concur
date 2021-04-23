@@ -159,10 +159,20 @@
 \makeatother
 
 
-% commands for indexing the contents
+\newenvironment{IndexedSolution}
+{
+	\begin{itshape}
+	\textbf{Solution: }
+}
+{
+	\end{itshape}
+}
+
+
+% commands for indexing the contents of the question
+\newcommand	{\QuestionAuthorsEmails}			[1]	{} % comma separated list
 \newcommand {\QuestionLanguage}	    			[1]	{} % specify only whether this is different from English
 \newcommand {\QuestionContentUnits}				[1]	{} % comma separated list
-\newcommand {\QuestionTaxonomyLevels}			[1]	{} % comma separated list, must be as many as the CUs
 \newcommand {\QuestionType}						[1]	{} % [ multiple choice | open | numeric ]
 \newcommand {\QuestionBody}						[1]	{#1} % in plain LaTeX -- avoid using self-defined commands
 \newcommand {\QuestionBodyImage}				[2][]  % better to keep commented if unused
@@ -180,17 +190,25 @@
 	\fi
 }
 \newcommand {\QuestionPotentialAnswers}			[1]	{\begin{enumerate} #1 \end{enumerate}} % meant to be used in the case ``multiple choice''. Will include a series of ``\answer'' and ``\correctanswer''
-\newcommand {\QuestionSolutions}				[1] % meant to be used in the cases ``open question'' and ``numerical question'' for a long description of *how* to solve the question. May also be an URL to an external resource
-{
-	\ifshowsolutions
-		\ifx#1\empty
-			% do nothing
-		\else
-			\textbf{\underline{Solution:}} #1
-		\fi
-	\fi
-}													   % useful especially for open questions
-\newcommand {\QuestionSolutionsImage}			[2][]  % better to keep commented if unused
+\newcommand {\QuestionNotesForTheTeachers}		[1]	{} % in case you want to give some additional information to the teachers
+\newcommand {\QuestionNotesForTheStudents}		[1]	{} % in case you want to give some additional information to the students
+\newcommand {\QuestionFeedbackForTheStudents}	[1]	{} % text that should be displayed to the students after they have answered to the question, useful especially when using the questions in a LMS
+\newcommand {\QuestionDisclosability}			[1]	{} % [ only me, only teachers, only my institution, everybody ]
+\newcommand {\QuestionSolutionsDisclosability}	[1]	{} % [ only me, only teachers, only my institution, everybody ]
+\newcommand {\QuestionNotationStandard}     	[1]	{} % to indicate which notation standard is used. E.g., ABC vs FGH for state space models; see the manuals in the portal for an updated list of notation standards
+
+% only useful for when one makes "multiple choice" questions
+\newcommand {\answer}							[0]	{\item}
+\newcommand {\correctanswer}					[0]	{\item \ifshowsolutions \textbf{(\underline{correct})} \fi }
+
+% fields that should NOT be compiled by the users
+\newcommand {\QuestionID}						[1]	{} % do not fill up by yourself - it will be compiled by the database
+
+
+\newcommand {\SolutionContentUnits}		[1]	{} % comma separated list
+\newcommand {\SolutionTaxonomyLevels}	[1]	{} % comma separated list, must be as many as the CUs
+\newcommand {\SolutionBody}				[1]	{#1} % in plain LaTeX -- avoid using self-defined commands
+\newcommand {\SolutionBodyImage}		[2][]  % better to keep commented if unused
 {
    	\ifx#2\empty
    	    % do nothing
@@ -204,20 +222,14 @@
     	\fi
 	\fi
 }
-\newcommand {\QuestionNotesForTheTeachers}		[1]	{} % in case you want to give some additional information to the teachers
-\newcommand {\QuestionNotesForTheStudents}		[1]	{} % in case you want to give some additional information to the students
-\newcommand {\QuestionFeedbackForTheStudents}	[1]	{} % text that should be displayed to the students after they have answered to the question, useful especially when using the questions in a LMS
-\newcommand {\QuestionDisclosability}			[1]	{} % [ only me, only teachers, only my institution, everybody ]
-\newcommand {\QuestionSolutionsDisclosability}	[1]	{} % [ only me, only teachers, only my institution, everybody ]
-\newcommand {\QuestionNotationStandard}     	[1]	{} % to indicate which notation standard is used. E.g., ABC vs FGH for state space models; see the manuals in the portal for an updated list of notation standards
-
-% only useful for when one makes "multiple choice" questions
-\newcommand {\answer}							[0]	{\item}
-\newcommand {\correctanswer}					[0]	{\item \ifshowsolutions \textbf{(\underline{correct})} \fi }
-
+\newcommand {\SolutionDisclosability}	[1]	{} % [ only me, only teachers, only my institution, everybody ]
+\newcommand	{\SolutionAuthorsEmails}	[1]	{} % comma separated list
+%
 % fields that should NOT be compiled by the users
-\newcommand	{\QuestionAuthorsEmails}			[1]	{} % do not fill up by yourself - it will be compiled by the database
-\newcommand {\QuestionID}						[1]	{} % do not fill up by yourself - it will be compiled by the database
+\newcommand {\SolutionID}				[1]	{} % do not fill up by yourself - it will be compiled by the database
+
+
+
 
 %%% definition of the environment "content maps" and its ancillary ones %%%
 
