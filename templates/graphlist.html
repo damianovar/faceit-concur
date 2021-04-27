@@ -7,7 +7,21 @@
 <h1>Select a course to visualize</h1>
 <ol>
 {% for sheet in CU_files %} 
-<li><button type="button" onclick="window.location.href='{{ url_for('graphs', sheet=sheet)}}';">{{sheet}}</button> </li>
+<li>
+    <ol>
+        <li>
+            <button type="button" onclick="window.location.href='{{ url_for('graphs', sheet=sheet)}}'">{{sheet}}</button>  
+        </li>
+        <li>
+            <form action="/graph_list" method="POST">
+                <button type="submit" name="delete_button" value="{{sheet}}">Delete graph</button>
+            </form>
+        </li>
+    </ol>
+    
+
+
+</li>
 {% endfor %}
 </ol>
 {% endblock %}

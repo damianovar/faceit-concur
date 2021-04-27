@@ -186,6 +186,7 @@ def map_cu_relations(CU_REL):
         g.add_node(n_id=cu, label=cu, shape='ellipse')
 
     cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
+    print("CUS:", cus)
     for cu, nec, usef, gen, syn, dlc in zip(cus, necessary, useful, generalize, synonym, dlc):
 
         if nec:
@@ -204,7 +205,53 @@ def map_cu_relations(CU_REL):
             dlc = dlc.split("(")[0].strip().lower()
             g.add_edge(dlc, cu)
 
+
     g.show('cu_relations.html')
+
+def get_nodes_and_edges_cu_relations(CU_REL):
+    """
+    1: Go through spreadsheet, add every single one of the kcs in first column to kcs in database
+    2: Map along with the others 
+    3: Store this map as a connection
+    """
+    g = Network(height="1500px", width="75%", bgcolor="#222222",
+                font_color="white", directed=True)
+
+    # if buttons:
+    g.width = "75%"
+    # nodes, layout, interaction, selection, renderer, physics
+    g.show_buttons(filter_=["edges", "physics"])
+
+
+    for cu in CU_REL.cus:
+        cu = cu.split("(")[0].strip().lower()
+        g.add_node(n_id=cu, label=cu, shape='ellipse')
+
+    cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
+    for cu, nec, usef, gen, syn, dlc in zip(cus, necessary, useful, generalize, synonym, dlc):
+
+        if nec:
+            nec = nec.split("(")[0].strip().lower()
+            print("Nec:",nec)
+            g.add_edge(nec, cu)
+        if usef:
+            usef = usef.split("(")[0].strip().lower()
+            g.add_edge(usef, cu)
+        if gen:
+            gen = gen.split("(")[0].strip().lower()
+            g.add_edge(gen, cu)
+        if syn:
+            syn = syn.split("(")[0].strip().lower()
+            g.add_edge(syn, cu)
+        if dlc:
+            dlc = dlc.split("(")[0].strip().lower()
+            g.add_edge(dlc, cu)
+
+
+    node, edge, _, _, _ = g.get_network_data()
+
+    return json.dumps(node), json.dumps(edge)
+
 
 
 def map_kcs(
