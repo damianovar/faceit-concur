@@ -6,6 +6,7 @@ import random as rnd
 from graphviz import Digraph
 from .cu_rel import CU_Relations
 import json
+from itertools import zip_longest
 
 #############
 # CONSTANTS #
@@ -220,31 +221,41 @@ def get_nodes_and_edges_cu_relations(CU_REL):
     g.width = "75%"
     # nodes, layout, interaction, selection, renderer, physics
     g.show_buttons(filter_=["edges", "physics"])
-
+    print("Values", CU_REL.cus)
     for cu in CU_REL.cus:
         cu = cu.split("(")[0].strip().lower()
         g.add_node(n_id=cu, label=cu, shape='ellipse')
 
-    cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
-    for cu, nec, usef, gen, syn, dlc in zip(cus, necessary, useful, generalize, synonym, dlc):
+    print("Ready to rumble")
 
+    cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
+
+    print("")
+
+    for cu, nec, usef, gen, syn, dlc in zip_longest(cus, necessary, useful, generalize, synonym, dlc):
+        print("Iteration")
+        cu = cu.split("(")[0].strip().lower()
         if nec:
             nec = nec.split("(")[0].strip().lower()
-            print("Nec:", nec)
+            g.add_node(nec)
             g.add_edge(nec, cu)
         if usef:
             usef = usef.split("(")[0].strip().lower()
+            g.add_node(usef)
             g.add_edge(usef, cu)
         if gen:
             gen = gen.split("(")[0].strip().lower()
+            g.add_node(gen)
             g.add_edge(gen, cu)
         if syn:
             syn = syn.split("(")[0].strip().lower()
+            g.add_node(syn)
             g.add_edge(syn, cu)
         if dlc:
             dlc = dlc.split("(")[0].strip().lower()
+            g.add_node(dlc)
             g.add_edge(dlc, cu)
-
+    print("Done rumbeling")
     node, edge, _, _, _ = g.get_network_data()
 
     return json.dumps(node), json.dumps(edge)

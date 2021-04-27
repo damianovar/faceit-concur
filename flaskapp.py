@@ -95,9 +95,9 @@ def graphs(sheet, mode):
         nodes = []
         edges = []
 
-    print()
-    print("Nodes", nodes, "\n")
-    print("Edges:", edges, "\n")
+    # print()
+    #print("Nodes", nodes, "\n")
+    #print("Edges:", edges, "\n")
 
     #lists = ss.read_course_category_tree(sheet, "content units hierarchies", 5)
 
