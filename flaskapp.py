@@ -80,21 +80,28 @@ def allowed_file(filename):
         return False
 
 
-@app.route("/graphviz/<sheet>/")
-def graphs(sheet):
+@app.route("/graphviz/<sheet>/<mode>")
+def graphs(sheet, mode):
 
     # Uncomment when ready for it
-    """
-    lists = ss.read_cu_relations(sheet, "content units relations")
-    nodes, edges = vis.map_cu_relations(lists)
-    """
-    # print()
-    #print("Nodes", nodes, "\n")
-    #print("Edges:", edges, "\n")
+    if mode == "relations":
+        lists = ss.read_cu_relations(sheet, "content units relations")
+        nodes, edges = vis.get_nodes_and_edges_cu_relations(lists)
+    elif mode == "hierarchies":
+        lists = ss.read_course_category_tree(
+            sheet, "content units hierarchies", 5)
+        nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
+    else:
+        nodes = []
+        edges = []
 
-    lists = ss.read_course_category_tree(sheet, "content units hierarchies", 5)
+    print()
+    print("Nodes", nodes, "\n")
+    print("Edges:", edges, "\n")
 
-    nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
+    #lists = ss.read_course_category_tree(sheet, "content units hierarchies", 5)
+
+    #nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
 
     return render_template("graphviz.html", title='Visualize graphs', nodes=nodes, edges=edges)
 
@@ -109,19 +116,6 @@ def graph_list():
             ss.delete_CU_file(sheet)
     available_CU_files = ss.get_available_CU_files()
     return render_template("graphlist.html", title="Graph list", CU_files=available_CU_files)
-
-
-"""
-@app.route("/delete_graph", methods=['POST'])
-def delete_graph(sheet):
-    print("We are graphlisting")
-    print("Sheet:", sheet)
-    if sheet:
-        print("File deleted")
-        ss.delete_CU_file(sheet)
-    available_CU_files = ss.get_available_CU_files()
-    return render_template("graphlist.html", title="Graph list", CU_files=available_CU_files)
-"""
 
 
 @app.route("/upload_excel", methods=["GET", "POST"])

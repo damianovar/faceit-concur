@@ -136,12 +136,12 @@ def read_cu_relations(spreadsheet: str, worksheet: str):
     # There are 6 columns to care about and store
     cu_rel = CU_Relations(ws.col_values(1), ws.col_values(2), ws.col_values(
         3), ws.col_values(4), ws.col_values(5), ws.col_values(6))
-    cu_rel.cus = cu_rel.cus[:end]
-    cu_rel.necessary = cu_rel.necessary[:end]
-    cu_rel.useful = cu_rel.useful[:end]
-    cu_rel.generalize = cu_rel.generalize[:end]
-    cu_rel.synonym = cu_rel.synonym[:end]
-    cu_rel.dlc = cu_rel.dlc[:end]
+    cu_rel.cus = cu_rel.cus[1:-1]
+    cu_rel.necessary = cu_rel.necessary[1:-1]
+    cu_rel.useful = cu_rel.useful[1:-1]
+    cu_rel.generalize = cu_rel.generalize[1:-1]
+    cu_rel.synonym = cu_rel.synonym[1:-1]
+    cu_rel.dlc = cu_rel.dlc[1:-1]
     return cu_rel
 
 

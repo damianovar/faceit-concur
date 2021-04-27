@@ -180,15 +180,14 @@ def map_cu_relations(CU_REL):
     # nodes, layout, interaction, selection, renderer, physics
     g.show_buttons(filter_=["edges", "physics"])
 
-
     for cu in CU_REL.cus:
         cu = cu.split("(")[0].strip().lower()
         g.add_node(n_id=cu, label=cu, shape='ellipse')
 
-    cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
+    cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
     print("CUS:", cus)
     for cu, nec, usef, gen, syn, dlc in zip(cus, necessary, useful, generalize, synonym, dlc):
-
+        print("Iteration")
         if nec:
             nec = nec.split("(")[0].strip().lower()
             g.add_edge(nec, cu)
@@ -205,8 +204,8 @@ def map_cu_relations(CU_REL):
             dlc = dlc.split("(")[0].strip().lower()
             g.add_edge(dlc, cu)
 
-
     g.show('cu_relations.html')
+
 
 def get_nodes_and_edges_cu_relations(CU_REL):
     """
@@ -222,7 +221,6 @@ def get_nodes_and_edges_cu_relations(CU_REL):
     # nodes, layout, interaction, selection, renderer, physics
     g.show_buttons(filter_=["edges", "physics"])
 
-
     for cu in CU_REL.cus:
         cu = cu.split("(")[0].strip().lower()
         g.add_node(n_id=cu, label=cu, shape='ellipse')
@@ -232,7 +230,7 @@ def get_nodes_and_edges_cu_relations(CU_REL):
 
         if nec:
             nec = nec.split("(")[0].strip().lower()
-            print("Nec:",nec)
+            print("Nec:", nec)
             g.add_edge(nec, cu)
         if usef:
             usef = usef.split("(")[0].strip().lower()
@@ -247,11 +245,9 @@ def get_nodes_and_edges_cu_relations(CU_REL):
             dlc = dlc.split("(")[0].strip().lower()
             g.add_edge(dlc, cu)
 
-
     node, edge, _, _, _ = g.get_network_data()
 
     return json.dumps(node), json.dumps(edge)
-
 
 
 def map_kcs(
@@ -385,7 +381,7 @@ def get_nodes_and_edges_cu_hierarchies(lists):
     trans_mat = tuple(zip(*lists))
     col_size = len(trans_mat)
     num_of_cols = len(trans_mat[0])
-    print("Trans matrix",trans_mat)
+    print("Trans matrix", trans_mat)
     g = Network(height="1500px", width="75%", bgcolor="#222222",
                 font_color="white", directed=True)
 
@@ -397,8 +393,9 @@ def get_nodes_and_edges_cu_hierarchies(lists):
     c = 0
     p0, p1, p2 = None, None, None
     color = "#FFFFFF"
-    g.add_node(n_id="Linear Algebra", label="Linear Algebra", color="FF0000", shape="ellipse", value=6)
-    
+    g.add_node(n_id="Linear Algebra", label="Linear Algebra",
+               color="FF0000", shape="ellipse", value=6)
+
     for elem in trans_mat:
         c += 1
         if c != 1 and c != col_size:
@@ -406,23 +403,28 @@ def get_nodes_and_edges_cu_hierarchies(lists):
             # Algorithm for determening parents and all that kind of good jazz
             if elem[0] and not (elem[1] or elem[2] or elem[3]):
                 p0 = elem[0]
-                g.add_node(n_id=p0, label=p0, color="#735702", shape="ellipse", value=4)
+                g.add_node(n_id=p0, label=p0, color="#735702",
+                           shape="ellipse", value=4)
                 g.add_edge("Linear Algebra", p0)
             elif elem[1] and not (elem[0] or elem[2] or elem[3]):
                 p1 = elem[1]
-                g.add_node(n_id=p1, label=p1, color="#BABF2A", shape="ellipse", value=3)
+                g.add_node(n_id=p1, label=p1, color="#BABF2A",
+                           shape="ellipse", value=3)
                 g.add_edge(p0, elem[1])
             elif elem[2] and not (elem[1] or elem[0] or elem[3]):
                 p2 = elem[2]
-                g.add_node(n_id=p2, label=p2, color="#027368", shape="ellipse", value=2)
+                g.add_node(n_id=p2, label=p2, color="#027368",
+                           shape="ellipse", value=2)
                 g.add_edge(p1, elem[2])
             elif elem[3] and not (elem[1] or elem[2] or elem[0]):
-                g.add_node(n_id=elem[3], label=elem[3], color="#829FD9", shape="ellipse", value=1)
+                g.add_node(n_id=elem[3], label=elem[3],
+                           color="#829FD9", shape="ellipse", value=1)
                 g.add_edge(p2, elem[3])
 
     node, edge, _, _, _ = g.get_network_data()
 
     return json.dumps(node), json.dumps(edge)
+
 
 def map_cu_hierarchies(lists):
     """
@@ -445,7 +447,8 @@ def map_cu_hierarchies(lists):
     c = 0
     p0, p1, p2 = None, None, None
     color = "#FFFFFF"
-    g.add_node(n_id="Linear Algebra", label="Linear Algebra", color="FF0000", shape="ellipse", value=6)
+    g.add_node(n_id="Linear Algebra", label="Linear Algebra",
+               color="FF0000", shape="ellipse", value=6)
 
     for elem in trans_mat:
         c += 1
@@ -454,24 +457,26 @@ def map_cu_hierarchies(lists):
             # Algorithm for determening parents and all that kind of good jazz
             if elem[0] and not (elem[1] or elem[2] or elem[3]):
                 p0 = elem[0]
-                g.add_node(n_id=p0, label=p0, color="#735702", shape="ellipse", value=4)
+                g.add_node(n_id=p0, label=p0, color="#735702",
+                           shape="ellipse", value=4)
                 g.add_edge("Linear Algebra", p0)
             elif elem[1] and not (elem[0] or elem[2] or elem[3]):
                 p1 = elem[1]
-                g.add_node(n_id=p1, label=p1, color="#BABF2A", shape="ellipse", value=3)
+                g.add_node(n_id=p1, label=p1, color="#BABF2A",
+                           shape="ellipse", value=3)
                 g.add_edge(p0, elem[1])
             elif elem[2] and not (elem[1] or elem[0] or elem[3]):
                 p2 = elem[2]
-                g.add_node(n_id=p2, label=p2, color="#027368", shape="ellipse", value=2)
+                g.add_node(n_id=p2, label=p2, color="#027368",
+                           shape="ellipse", value=2)
                 g.add_edge(p1, elem[2])
             elif elem[3] and not (elem[1] or elem[2] or elem[0]):
-                g.add_node(n_id=elem[3], label=elem[3], color="#829FD9", shape="ellipse", value=1)
+                g.add_node(n_id=elem[3], label=elem[3],
+                           color="#829FD9", shape="ellipse", value=1)
                 g.add_edge(p2, elem[3])
 
     print(g.get_network_data()[0])
     g.show("cu_hierarchy.html")
-
-
 
 
 ##########################
