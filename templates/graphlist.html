@@ -5,16 +5,28 @@
 
 
 <h1>Select a course to visualize</h1>
-<ol>
+<ol style="list-style-type: none;">
 {% for sheet in CU_files %} 
+<div>
+    <h2>{{sheet}}</h2>
+    <hr>
+    <button type="button" onclick="window.location.href='{{ url_for('graphs', sheet=sheet)}}'" class="btn btn-primary" style="margin:5px;">Visualize course unit relations</button>
+    <form action="/graph_list" method="POST">
+        <button type="submit" name="delete_button" value="{{sheet}}" style="margin:5px;" class="btn btn-primary">Delete graph</button>
+    </form>
+
+</div>
+
+
+<!--
 <li>
     <ol>
         <li>
-            <button type="button" onclick="window.location.href='{{ url_for('graphs', sheet=sheet)}}'">{{sheet}}</button>  
+            <button type="button" onclick="window.location.href='{{ url_for('graphs', sheet=sheet)}}'" class="btn btn-primary">{{sheet}}</button>  
         </li>
         <li>
             <form action="/graph_list" method="POST">
-                <button type="submit" name="delete_button" value="{{sheet}}">Delete graph</button>
+                <button type="submit" name="delete_button" value="{{sheet}}" class="btn btn-primary">Delete graph</button>
             </form>
         </li>
     </ol>
@@ -22,6 +34,7 @@
 
 
 </li>
+ -->
 {% endfor %}
 </ol>
 {% endblock %}
