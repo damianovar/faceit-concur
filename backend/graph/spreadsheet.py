@@ -26,16 +26,18 @@ def connect_to_spreadsheet(spreadhseet, worksheet):
     #basedir = Path("src/services/")
     basedir = Path().absolute()
     print(basedir)
-    data_json = basedir / "faceit-concur" /"backend" / "graph" / "services"/ "client_secret.json"
+    data_json = basedir / "faceit-concur" / "backend" / \
+        "graph" / "services" / "client_secret.json"
     # use creds to create a client to interact with the Google Drive API
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name(data_json, scope)
     client = gspread.authorize(creds)
 
     # Find a workbook by name and open the first sheet
     # Make sure you use the right name here.
     ss = client.open(spreadhseet)
-    
+
     try:
         print(ss.worksheets())
         return ss.worksheet(worksheet)
@@ -115,10 +117,10 @@ def read_course_category_tree(spreadsheet, worksheet, num_of_subtopics: int):
     desired_size = 0
     for col in topic_cols:
         desired_size = max(desired_size, len(col))
-    
-    for iterator in range(len(topic_cols)):
-        topic_cols[iterator] = augment_column(topic_cols[iterator], desired_size)
 
+    for iterator in range(len(topic_cols)):
+        topic_cols[iterator] = augment_column(
+            topic_cols[iterator], desired_size)
 
     return topic_cols
 
@@ -132,7 +134,8 @@ def augment_column(column, desired_size):
 def read_cu_relations(spreadsheet: str, worksheet: str):
     ws = connect_to_spreadsheet(spreadsheet, worksheet)
     # There are 6 columns to care about and store
-    cu_rel = CU_Relations(ws.col_values(1), ws.col_values(2), ws.col_values(3), ws.col_values(4), ws.col_values(5), ws.col_values(6))
+    cu_rel = CU_Relations(ws.col_values(1), ws.col_values(2), ws.col_values(
+        3), ws.col_values(4), ws.col_values(5), ws.col_values(6))
     cu_rel.cus = cu_rel.cus[:end]
     cu_rel.necessary = cu_rel.necessary[:end]
     cu_rel.useful = cu_rel.useful[:end]
@@ -173,26 +176,33 @@ def read_kc_matrix_from_csv():
 
 def connect_to_CU_database():
     basedir = Path().absolute()
-    data_json = basedir / "faceit-concur" /"backend" / "graph" / "services"/ "client_secret.json"
-    scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+    data_json = basedir / "faceit-concur" / "backend" / \
+        "graph" / "services" / "client_secret.json"
+    scope = ['https://spreadsheets.google.com/feeds',
+             'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name(data_json, scope)
     return gspread.authorize(creds)
 
 
 def delete_CU_file(CU_name) -> None:
-    client = connect_to_CU_database() 
+    client = connect_to_CU_database()
 
     for spreadsheet in client.list_spreadsheet_files():
         if spreadsheet['name'] == CU_name:
             client.del_spreadsheet(spreadsheet['id'])
+
 
 def get_available_CU_files() -> list:
     client = connect_to_CU_database()
     spreadsheets_json_files = client.list_spreadsheet_files()
     spreadsheet_list = []
     for sheet in spreadsheets_json_files:
-       spreadsheet_list.append(sheet["name"])
+        # TODO: Ensure that "LA list with categories" and "list of knowledge contents"
+        if sheet["id"] != '1ZTHiio5bn6PcVHZqALLdJgJlestfXfcZluF0QqCkEWA' and sheet["id"] != '1VMea_KUaqwY2bHJylP3NjdPenekWuzkaK_iXD7hxFTQ':
+            spreadsheet_list.append(sheet["name"])
+
     return spreadsheet_list
+
 
 def upload_CU_file(file) -> None:
 
@@ -202,21 +212,21 @@ def upload_CU_file(file) -> None:
     delete_CU_file(file.filename[:-5])
     onlineSheet = client.create(file.filename[:-5])
 
-
     excelFile = pd.ExcelFile(data_excel, engine='openpyxl')
     for name_of_sheet in excelFile.sheet_names:
         dataframe = excelFile.parse(name_of_sheet)
-        worksheet = onlineSheet.add_worksheet(title=name_of_sheet, rows=str(dataframe.shape[0]), cols=str(dataframe.shape[1]))
+        worksheet = onlineSheet.add_worksheet(title=name_of_sheet, rows=str(
+            dataframe.shape[0]), cols=str(dataframe.shape[1]))
         print("Created a worksheet:", name_of_sheet)
         print("Shape:", dataframe.shape[0], dataframe.shape[1])
-        dataframe.fillna('',inplace=True)
-        worksheet.update([dataframe.columns.values.tolist()] + dataframe.values.tolist())
-        #print(worksheet.get_all_values())
-    
-    print("Upload complete")
+        dataframe.fillna('', inplace=True)
+        worksheet.update([dataframe.columns.values.tolist()
+                          ] + dataframe.values.tolist())
+        # print(worksheet.get_all_values())
 
+    print("Upload complete")
 
 
 def delete_all_files():
     client = connect_to_CU_database()
-    #delete_CU_file("temp")
+    # delete_CU_file("temp")
