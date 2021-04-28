@@ -9,7 +9,7 @@ import json
 from itertools import zip_longest
 
 
-def get_nodes_and_edges_cu_relations(CU_REL):
+def get_nodes_and_edges_cu_relations(CU_REL, sheet):
     """
     1: Go through spreadsheet, add every single one of the kcs in first column to kcs in database
     2: Map along with the others 
@@ -97,7 +97,7 @@ def remove_text_inside_parantheses(text):
     return result
 
 
-def get_nodes_and_edges_cu_hierarchies(lists):
+def get_nodes_and_edges_cu_hierarchies(lists, sheet):
     """
     Left right mapping of indented category mapping
     :param lists:
@@ -118,7 +118,7 @@ def get_nodes_and_edges_cu_hierarchies(lists):
     c = 0
     p0, p1, p2 = None, None, None
     color = "#FFFFFF"
-    g.add_node(n_id="Linear Algebra", label="Linear Algebra",
+    g.add_node(n_id=sheet, label=sheet,
                color="FF0000", shape="ellipse", value=6)
 
     for elem in trans_mat:
@@ -130,7 +130,7 @@ def get_nodes_and_edges_cu_hierarchies(lists):
                 p0 = elem[0]
                 g.add_node(n_id=p0, label=p0, color="#735702",
                            shape="ellipse", value=4)
-                g.add_edge("Linear Algebra", p0)
+                g.add_edge(sheet, p0)
             elif elem[1] and not (elem[0] or elem[2] or elem[3]):
                 p1 = elem[1]
                 g.add_node(n_id=p1, label=p1, color="#BABF2A",

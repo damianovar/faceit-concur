@@ -84,11 +84,11 @@ def allowed_file(filename):
 def graphs(sheet, mode):
     if mode == "relations":
         lists = ss.read_cu_relations(sheet, "content units relations")
-        nodes, edges = vis.get_nodes_and_edges_cu_relations(lists)
+        nodes, edges = vis.get_nodes_and_edges_cu_relations(lists, sheet)
     elif mode == "hierarchies":
         lists = ss.read_course_category_tree(
             sheet, "content units hierarchies", 5)
-        nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
+        nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists, sheet)
     else:
         nodes = []
         edges = []
