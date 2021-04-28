@@ -11,7 +11,7 @@ Array.prototype.forEach.call( inputs, function( input )
 			fileName = ( this.getAttribute( 'data-multiple-caption' ) || '' ).replace( '{count}', this.files.length );
 		else
 			fileName = e.target.value.split( '\\' ).pop();
-        console.log(fileName)
+        console.log("Filename:" + fileName)
 		if( fileName )
             document.querySelector('label[for="zipf"]').innerHTML = fileName;
 		else

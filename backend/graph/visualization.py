@@ -236,28 +236,55 @@ def get_nodes_and_edges_cu_relations(CU_REL):
         print("Iteration")
         cu = cu.split("(")[0].strip().lower()
         if nec:
-            nec = nec.split("(")[0].strip().lower()
-            g.add_node(nec)
-            g.add_edge(nec, cu)
+            nec = remove_text_inside_parantheses(nec).split(",")
+            for n in nec:
+                n = n.strip().lower()
+                g.add_node(n)
+                g.add_edge(n, cu)
         if usef:
-            usef = usef.split("(")[0].strip().lower()
-            g.add_node(usef)
-            g.add_edge(usef, cu)
+            usef = remove_text_inside_parantheses(usef).split(",")
+            for u in usef:
+                u = u.strip().lower()
+                g.add_node(u)
+                g.add_edge(u, cu)
         if gen:
-            gen = gen.split("(")[0].strip().lower()
-            g.add_node(gen)
-            g.add_edge(gen, cu)
+            gen = remove_text_inside_parantheses(gen).split(",")
+            for ge in gen:
+                ge = ge.strip().lower()
+                g.add_node(ge)
+                g.add_edge(ge, cu)
         if syn:
-            syn = syn.split("(")[0].strip().lower()
-            g.add_node(syn)
-            g.add_edge(syn, cu)
+            syn = remove_text_inside_parantheses(syn).split(",")
+            for sy in syn:
+                sy = sy.strip().lower()
+                g.add_node(sy)
+                g.add_edge(sy, cu)
         if dlc:
-            dlc = dlc.split("(")[0].strip().lower()
-            g.add_node(dlc)
-            g.add_edge(dlc, cu)
-    print("Done rumbeling")
-    node, edge, _, _, _ = g.get_network_data()
+            dlc = remove_text_inside_parantheses(dlc).split(",")
+            for dl in dlc:
+                dl = dl.strip().lower()
+                g.add_node(dl)
+                g.add_edge(dl, cu)
 
+    for iterate, node in enumerate(g.get_nodes()):
+        length = len(g.neighbors(node))
+        if length == 0:
+            g.nodes[iterate]['color'] = "#829FD9"
+        if length == 1:
+            g.nodes[iterate]['color'] = "#027368"
+        if length == 2:
+            g.nodes[iterate]['color'] = "#BABF2A"
+        if length > 3:
+            g.nodes[iterate]['color'] = "#735702"
+        print(length)
+    #print("Done rumbeling")
+    node, edge, _, _, _ = g.get_network_data()
+    #print("Nodes:", node)
+    #print("Edges:", edge)
+
+    print("Setup for a test", remove_text_inside_parantheses(
+        "ODEs (e2), linearity (e2, u1), time invariance (e2, u1), causality (e2)"))
+    # g.show('cu_relations.html')
     return json.dumps(node), json.dumps(edge)
 
 
@@ -380,6 +407,20 @@ def map_kc_categories(kcs, positions):
     g.render('categories.gv', view=True)
 
 
+def remove_text_inside_parantheses(text):
+    result = ""
+    add_letter = True
+    for char in text:
+        if char == "(":
+            add_letter = False
+
+        if add_letter:
+            result += char
+        if char == ")":
+            add_letter = True
+    return result
+
+
 def get_nodes_and_edges_cu_hierarchies(lists):
     """
     Left right mapping of indented category mapping
@@ -387,12 +428,9 @@ def get_nodes_and_edges_cu_hierarchies(lists):
     :return:
     """
 
-    print("Lists:", lists, "\n")
-
     trans_mat = tuple(zip(*lists))
     col_size = len(trans_mat)
     num_of_cols = len(trans_mat[0])
-    print("Trans matrix", trans_mat)
     g = Network(height="1500px", width="75%", bgcolor="#222222",
                 font_color="white", directed=True)
 
