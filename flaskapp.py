@@ -82,8 +82,6 @@ def allowed_file(filename):
 
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
-
-    # Uncomment when ready for it
     if mode == "relations":
         lists = ss.read_cu_relations(sheet, "content units relations")
         nodes, edges = vis.get_nodes_and_edges_cu_relations(lists)
@@ -95,14 +93,6 @@ def graphs(sheet, mode):
         nodes = []
         edges = []
 
-    # print()
-    #print("Nodes", nodes, "\n")
-    #print("Edges:", edges, "\n")
-
-    #lists = ss.read_course_category_tree(sheet, "content units hierarchies", 5)
-
-    #nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists)
-
     return render_template("graphviz.html", title='Visualize graphs', nodes=nodes, edges=edges)
 
 
@@ -112,7 +102,6 @@ def graph_list():
     if request.method == "POST":
         if request.form['delete_button']:
             sheet = request.form['delete_button']
-            print("Here we go delete")
             ss.delete_CU_file(sheet)
     available_CU_files = ss.get_available_CU_files()
     return render_template("graphlist.html", title="Graph list", CU_files=available_CU_files)
@@ -124,14 +113,11 @@ def upload_excel():
         if request.files:
             excel_file = request.files["xlsx"]
             if excel_file.filename == "":
-                print("No filename")
                 return redirect(request.url)
             if excel_file.filename[-5:] == ".xlsx":
-                print("Working file upload")
                 ss.upload_CU_file(excel_file)
                 return redirect(request.url)
             else:
-                print("That file extension is not allowed")
                 return redirect(request.url)
 
     return render_template("upload_excel.html", title="Upload Excel")
@@ -146,8 +132,6 @@ def upload_tex():
                 print("No filename")
                 return redirect(request.url)
             if allowed_file(zipf.filename):
-                # print(tex.read().decode('UTF-8'))
-                print(zipf)
                 Upload.register_question(zipf)
                 return redirect(request.url)
             else:
