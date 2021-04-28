@@ -35,31 +35,31 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
             for n in nec:
                 n = n.strip().lower()
                 g.add_node(n)
-                g.add_edge(n, cu)
+                g.add_edge(n, cu, color="#32a852")
         if usef:
             usef = remove_text_inside_parantheses(usef).split(",")
             for u in usef:
                 u = u.strip().lower()
                 g.add_node(u)
-                g.add_edge(u, cu)
+                g.add_edge(u, cu, color="#f0fc00")
         if gen:
             gen = remove_text_inside_parantheses(gen).split(",")
             for ge in gen:
                 ge = ge.strip().lower()
                 g.add_node(ge)
-                g.add_edge(ge, cu)
+                g.add_edge(ge, cu, color="#00f4fc")
         if syn:
             syn = remove_text_inside_parantheses(syn).split(",")
             for sy in syn:
                 sy = sy.strip().lower()
                 g.add_node(sy)
-                g.add_edge(sy, cu)
+                g.add_edge(sy, cu, color="#fc0022")
         if dlc:
             dlc = remove_text_inside_parantheses(dlc).split(",")
             for dl in dlc:
                 dl = dl.strip().lower()
                 g.add_node(dl)
-                g.add_edge(dl, cu)
+                g.add_edge(dl, cu, color="#ffffff")
 
     for iterate, node in enumerate(g.get_nodes()):
         length = len(g.neighbors(node))

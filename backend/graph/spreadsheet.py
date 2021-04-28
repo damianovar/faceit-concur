@@ -170,10 +170,6 @@ def read_kcs_from_csv(filepath, column_name):
     return df[column_name]
 
 
-def read_kc_matrix_from_csv():
-    raise NotImplementedError
-
-
 def connect_to_CU_database():
     basedir = Path().absolute()
     data_json = basedir / "faceit-concur" / "backend" / \
