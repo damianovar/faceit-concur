@@ -60,7 +60,7 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
                 dl = dl.strip().lower()
                 g.add_node(dl)
                 g.add_edge(dl, cu, color="#ffffff")
-
+    """
     for iterate, node in enumerate(g.get_nodes()):
         length = len(g.neighbors(node))
         if length == 0:
@@ -72,6 +72,7 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
         if length > 3:
             g.nodes[iterate]['color'] = "#735702"
         print(length)
+    """
     #print("Done rumbeling")
     node, edge, _, _, _ = g.get_network_data()
     #print("Nodes:", node)
@@ -147,5 +148,5 @@ def get_nodes_and_edges_cu_hierarchies(lists, sheet):
                 g.add_edge(p2, elem[3])
 
     node, edge, _, _, _ = g.get_network_data()
-
+    # g.save_graph("grap.html")
     return json.dumps(node), json.dumps(edge)
