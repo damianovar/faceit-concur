@@ -4,10 +4,24 @@
 {% block main %}
 
 
-<h1>Select a course to visualize</h1>
-<ol>
+<h1 style="margin-bottom: 10px;">Select a course to visualize</h1>
+<ol style="list-style-type: none;">
 {% for sheet in CU_files %} 
-<li><button type="button" onclick="window.location.href='{{ url_for('graphs', sheet=sheet)}}';">{{sheet}}</button> </li>
+<div>
+    <h2 style="text-transform: capitalize;">{{sheet}}</h2>
+    <hr>
+    <a href={{url_for('graphs', sheet=sheet, mode="hierarchies")}}>
+        <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit hierarchies</button>
+    </a>
+    <a href={{url_for('graphs', sheet=sheet, mode="relations")}}>
+        <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit relations</button>
+    </a>
+   
+    <form action="/graph_list" method="POST">
+        <button type="submit" name="delete_button" value="{{sheet}}" style="margin:5px; margin-bottom:30px;" class="btn btn-secondary">Delete graph</button>
+    </form>
+
+</div>
 {% endfor %}
 </ol>
 {% endblock %}
