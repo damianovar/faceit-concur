@@ -12,6 +12,7 @@ sass_map = {"static/scss/style.scss": "static/css/style.css"}
 
 
 def compile_sass_to_css(sass_map):
+    """Compile scss file to css."""
 
     print("Compiling scss to css:")
 
