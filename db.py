@@ -128,7 +128,7 @@ def list_question_objects_lite() -> Question:
     return object_list, selection_list
 
 
-def write_answer_to_mongo(question, answer):
+def write_answer_to_mongo(question, answer, selected_option, perceived_difficulty):
     """
     Retrieve an answer and send it to the database.
     """
