@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, flash, redirect, session, url_for
 from passlib.hash import pbkdf2_sha256
-from backend.models.models import User, University
+from backend.models.models import User, Institution
 
 class Account:
 
@@ -29,7 +29,7 @@ class Account:
             user = User(
                 first_name = request.form.get('first_name'),
                 last_name = request.form.get('last_name'),
-                university = University.objects(name=request.form.get('university')).first(),
+                institution = Institution.objects(name=request.form.get('institution')).first(),
                 role = request.form.get('role'),
                 username = request.form.get('username'),
                 email = request.form.get('email'),
@@ -53,3 +53,4 @@ class Account:
             flash('Invalid Email or Password!', 'danger')
             return redirect(url_for('login'))
         return jsonify({"error": "Invalid login credentials "}), 401
+

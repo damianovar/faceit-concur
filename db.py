@@ -3,36 +3,9 @@ from typing import List, Tuple
 from mongoengine import connect
 from flask import session
 
-from backend.models.models import (
-    KC,
-    Course,
-    Question,
-    Answer,
-    Register,
-    University,
-    Country,
-)
-
-
-client = connect(
-    db="KCMap",
-    username="developer",
-    password="bruxellesmagdeburgpadovatrondheimuppsala",
-    host="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority",
-    connectTimeoutMS=30000,
-    socketTimeoutMS=None,
-    socketKeepAlive=True,
-    connect=False,
-    maxPoolsize=1,
-)
-
-
-def list_question_objects() -> Question:
-    """Return an object list and a list of selections"""
-
 from bson.objectid import ObjectId
 import time
-from backend.models.models import KC, Course, Question, Answer, Register, University, Country, User
+from backend.models.models import CU, Course, Question, Answer_to_question, Institution, Country, User
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -41,67 +14,56 @@ import base64
 import numpy as np
 from collections import Counter
 
-## old database
-#password="TTK4260",
-#host="mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority",
+# uppsala trondheim padova magdeburg bruxelles
 
-client = connect(db="KCMap",
-                 username="developer",
-                 password="bruxellesmagdeburgpadovatrondheimuppsala",
-                 host="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority",
-                 connectTimeoutMS=30000,
-                 socketTimeoutMS=None,
-                 socketKeepAlive=True,
-                 connect=False,
-                 maxPoolsize=1)
+client = connect(db       ="KCMap",
+                 username ="developer",
+                 password ="bruxellesmagdeburgpadovatrondheimuppsala",
+                 host     ="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority",
+                 connectTimeoutMS =30000,
+                 socketTimeoutMS  =None,
+                 socketKeepAlive  =True,
+                 connect          =False,
+                 maxPoolsize      =1)
 
-                     
-def list_question_objects_old() -> Question:
-
-    object_list = []
-    selection_list = []
-    for elements in Question.objects():
-        selection_list.append(elements.id)
-        question = elements.question
-        course = elements.course
-        course_name = course.name if course is not None else "empty"
-        kcs = elements.kc_list
-        kc_name = []
-        for kc in kcs:
-            kc_name.append(kc.name)
-        taxonomy_level = elements.kc_taxonomy
-        list_item = [question, course_name, kc_name, taxonomy_level]
-        object_list.append(list_item)
-    return object_list, selection_list
-
-
-
-def list_question_objects_2() -> Tuple[List[list], list]:
-    """Return an object list and a list of selections"""
-
-    # TODO: give this function a better name please :P
-
+                   
 def list_question_objects():
     """
-        Goes through the Question collection on the MongoDB server and extracts the data into python lists
+        Goes through the collection of questions (object type Question)
+        on the MongoDB server, and extracts the data into python lists
  
-        object_list -> question text and question attributes
-        selection_list -> question IDs
+        list_of_questions_attributes -> question text and question attributes
+        list_of_questions_IDs -> question IDs
     """
 
-    object_list = []
-    selection_list = []
-    for elements in Question.objects():
-        selection_list.append(elements.id)
-        question = elements.question
-        course_name = elements.course_name
-        kc_name = elements.kc_names_list
-        taxonomy_level = elements.kc_taxonomy
+    # storage allocation
+    list_of_questions_attributes    = []
+    list_of_questions_IDs = []
+
+    # scan all the questions in the MongoDB
+    for question in Question.objects():
+
+        # save the id
+        list_of_questions_IDs.append(question.id)
+
+        # save the course name
+        course_name = question.courses
+
         if course_name is None:
             course_name = 'empty'
-        list_item = [question, course_name, kc_name, taxonomy_level]
-        object_list.append(list_item)
-    return object_list, selection_list
+
+        # store the interesting attributes
+        attributes_of_current_question = \
+                [question.body,
+                 course_name,
+                 question.content_units,
+                 question.taxonomy_levels]
+
+        # push them in the list
+        list_of_questions_attributes.append(attributes_of_current_question)
+
+    return list_of_questions_attributes, list_of_questions_IDs
+
 
 def write_answer_to_mongo(question, txt_answer, selected_option, perceived_difficulty):
     """
@@ -110,40 +72,10 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
     """
     session_data_string = session["user"]
 
-
-def list_question_objects_lite() -> Question:
-    """Return an object list and a list of selections"""
-
-    # TODO: Okay now you're just out of names :P
-    object_list = []
-    selection_list = []
-    for elements in Question.objects():
-        selection_list.append(elements.id)
-        question = elements.question
-        course_name = elements.course_name
-        kc_name = elements.kc_names_list
-        taxonomy_level = elements.kc_taxonomy
-        list_item = [question, course_name]
-        object_list.append(list_item)
-    return object_list, selection_list
-
-
-def write_answer_to_mongo(question, answer, selected_option, perceived_difficulty):
-    """
-    Retrieve an answer and send it to the database.
-    """
-    my_string = session["user"]
-
-    username_str_start = my_string.find("username") + 9
-    username_str_end = my_string.find("email") - 4
-    email_str_start = my_string.find("email") + 9
-    email_str_end = my_string.find("password") - 4
-
     username_str_start = session_data_string.find('username') + 9
     username_str_end = session_data_string.find('email') - 4
     email_str_start = session_data_string.find('email') + 9
     email_str_end = session_data_string.find('password') - 4
-
 
     user_name = session["user"][username_str_start:username_str_end]
     user_email = session["user"][email_str_start:email_str_end]
@@ -153,26 +85,13 @@ def write_answer_to_mongo(question, answer, selected_option, perceived_difficult
     if perceived_difficulty == None:
         perceived_difficulty = -1
 
+    Answer_to_question.objects(question = question, user = user).update_one( \
+            user_name=user_name,
+            answer=txt_answer,
+            selected_option=selected_option,
+            perceived_difficulty=perceived_difficulty,
+            upsert=True)
 
-    Answer.objects(question=question, user=user).update_one(
-        user_name=user_name, answer=answer, upsert=True
-    )
-
-
-    Answer.objects(question = question, user=user).update_one(user_name=user_name, answer=txt_answer, selected_option=selected_option, perceived_difficulty=perceived_difficulty, upsert=True)
-
-
-def get_question_by_obj_id(selections) -> str:
-    """
-    Get a question if object id matches.
-
-    str selections
-    """
-    for ques in Question.objects():
-        db_id = str(ques.id)
-        if selections == db_id:
-            return ques
-    return "Didn't find the question!"
 
 def get_user_obj():
     """
@@ -189,11 +108,13 @@ def get_user_obj():
 
     return user
 
+
 def get_user_role():
     """
         Retrives user role and returns it as a string: "Admin", "Teacher" or "Student"
     """
     return get_user_obj().role
+
 
 def get_question_image(question_id):
     """
@@ -211,12 +132,14 @@ def get_question_image(question_id):
     base64_image = base64.b64encode(image_raw).decode("utf-8")
     return base64_image
 
+
 def get_question_by_obj_id(question_id):
     """
         Retrieves question object from Question collection given question-object id
     """
     question_obj = Question.objects(id = str(question_id)).first()
     return question_obj
+
 
 def get_answer_options_from_question_obj(selected_question_obj):
     """
@@ -226,12 +149,13 @@ def get_answer_options_from_question_obj(selected_question_obj):
     idx_list_for_options = list(range(0, len(selected_question_obj.options)))
     return list_of_options, idx_list_for_options
 
+
 def get_avg_perceived_difficulty(question_id):
     """
         Given question ID, looks up the Answer collection and retrieves all recorded perceived difficulty scores for that question
         Returns the average perceived difficulty score
     """
-    perceived_difficulty_list = Answer.objects(question=get_question_by_obj_id(question_id)).values_list('perceived_difficulty')
+    perceived_difficulty_list = Answer_to_question.objects(question=get_question_by_obj_id(question_id)).values_list('perceived_difficulty')
     if len(perceived_difficulty_list) > 0:
         print(perceived_difficulty_list)
         perceived_difficulty_list_valid = [item for item in perceived_difficulty_list if item != None and item >= 0]
@@ -243,8 +167,12 @@ def get_avg_perceived_difficulty(question_id):
 
 def make_bar_plot(question_data):
     """
-        Example function which retrives desired data, in this case number of total questions and number of unanswered questions by the current user
-        and creates a matplotlib barplot based on that data. The barplot is returned as a base64 byte string which is easy to display in HTML
+        Example function which retrives desired data,
+        in this case number of total questions and number of
+        unanswered questions by the current user
+        and creates a matplotlib barplot based on that data.
+        The barplot is returned as a base64 byte string
+        which is easy to display in HTML
     """
     course_data = []
     for row in question_data:
@@ -253,7 +181,7 @@ def make_bar_plot(question_data):
     unique_courses_names = list(Counter(course_data).keys()) # equals to list(set(words))
     unique_courses_instances = Counter(course_data).values() # counts the elements' frequency
 
-    answered_questions_list = Answer.objects(user=get_user_obj()).values_list('question')
+    answered_questions_list = Answer_to_question.objects(user=get_user_obj()).values_list('question')
     
     answered_questions_course_names = []
     for item in answered_questions_list:
@@ -268,19 +196,19 @@ def make_bar_plot(question_data):
         unique_answered_courses_instances[idx] += 1
 
     labels = unique_courses_names
-    Total = unique_courses_instances
-    Answered = unique_answered_courses_instances
+    total = unique_courses_instances
+    answered = unique_answered_courses_instances
 
     x = np.arange(len(labels))  # the label locations
     width = 0.30  # the width of the bars
 
     # Create barplot
     fig, ax = plt.subplots()
-    ax.bar(x - width/2, Total, width, label='Total')
-    ax.bar(x + width/2, Answered, width, label='Answered')
+    ax.bar(x - width/2, total, width, label='total')
+    ax.bar(x + width/2, answered, width, label='answered')
     ax.set_ylabel('Number of questions')
     ax.set_xlabel('Courses')
-    ax.set_title('Answered question per course')
+    ax.set_title('answered question per course')
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.legend()
@@ -295,30 +223,12 @@ def make_bar_plot(question_data):
     figdata_png = base64.b64encode(figfile.read()).decode("utf-8")
     return figdata_png
 
-def get_course(name):
-    cu_list = []
-    for c in Course.objects():
-        if name == c.name:
-            cus = c.cus
-            for cu in cus:
-                cu_list.append(cu.name)
-            return cu_list
-    return
-
-
-def manually_add_stuff():
-
-    """
-    Add a university to the database.
-    """
-    # TODO: Remove default name after checking if this works.
-    if not Course.objects(name="Operating Systems"):
-        return Course(name="Operating Systems", code="TDT4186", semester="V21").save()
-    if not University.objects(name="Otto-von-Guericke-Universität"):
-        c = Country.objects(name="Germany").first()
-        return University(name="Otto-von-Guericke-Universität", country=c).save()
-    return "Uni already exists!"
-
+  
+def add_institution():
+    if not Institution.objects(name="NTNU"):
+        c = Country.objects(name="Norway").first()
+        return Institution(name="NTNU", country=c).save()
+    return "This institution already exists!"
 
 
 def get_amount_of_cus_in_course(course: str) -> int:

@@ -19,12 +19,11 @@ from backend.upload.upload_script import Upload
 from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
 
-from backend.user.models import User
 import backend.graph.visualization as vis
 import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
-from backend.models.models import University, Course, User
+from backend.models.models import Institution, Course, User
 
 import db
 import matrix
@@ -64,18 +63,18 @@ def login_requiered(f):
 @app.route("/")
 def index() -> Any:
     """Return homepage."""
-    db.manually_add_stuff()
     return render_template("index.html", title="Home")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+
     """Return a page for registering a user."""
+    db.add_institution()
     form = RegistrationForm()
-    form.university.choices = [
-        universities.name for universities in University.objects()
-    ]
-    if request.method == "POST" and form.validate():
+    form.institution.choices = [
+        institutions.name for institutions in Institution.objects()]
+    if request.method == 'POST' and form.validate():
         if Account().signup(form):
             return redirect("/")
     return render_template("register.html", title="Register", form=form)
