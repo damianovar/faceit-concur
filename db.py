@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, Tuple
 
 from mongoengine import connect
 from flask import session
+
 from bson.objectid import ObjectId
 import time
 from backend.models.models import CU, Course, Question, Answer_to_question, Institution, Country, User
@@ -13,13 +14,7 @@ import base64
 import numpy as np
 from collections import Counter
 
-## old database
-#password="TTK4260",
-#host="mongodb+srv://developer:TTK4260@kcbank.lwcpe.mongodb.net/KCMap?retryWrites=true&w=majority",
-
-
 # uppsala trondheim padova magdeburg bruxelles
-
 
 client = connect(db       ="KCMap",
                  username ="developer",
@@ -31,8 +26,7 @@ client = connect(db       ="KCMap",
                  connect          =False,
                  maxPoolsize      =1)
 
-                     
-
+                   
 def list_question_objects():
     """
         Goes through the collection of questions (object type Question)
@@ -54,6 +48,7 @@ def list_question_objects():
 
         # save the course name
         course_name = question.courses
+
         if course_name is None:
             course_name = 'empty'
 
@@ -104,6 +99,7 @@ def get_user_obj():
     """
     session_data_string = session["user"]
 
+
     email_str_start = session_data_string.find('email') + 9
     email_str_end = session_data_string.find('password') - 4
 
@@ -125,10 +121,6 @@ def get_question_image(question_id):
         Loads in image from the question object given by the question id 
         and returns the decoded image as base64 byte string.
     """
-    import sys
-    from PIL import Image
-    from io import BytesIO
-    import base64
 
     question_obj = Question.objects(id = str(question_id)).first()
 
@@ -136,6 +128,7 @@ def get_question_image(question_id):
     if image_raw is None:
         return None
 
+    # Turn the image into a base64 byte string (decoded using utf-8 charset)
     base64_image = base64.b64encode(image_raw).decode("utf-8")
     return base64_image
 
@@ -197,8 +190,6 @@ def make_bar_plot(question_data):
         else:
             answered_questions_course_names.append('empty')
 
-    #answered_questions_course_names = [item.course_name if item is not None else 'empty' for item in answered_questions_list]
-
     unique_answered_courses_instances = [0] * len(unique_courses_names)
     for course_name in answered_questions_course_names:
         idx = unique_courses_names.index(course_name)
@@ -211,6 +202,7 @@ def make_bar_plot(question_data):
     x = np.arange(len(labels))  # the label locations
     width = 0.30  # the width of the bars
 
+    # Create barplot
     fig, ax = plt.subplots()
     ax.bar(x - width/2, total, width, label='total')
     ax.bar(x + width/2, answered, width, label='answered')
@@ -227,16 +219,20 @@ def make_bar_plot(question_data):
     plt.savefig(figfile, format='png')
     figfile.seek(0)  # rewind to beginning of file
     
+    # Turn the figure into a base64 byte string (decoded using utf-8 charset)
     figdata_png = base64.b64encode(figfile.read()).decode("utf-8")
     return figdata_png
 
-
+  
 def add_institution():
     if not Institution.objects(name="NTNU"):
         c = Country.objects(name="Norway").first()
         return Institution(name="NTNU", country=c).save()
     return "This institution already exists!"
 
+
+def get_amount_of_cus_in_course(course: str) -> int:
+    return len(Course.objects(name=course).first().cus)
 
 # Test/Utility function, opens locally stored png image and uploads it to mongodb Question collection given question id 
 def upload_image_to_question(question_id):
@@ -247,4 +243,5 @@ def upload_image_to_question(question_id):
     question_obj.save()
     print("UPLOADED")
     return
+
 

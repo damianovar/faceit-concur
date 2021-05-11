@@ -8,8 +8,18 @@ from backend.models.models import Question
 # GET Questions #
 ##########################
 
+
 class Download:
+    """Class for handling downloads. This does not have to be a class!!!!"""
+    # TODO: why can't this just be functions??
     def get_questions_by_selection(selections) -> Question:
+        """
+        Get questions based on a list of object ids.
+
+        List[str] selections
+
+        return obj 
+        """
 
         questions = []
         correct_answers = []
@@ -43,21 +53,29 @@ class Download:
                     notes_teachers.append(ques.notes_teacher)
                     notes_students.append(ques.notes_student)
                     feedback_students.append(ques.feedback_student)
-                    question_disclosability.append(ques.question_disclosability)
-                    solution_disclosability.append(ques.solution_disclosability)
+                    question_disclosability.append(
+                        ques.question_disclosability)
+                    solution_disclosability.append(
+                        ques.solution_disclosability)
                     if ques.image:
                         # Image.open(io.BytesIO(ques.image.read())).save('result_file' + '.png', 'PNG')
                         question_image.append(ques.image.read())
-                    else: 
+                    else:
                         question_image.append("None")
                     break
 
         return {"Questions": questions, "answer": correct_answers, "Options": answers_options, "kc": content_units, "kc_taxonomy": taxonomy_levels, "author_email": author_emails,
                 "QuestionType": question_types, "notes_teacher": notes_teachers, "notes_student": notes_students, "feedback_student": feedback_students,
-                "question_disclosability": question_disclosability, "solution_disclosability": solution_disclosability, "question_image": question_image} 
+                "question_disclosability": question_disclosability, "solution_disclosability": solution_disclosability, "question_image": question_image}
 
-     
     def zip_download(download, zfn, fn):
+        """
+        Make a zip file filled with questions.
+
+        str download
+        fun fn
+        str zfn
+        """
         save_path = "static/clients/zip"
         zip_file_name = os.path.join(save_path, zfn)
         file_name = os.path.join(save_path, fn)
@@ -65,40 +83,47 @@ class Download:
 
         with open(file_name, 'w') as of:
 
-            # write the preamble of the main.tex file
-            of.write(r"% global variable to conditionally print the solutions together with the questions" +'\n')
+            # Write the preamble of the main.tex file
+            of.write(
+                r"% global variable to conditionally print the solutions together with the questions" + '\n')
             of.write(r"\newif \ifshowsolutions" + '\n')
-            of.write(r"% \showsolutionstrue % comment this line to have :showsolutionsfalse" + '\n')
+            of.write(
+                r"% \showsolutionstrue % comment this line to have :showsolutionsfalse" + '\n')
             of.write('\n')
-            of.write(r"% global variable to conditionally print the contents map of the instructional material" + '\n')
-            of.write(r"\newif \ifshowcontentsmap" +'\n')
-            of.write(r"\showcontentsmaptrue % comment this line to have ``showcontentsmapfalse''" + '\n')
+            of.write(
+                r"% global variable to conditionally print the contents map of the instructional material" + '\n')
+            of.write(r"\newif \ifshowcontentsmap" + '\n')
+            of.write(
+                r"\showcontentsmaptrue % comment this line to have ``showcontentsmapfalse''" + '\n')
             of.write('\n')
             of.write(r"% required packages" + '\n')
             of.write(r"\RequirePackage{enumerate}" + '\n')
             of.write(r'\RequirePackage[table]{xcolor}' + '\n')
             of.write('\n')
-            of.write(r"% supported document classes - decomment the one that you prefer" + '\n')
+            of.write(
+                r"% supported document classes - decomment the one that you prefer" + '\n')
             of.write(r"\documentclass{article}" + '\n')
-            of.write(r"% \documentclass{beamer}" +'\n')
+            of.write(r"% \documentclass{beamer}" + '\n')
             of.write('\n')
-            of.write(r"% commands to define the contents maps" +'\n')
-            of.write(r"\input{contentsmapping}"+ '\n')
+            of.write(r"% commands to define the contents maps" + '\n')
+            of.write(r"\input{contentsmapping}" + '\n')
             of.write('\n')
-            of.write(r"% -------------------------------------------------------------- %" + '\n')
+            of.write(
+                r"% -------------------------------------------------------------- %" + '\n')
             of.write(r"\begin{document}" + '\n')
             of.write('\n')
 
-            # write in the main.tex file each question independently
+            # Write in the main.tex file each question independently
             ind = 0
             for i in list(range(len(download["Questions"]))):
                 ind += 1
 
                 # start the environment
-                of.write(r"\begin{IndexedQuestion}" +'\n' )
+                of.write(r"\begin{IndexedQuestion}" + '\n')
 
                 # add the author email
-                of.write('\t' + r"\QuestionAuthorEmail{{{}}}".format(download["author_email"][i]) + '\n')
+                of.write(
+                    '\t' + r"\QuestionAuthorEmail{{{}}}".format(download["author_email"][i]) + '\n')
 
                 # add all the various content units
                 of.write('\t' + r"\QuestionContentUnits{")
@@ -123,46 +148,57 @@ class Download:
                 of.write('\n')
 
                 # specify the type of question
-                of.write('\t' + r"\QuestionType{{{}}}".format(download["QuestionType"][i]) + '\n')
+                of.write(
+                    '\t' + r"\QuestionType{{{}}}".format(download["QuestionType"][i]) + '\n')
 
                 # insert the body of the question
                 question = download["Questions"][i]
-                of.write('\t' + r"\QuestionBody{{{}}} ".format(question) + '\n')
+                of.write(
+                    '\t' + r"\QuestionBody{{{}}} ".format(question) + '\n')
 
-                # adding, if existing, the image of the body of the question. note that checking 
-                # if the ques_image exists was getting difficult with "None", so here the code 
+                # adding, if existing, the image of the body of the question. note that checking
+                # if the ques_image exists was getting difficult with "None", so here the code
                 # is using "length" (indeed a binary image will definitely have a greater size)
                 ques_image = download["question_image"][i]
                 print(ques_image)
-                if ques_image != None and len(ques_image) > 6:        
-                    of.write('\t' + r"\QuestionImage" + "{" + r"\includegraphics{{{}}}".format("image" + str(i) + '.png') + '}' + '\n')
+                if ques_image != None and len(ques_image) > 6:
+                    of.write('\t' + r"\QuestionImage" + "{" + r"\includegraphics{{{}}}".format(
+                        "image" + str(i) + '.png') + '}' + '\n')
                     image_name = 'image' + str(i) + '.png'
                     image_save_path = os.path.join(save_path, image_name)
-                    Image.open(io.BytesIO(ques_image)).save(image_save_path, 'PNG')
+                    Image.open(io.BytesIO(ques_image)).save(
+                        image_save_path, 'PNG')
                     image_path_list.append(image_save_path)
 
                 # starting adding the potential answers
                 correct_ans = download["answer"][i]
                 answers_options = download["Options"][i]
-                of.write('\t'+ r"\QuestionPotentialAnswers"+ '\n' )
-                of.write('\t' +"{" + '\n')
+                of.write('\t' + r"\QuestionPotentialAnswers" + '\n')
+                of.write('\t' + "{" + '\n')
 
                 # adding one answer per time
                 for k, entry in enumerate(answers_options):
                     if any(j.strip() == entry.strip() for j in correct_ans):
-                        of.write('\t'+ '\t' + r"\correctanswer{}".format(answers_options[k]) + '\n')
+                        of.write(
+                            '\t' + '\t' + r"\correctanswer{}".format(answers_options[k]) + '\n')
                     else:
-                        of.write('\t'+ '\t' + r"\answer{}".format(answers_options[k]) + '\n')
+                        of.write(
+                            '\t' + '\t' + r"\answer{}".format(answers_options[k]) + '\n')
 
                 # closing writing the potential answers
                 of.write('\t' + "}" + '\n')
 
                 # writing the ancillary fields
-                of.write('\t' + r"\QuestionNotesForTheTeachers{{{}}}".format(download["notes_teacher"][i]) + '\n')
-                of.write('\t' + r"\QuestionNotesForTheStudents{{{}}}".format(download["notes_student"][i]) + '\n')
-                of.write('\t' + r"\QuestionFeedbackForTheStudents{{{}}}".format(download["feedback_student"][i]) + '\n')
-                of.write('\t' + r"\QuestionDisclosability{{{}}}".format(download["question_disclosability"][i]) + '\n')
-                of.write('\t' + r"\QuestionSolutionDisclosability{{{}}}".format(download["solution_disclosability"][i]) + '\n')
+                of.write(
+                    '\t' + r"\QuestionNotesForTheTeachers{{{}}}".format(download["notes_teacher"][i]) + '\n')
+                of.write(
+                    '\t' + r"\QuestionNotesForTheStudents{{{}}}".format(download["notes_student"][i]) + '\n')
+                of.write('\t' + r"\QuestionFeedbackForTheStudents{{{}}}".format(
+                    download["feedback_student"][i]) + '\n')
+                of.write('\t' + r"\QuestionDisclosability{{{}}}".format(
+                    download["question_disclosability"][i]) + '\n')
+                of.write('\t' + r"\QuestionSolutionDisclosability{{{}}}".format(
+                    download["solution_disclosability"][i]) + '\n')
 
                 # end writing the question environment
                 of.write(r"\end{IndexedQuestion}")
@@ -179,7 +215,8 @@ class Download:
         zipobj.write(file_name, "main.tex")
 
         # add the contentsmapping.tex file
-        zipobj.write(r"backend/download/contentsmapping.tex", "contentsmapping.tex")
+        zipobj.write(r"backend/download/contentsmapping.tex",
+                     "contentsmapping.tex")
 
         # add the various images
         for image_file in image_path_list:
@@ -187,5 +224,3 @@ class Download:
 
         # finish the job
         zipobj.close()
-
-

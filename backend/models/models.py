@@ -23,13 +23,12 @@ DISCLOSABILITY_TYPES    = ( 'only me',
                             'everybody' )
 
 
-
 class Country(Document):
     name = StringField(max_length=200, required=True, unique=True)
 
     @queryset_manager
     def objects(doc_cls, queryset):
-        return queryset.order_by('+name')
+        return queryset.order_by("+name")
 
 
 
@@ -38,8 +37,7 @@ class Language(Document):
 
     @queryset_manager
     def objects(doc_cls, queryset):
-        return queryset.order_by('+name')
-
+        return queryset.order_by("+name")
 
 
 class Notation_standard(Document):
@@ -85,9 +83,11 @@ class User(Document):
     institutions        = ListField(ReferenceField(Institution, reverse_delete_rule=CASCADE), required=True )
     preferred_languages = ListField(ReferenceField(Language,    reverse_delete_rule=CASCADE), required=False)
 
+
     @queryset_manager
     def objects(doc_cls, queryset):
-        return queryset.order_by('+last_name')
+        return queryset.order_by("+last_name")
+
 
     # to ease the debug - TODO ask Chris where to put these types of methods
     def print(self):
@@ -119,7 +119,8 @@ class CU(Document):
 
     @queryset_manager
     def objects(doc_cls, queryset):
-        return queryset.order_by('+name')
+        return queryset.order_by("+name")
+
 
 
 
@@ -307,7 +308,9 @@ class Solution_to_question(Document):
 
     @queryset_manager
     def objects(doc_cls, queryset):
+
         return queryset.order_by('+timestamp')
+
 
 
 
@@ -315,6 +318,7 @@ class Solution_to_question(Document):
 # let students search for these batches instead of
 # single questions
 class Test(Document):
+
     #
     # different types of users with different powers
     creator         = ReferenceField (User, reverse_delete_rule=CASCADE, required=True)
@@ -450,5 +454,6 @@ class Opinion_on_solution(Document):
     @queryset_manager
     def objects(doc_cls, queryset):
         return queryset.order_by('+timestamp')
+
 
 

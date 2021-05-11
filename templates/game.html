@@ -1,15 +1,50 @@
-{% extends "base/base.html" %}
-{% set active_page = "menu9" %}
-{% block main %}
+{% extends "base/base.html" %} {% set active_page = "menu9" %} {% block head %}
+{{ super()}} {% endblock %} {% block main %}
 
-<div class="container">
-  <div class="row">
-    <div class="col">
-      {{session['logged_in']}}
-      {{session['user']}}
-    </div>
-  </div>
+<div class="container mb-2">
+  <h1>Welcome to the mapping game!</h1>
+
+  <form action="game" method="POST" id="game_answer_form">
+    <h2>{{course}} ({{code}}):</h2>
+    <br />
+    <h2>{{question_string}}</h2>
+
+    <table id="game_table">
+      <thead>
+        <tr>
+          1 means no correlation, 10 means the 2 content units are the same
+        </tr>
+      </thead>
+      git
+
+      <tbody>
+        <br />
+        {% for i in range(1, 11) %}
+        <button
+          class="btn btn-secondary"
+          type="submit"
+          name="btn_value"
+          value="{{i}}"
+        >
+          {{ i }}
+        </button>
+        {% endfor %}
+        <button
+          class="btn btn-outline-secondary"
+          type="submit"
+          name="btn_value"
+          value="-1"
+        >
+          Don't know
+        </button>
+      </tbody>
+
+      <!-- QUESTIONS ARE TO BE INSERTED HERE AND LOOPED THROUGH -->
+
+      <br />
+      <button class="btn btn-primary">Submit</button>
+    </table>
+  </form>
 </div>
-
 
 {% endblock %}

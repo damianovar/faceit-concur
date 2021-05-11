@@ -3,13 +3,21 @@ from passlib.hash import pbkdf2_sha256
 from backend.models.models import User, Institution
 
 class Account:
+
     def start_session(self, user):
+        """
+
+        return a user file
+
+        Args:
+            user:
+        """
         session['logged_in'] = True
         session['user'] = user
         return jsonify(user), 200
 
     def signup(self, form):
-        # Check for existing email address
+        """Check for existing email address."""
         if User.objects(email = request.form.get('email')).first():
             flash('Email already in use!', 'danger')
             return False
