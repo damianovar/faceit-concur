@@ -1,5 +1,4 @@
 """Entry Point."""
-from typing import *
 
 from flask import (
     Flask,
@@ -14,6 +13,7 @@ from flask import (
 )
 from functools import wraps
 from werkzeug.utils import secure_filename
+from typing import *
 
 from backend.upload.upload_script import Upload
 from backend.download.download_script import Download

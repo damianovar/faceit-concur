@@ -1,3 +1,4 @@
+from config import ProductionConfig
 from typing import List, Tuple
 
 from mongoengine import connect
@@ -5,7 +6,7 @@ from flask import session
 
 from bson.objectid import ObjectId
 import time
-from backend.models.models import CU, Course, Question, Answer_to_question, Institution, Country, User
+from backend.models.models import CU, Course, Question, QuestionAnswer, Institution, Country, User, CUConnection
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -19,7 +20,7 @@ from collections import Counter
 client = connect(db       ="KCMap",
                  username ="developer",
                  password ="bruxellesmagdeburgpadovatrondheimuppsala",
-                 host     ="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/KCMap?retryWrites=true&w=majority",
+                 host     ="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/FaceIT-DB?retryWrites=true&w=majority",
                  connectTimeoutMS =30000,
                  socketTimeoutMS  =None,
                  socketKeepAlive  =True,
@@ -85,7 +86,7 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
     if perceived_difficulty == None:
         perceived_difficulty = -1
 
-    Answer_to_question.objects(question = question, user = user).update_one( \
+    QuestionAnswer.objects(question = question, user = user).update_one( \
             user_name=user_name,
             answer=txt_answer,
             selected_option=selected_option,
@@ -155,7 +156,7 @@ def get_avg_perceived_difficulty(question_id):
         Given question ID, looks up the Answer collection and retrieves all recorded perceived difficulty scores for that question
         Returns the average perceived difficulty score
     """
-    perceived_difficulty_list = Answer_to_question.objects(question=get_question_by_obj_id(question_id)).values_list('perceived_difficulty')
+    perceived_difficulty_list = QuestionAnswer.objects(question=get_question_by_obj_id(question_id)).values_list('perceived_difficulty')
     if len(perceived_difficulty_list) > 0:
         print(perceived_difficulty_list)
         perceived_difficulty_list_valid = [item for item in perceived_difficulty_list if item != None and item >= 0]
@@ -181,7 +182,7 @@ def make_bar_plot(question_data):
     unique_courses_names = list(Counter(course_data).keys()) # equals to list(set(words))
     unique_courses_instances = Counter(course_data).values() # counts the elements' frequency
 
-    answered_questions_list = Answer_to_question.objects(user=get_user_obj()).values_list('question')
+    answered_questions_list = QuestionAnswer.objects(user=get_user_obj()).values_list('question')
     
     answered_questions_course_names = []
     for item in answered_questions_list:
@@ -223,7 +224,23 @@ def make_bar_plot(question_data):
     figdata_png = base64.b64encode(figfile.read()).decode("utf-8")
     return figdata_png
 
-  
+
+def get_course(name):
+    cu_list = []
+    for c in Course.objects():
+        if name == c.name:
+            cus = c.taught_cus_list
+            for cu in cus:
+                cu_list.append(cu.name)
+            return cu_list
+    return 'No course found with the name: "' + name + '"'
+
+
+def get_amount_of_cus_in_course(course: str) -> int:
+    return len(Course.objects(name=course).first().taught_cus_list)
+
+
+# Example function to manually add data
 def add_institution():
     if not Institution.objects(name="NTNU"):
         c = Country.objects(name="Norway").first()
@@ -231,8 +248,23 @@ def add_institution():
     return "This institution already exists!"
 
 
-def get_amount_of_cus_in_course(course: str) -> int:
-    return len(Course.objects(name=course).first().cus)
+# def add_cuconnection():
+#     creator = User.objects(username="chlang").first()
+#     course = Course.objects(name="Operating Systems").first()
+#     cu_matrix = [
+#         "0", 
+#         "1", 
+#         "2", 
+#         "3", 
+#         "0", 
+#         "4", 
+#         "5", 
+#         "6", 
+#         "0"
+#     ]
+#     print(course)
+#     CUConnection(creator=creator,course=course,cu_matrix=cu_matrix ).save()
+#     return 
 
 # Test/Utility function, opens locally stored png image and uploads it to mongodb Question collection given question id 
 def upload_image_to_question(question_id):
