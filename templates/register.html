@@ -38,16 +38,16 @@
                 </div>
             </div>
             <div class="form-group">
-                {{ form.university.label(class="form-control-label register-label") }}
-                {% if form.university.errors %}
-                    {{ form.university(class="form-control form-control-lg is-invalid") }}
+                {{ form.institution.label(class="form-control-label register-label") }}
+                {% if form.institution.errors %}
+                    {{ form.institution(class="form-control form-control-lg is-invalid") }}
                     <div class="invalid-feedback">
-                        {% for error in form.university.errors %}
+                        {% for error in form.institution.errors %}
                             <span>{{ error }}</span>
                         {% endfor %}
                     </div>
                 {% else %}
-                    {{ form.university(class="form-control form-control-lg") }}
+                    {{ form.institution(class="form-control form-control-lg") }}
                 {% endif %}
             </div>
             <div class="form-group pb-2">

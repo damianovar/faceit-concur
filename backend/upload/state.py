@@ -14,8 +14,12 @@ class State(metaclass=SingletonMeta):
     """
     def __init__(self, user=None):
         self.user = user
+
+        """
+        # Damiano on 12.04.2021: these things are outdated and useless -- TODO remove
         self.kc_list = None
         self.kc_matrix = None
         self.connection = None
         self.course = None
         self.questions = None
+        """
