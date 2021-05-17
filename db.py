@@ -58,7 +58,8 @@ def list_question_objects():
                 [question.body,
                  course_name,
                  question.content_units,
-                 question.taxonomy_levels]
+                 #question.taxonomy_levels
+                 ]
 
         # push them in the list
         list_of_questions_attributes.append(attributes_of_current_question)

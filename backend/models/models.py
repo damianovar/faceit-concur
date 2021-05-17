@@ -252,7 +252,7 @@ class Question(Document):
     #
     # useful only in 'multiple choice' questions:
     # save the list of potential answers each as a separate string
-    potential_answers = ListField(StringField, required=False)
+    potential_answers = ListField(StringField(), required=False)
     #
     # useful only in 'multiple choice' questions:
     # save for each potential answer how correct that answer is

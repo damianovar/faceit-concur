@@ -1,3 +1,4 @@
+from os import name
 import pandas as pd
 import re
 import zipfile
@@ -94,38 +95,31 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     # allocate the object before getting the various fields
     q = Question()
 
-    content_units = str(
-        get_field("QuestionContentUnits", tex_frame_contents))[1:-1]
-    q.content_units = content_units.replace(
-        ' ,', ',').replace(', ', ',').split(",")
-    print("A")
-
+    q.content_units = get_content_units(tex_frame_contents)
     # taxonomy_levels            = str(get_field("QuestionTaxonomyLevels", tex_frame_contents))[1:-1]
     # q.taxonomy_levels          = taxonomy_levels.replace(' ,', ',').replace(', ', ',').replace(' ', '').split(",")
 
     q.body = get_question_body(tex_frame_contents)
-    print("B")
 
     q.body_image = get_image(
         tex_frame_contents, file_list, zip_file, "QuestionBodyImage")
-    print("C")
 
     q.question_type = str(get_field("QuestionType", tex_frame_contents))[1:-1]
-    print("D")
 
     potential_answers, correct_answers = \
         get_answers_for_multiple_choice_questions(
             tex_frame_contents, q.question_type)
+
     q.potential_answers = potential_answers
+
     q.correct_answers = correct_answers
-    print("E")
 
     q.solutions = str(get_field("QuestionSolutions", tex_frame_contents))[1:-1]
 
     q.solutions_image = get_image(
         tex_frame_contents, file_list, zip_file, "QuestionSolutionsImage")
 
-    q.authors = state.user
+    #q.authors = state.user
 
     #q.creator                  = state.user
     # print(q.creator)
@@ -165,16 +159,31 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
 
 
 def get_user(user):
-    if User.objects(username=user):
-        u = User.objects(username=user).first()
-        return u
-    return "This username does not exist!"
+    try:
+        return User.objects(username=user).first()
+    except Exception as e:
+        print("User not found - a valid user is required to upload questions") 
+        return None
 
+def get_content_units(tex_frame_contents):
+    content_units = str(
+        get_field("QuestionContentUnits", tex_frame_contents))[1:-1]
+    content_units = content_units.replace(
+        ' ,', ',').replace(', ', ',').split(",")
+    cu = []
+    for content_unit in content_units:
+        try:
+            cu.append(CU.objects(name=content_unit).first())
+        except Exception as e:
+            print("CU not found - creating a new CU")
+            cu.append(CU(name=content_unit).save())
+    return cu
 
 def get_language(language):
-    if Language.objects(name=language):
+    try:
         return Language.objects(name=language).first()
-    return None
+    except Exception as e:
+        return None
 
 
 def get_notation_standard(notation):
