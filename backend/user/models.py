@@ -29,7 +29,7 @@ class Account:
             user = User(
                 first_name = request.form.get('first_name'),
                 last_name = request.form.get('last_name'),
-                institution = Institution.objects(name=request.form.get('institution')).first(),
+                institutions = [Institution.objects(name=request.form.get('institution')).first()],
                 role = request.form.get('role'),
                 username = request.form.get('username'),
                 email = request.form.get('email'),

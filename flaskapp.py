@@ -43,7 +43,7 @@ if not os.path.exists(app.config["TEX_UPLOADS"]):
     os.makedirs(app.config["TEX_UPLOADS"])
 
 
-def login_requiered(f):
+def login_required(f):
     """
     Check if user is logged in.
 
@@ -71,6 +71,7 @@ def register():
 
     """Return a page for registering a user."""
     db.add_institution()
+    print("A")
     form = RegistrationForm()
     form.institution.choices = [
         institutions.name for institutions in Institution.objects()]
@@ -178,7 +179,7 @@ def upload_tex():
 
 
 @app.route("/submit_answer", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def show_questions():
     data, selection_data = db.list_question_objects()
 
@@ -193,7 +194,7 @@ def show_questions():
 
 
 @app.route("/submit_answer/answer_selected_question", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def answer_selected_question():
     messages = request.args["messages"]
     selected_question_id = json.loads(messages)["selected_question_id"]
@@ -247,7 +248,7 @@ def answer_selected_question():
 
 
 @app.route("/submit_answer/successfully_submitted", methods=["GET"])
-@login_requiered
+@login_required
 def show_submission_info():
     messages = request.args["messages"]
     selected_multiple_choice_answer = json.loads(messages)[
@@ -299,7 +300,7 @@ def get_image(tex_name):
 
 
 @app.route("/downloads", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def downloads():
 
     """Let a user download questions."""
@@ -324,7 +325,7 @@ def downloads():
 
 
 @app.route("/game", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def game() -> Any:
     cu_amount = db.get_amount_of_cus_in_course("Operating Systems")
 

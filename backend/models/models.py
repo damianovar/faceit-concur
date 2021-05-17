@@ -287,9 +287,12 @@ class Question(Document):
 
     # to ease the debug
     def print(self):
-        print("question ID: {}".format(self._ID))
+        #print("question ID: {}".format(self._ID))
+        print("creator:        {}".format(self.creator))
+        print("current version:        {}".format(self.current_version))
+        print("content units:        {}".format(self.content_units))
         print("body:        {}".format(self.body))
-        print("type:        {}".format(self.type))
+        print("type:        {}".format(self.question_type))
 
 
 class QuestionSolution(Document):

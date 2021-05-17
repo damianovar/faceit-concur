@@ -17,9 +17,9 @@ from collections import Counter
 
 # uppsala trondheim padova magdeburg bruxelles
 
-client = connect(db       ="KCMap",
+client = connect(db       ="FaceIT-DB",
                  username ="developer",
-                 password ="bruxellesmagdeburgpadovatrondheimuppsala",
+                 password ="bruxelles magdeburg padova trondheim uppsala",
                  host     ="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/FaceIT-DB?retryWrites=true&w=majority",
                  connectTimeoutMS =30000,
                  socketTimeoutMS  =None,
@@ -246,7 +246,6 @@ def add_institution():
         c = Country.objects(name="Norway").first()
         return Institution(name="NTNU", country=c).save()
     return "This institution already exists!"
-
 
 # def add_cuconnection():
 #     creator = User.objects(username="chlang").first()
