@@ -1,4 +1,5 @@
 # user.py
+import re
 from mongoengine import Document, StringField, IntField, FloatField, ImageField, ListField, ReferenceField, DateTimeField
 from mongoengine.queryset.base import NULLIFY, CASCADE
 from mongoengine.queryset.manager import queryset_manager
@@ -87,6 +88,9 @@ class User(Document):
         Institution, reverse_delete_rule=CASCADE), required=True)
     preferred_languages = ListField(ReferenceField(
         Language, reverse_delete_rule=CASCADE), required=False)
+
+    confirmed_at = DateTimeField(required=True)
+
 
     @queryset_manager
     def objects(doc_cls, queryset):

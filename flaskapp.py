@@ -10,9 +10,10 @@ from flask import (
     abort,
     session,
     jsonify,
+    flash
 )
 from functools import wraps
-from werkzeug.utils import secure_filename
+
 from typing import *
 
 from backend.upload.upload_script import Upload
@@ -60,6 +61,25 @@ def login_required(f):
     return wrap
 
 
+"""
+Restrict access to certain access level e.g. Teacher, Admin, ... (TODO: list of roles)
+
+str access_level
+
+"""
+def requires_access_level(access_level):
+    def decorator(f):
+        @wraps(f)
+        def wrap(*args, **kwargs):
+            if access_level == session.get("user").get("role"):
+                return f(*args, **kwargs)
+            else:
+                flash("You do not have access to that page. Sorry!")
+                return redirect(url_for('index'))
+        return wrap
+    return decorator
+
+
 @app.route("/")
 def index() -> Any:
     """Return homepage."""
@@ -68,7 +88,6 @@ def index() -> Any:
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-
     """Return a page for registering a user."""
     db.add_institution()
     print("A")
@@ -161,6 +180,7 @@ def upload_excel():
 
 
 @app.route("/upload", methods=["GET", "POST"])
+@requires_access_level("Admin")
 def upload_tex():
     """Upload a tex-file."""
     if request.method == "POST":
@@ -302,7 +322,6 @@ def get_image(tex_name):
 @app.route("/downloads", methods=["GET", "POST"])
 @login_required
 def downloads():
-
     """Let a user download questions."""
 
     # Check one which is used - 1 or 2
@@ -342,7 +361,8 @@ def game() -> Any:
     cu1 = None
     cu2 = None
 
-    reshaped_user_matrix = np.fromiter(matrix.reshape_for_db(user_matrix), float)
+    reshaped_user_matrix = np.fromiter(
+        matrix.reshape_for_db(user_matrix), float)
     unused_cu_indeces = np.where(reshaped_user_matrix == -1)
     unused_cu_indeces = unused_cu_indeces[0]
 
@@ -418,7 +438,8 @@ def add_headers(response):
     return str response
     """
     response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Headers",
+                         "Content-Type,Authorization")
     return response
 
 

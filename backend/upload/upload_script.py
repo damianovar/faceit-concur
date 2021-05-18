@@ -1,15 +1,16 @@
+from flask import session
 from os import name
 import pandas as pd
 import re
 import zipfile
 from TexSoup import TexSoup  # , TokenWithPosition
+
 from backend.models.models import Language, Question, CU, User, NotationStandard
-from backend.upload.state import State
+
 
 # ---------------- HELPER METHODS ------------------
 
 __alphabet__ = "abcdefghij"
-state = State()  # GLOBAL STATE - make into a singleton
 
 
 # class to extract the questions from the zip files uploaded
@@ -95,7 +96,7 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     # allocate the object before getting the various fields
     q = Question()
 
-    q.creator = get_user("buswayne")
+    q.creator = get_user(session.get("user").get("username"))
 
     q.content_units = get_content_units(tex_frame_contents, q.creator)
     # taxonomy_levels            = str(get_field("QuestionTaxonomyLevels", tex_frame_contents))[1:-1]

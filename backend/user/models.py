@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, flash, redirect, session, url_for
 from passlib.hash import pbkdf2_sha256
 from backend.models.models import User, Institution
+import ast
 
 class Account:
 
@@ -44,10 +45,12 @@ class Account:
 
     def login(self):
         user = User.objects(email=request.form.get('email')).first()
-        print(user)
         if user and pbkdf2_sha256.verify(request.form.get('password'), user.password):
             flash('Login successful!', 'success')
-            self.start_session(user.to_json())
+            print(user.to_json())
+
+            # Converts user object to dict type and starts the session with the user data
+            self.start_session(ast.literal_eval(user.to_json()))
             return redirect('/')
         else:
             flash('Invalid Email or Password!', 'danger')
