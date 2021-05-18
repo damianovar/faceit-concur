@@ -53,11 +53,11 @@ def list_question_objects():
         if course_name is None:
             course_name = 'empty'
 
-        # store the interesting attributes
+       # store the interesting attributes
         attributes_of_current_question = \
                 [question.body,
                  course_name,
-                 question.content_units,
+                 [cu.name for cu in question.content_units],
                  #question.taxonomy_levels
                  ]
 

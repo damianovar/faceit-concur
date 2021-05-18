@@ -95,7 +95,9 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     # allocate the object before getting the various fields
     q = Question()
 
-    q.content_units = get_content_units(tex_frame_contents)
+    q.creator = get_user("buswayne")
+
+    q.content_units = get_content_units(tex_frame_contents, q.creator)
     # taxonomy_levels            = str(get_field("QuestionTaxonomyLevels", tex_frame_contents))[1:-1]
     # q.taxonomy_levels          = taxonomy_levels.replace(' ,', ',').replace(', ', ',').replace(' ', '').split(",")
 
@@ -123,7 +125,6 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
 
     #q.creator                  = state.user
     # print(q.creator)
-    q.creator = get_user("buswayne")
 
     q.notes_for_the_teacher = str(
         get_field("QuestionNotesForTheTeachers", tex_frame_contents))[1:-1]
@@ -135,7 +136,7 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
         get_field("QuestionFeedbackForTheStudents", tex_frame_contents))[1:-1]
 
     #q.question_disclosability = str(
-    #    get_field("QuestionDisclosability", tex_frame_contents))[1:-1].strip()
+    #get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
     q.question_disclosability = 'me'
     print(q.question_disclosability)
 
@@ -165,18 +166,19 @@ def get_user(user):
         print("User not found - a valid user is required to upload questions") 
         return None
 
-def get_content_units(tex_frame_contents):
+def get_content_units(tex_frame_contents, creator):
     content_units = str(
         get_field("QuestionContentUnits", tex_frame_contents))[1:-1]
     content_units = content_units.replace(
         ' ,', ',').replace(', ', ',').split(",")
     cu = []
     for content_unit in content_units:
-        try:
+        if CU.objects(name=content_unit).first() is not None:
             cu.append(CU.objects(name=content_unit).first())
-        except Exception as e:
+            print("CU found: " + str(content_unit))
+        else:
             print("CU not found - creating a new CU")
-            cu.append(CU(name=content_unit).save())
+            cu.append(CU(name=content_unit, creator=creator).save())
     return cu
 
 def get_language(language):
