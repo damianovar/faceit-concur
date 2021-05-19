@@ -24,7 +24,6 @@ class Upload:
 
         # for each of them, save it
         for q in questions:
-            print("q-type: " + str(type(q)))
             q.save()
 
 
@@ -96,7 +95,7 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     # allocate the object before getting the various fields
     q = Question()
 
-    q.creator = get_user(session.get("user").get("username"))
+    q.creator = get_user()
 
     q.content_units = get_content_units(tex_frame_contents, q.creator)
     # taxonomy_levels            = str(get_field("QuestionTaxonomyLevels", tex_frame_contents))[1:-1]
@@ -124,9 +123,6 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
 
     #q.authors = state.user
 
-    #q.creator                  = state.user
-    # print(q.creator)
-
     q.notes_for_the_teacher = str(
         get_field("QuestionNotesForTheTeachers", tex_frame_contents))[1:-1]
 
@@ -137,9 +133,9 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
         get_field("QuestionFeedbackForTheStudents", tex_frame_contents))[1:-1]
 
     #q.question_disclosability = str(
-    #get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
+    #    get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
     q.question_disclosability = 'me'
-    print(q.question_disclosability)
+    #print(q.question_disclosability)
 
     q.solution_disclosability = str(
         get_field("QuestionSolutionDisclosability", tex_frame_contents))[1:-1]
@@ -160,8 +156,9 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     return q
 
 
-def get_user(user):
+def get_user():
     try:
+        user = session.get("user").get("username")
         return User.objects(username=user).first()
     except Exception as e:
         print("User not found - a valid user is required to upload questions") 

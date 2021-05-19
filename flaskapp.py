@@ -71,11 +71,15 @@ def requires_access_level(access_level):
     def decorator(f):
         @wraps(f)
         def wrap(*args, **kwargs):
-            if access_level == session.get("user").get("role"):
-                return f(*args, **kwargs)
-            else:
-                flash("You do not have access to that page. Sorry!")
-                return redirect(url_for('index'))
+            try:
+                if access_level == session.get("user").get("role"):
+                    return f(*args, **kwargs)    
+                else:
+                    flash("You do not have access to this page. Sorry!")
+                    return redirect(url_for('index'))
+            except:
+                    flash("You must be logged in to access this page. Sorry!")
+                    return redirect(url_for('index'))
         return wrap
     return decorator
 
@@ -251,7 +255,7 @@ def answer_selected_question():
     current_user_role = db.get_user_role()
     if current_user_role == "Admin" or current_user_role == "Teacher":
         correct_answer = (
-            "The correct answer is: " + selected_question_obj.correct_answer[0]
+            "The correct answer is: " + selected_question_obj.potential_answers[0]
         )
     else:  # current_user_role == 'Student'
         correct_answer = None
@@ -261,7 +265,7 @@ def answer_selected_question():
         data=list_of_options,
         selection_data=idx_list_for_options,
         question_id=selected_question_obj.id,
-        question_text=selected_question_obj.question,
+        question_text=selected_question_obj.body,
         correct_answer=correct_answer,
         question_image=question_image,
     )

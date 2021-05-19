@@ -3,12 +3,12 @@ import re
 import zipfile
 from TexSoup import TexSoup  # , TokenWithPosition
 from backend.models.models import Question, CU
-from backend.upload.state import State
+#from backend.upload.state import State
 
 # ---------------- HELPER METHODS ------------------
 
 __alphabet__ = "abcdefghij"
-state = State()  # GLOBAL STATE - make into a singleton
+#state = State()  # GLOBAL STATE - make into a singleton
 
 
 # class to extract the questions from the zip files uploaded

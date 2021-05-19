@@ -97,7 +97,7 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
 
 def get_user_obj():
     """
-        Accesses the session data and retrives the current user obj
+        Accesses the session data and retrieves the current user obj
     """
     session_data_string = session["user"]
 
@@ -115,7 +115,8 @@ def get_user_role():
     """
         Retrives user role and returns it as a string: "Admin", "Teacher" or "Student"
     """
-    return get_user_obj().role
+    user = session.get("user").get("username")
+    return User.objects(username=user).first().role
 
 
 def get_question_image(question_id):
@@ -126,7 +127,7 @@ def get_question_image(question_id):
 
     question_obj = Question.objects(id = str(question_id)).first()
 
-    image_raw = question_obj.image.read()
+    image_raw = question_obj.body_image.read()
     if image_raw is None:
         return None
 
@@ -147,9 +148,12 @@ def get_answer_options_from_question_obj(selected_question_obj):
     """
         For a given question object, returns a list of answer options with a list of corresponding indices
     """
-    list_of_options = [[x] for x in selected_question_obj.options]
-    idx_list_for_options = list(range(0, len(selected_question_obj.options)))
-    return list_of_options, idx_list_for_options
+    # list_of_options = [[x] for x in selected_question_obj.options]
+    # idx_list_for_options = list(range(0, len(selected_question_obj.options)))
+    if selected_question_obj.question_type == 'multiple choice':
+        list_of_options = selected_question_obj.potential_answers
+        idx_list_for_options = list(range(0, len(selected_question_obj.potential_answers)))  
+        return list_of_options, idx_list_for_options
 
 
 def get_avg_perceived_difficulty(question_id):
