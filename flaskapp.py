@@ -290,18 +290,18 @@ def show_submission_info():
         perceived_difficulty,
     )
 
-    options_list = answered_question_obj.options
+    options_list = answered_question_obj.potential_answers
     display_answer = str(options_list[int(selected_multiple_choice_answer)])
 
-    data, _ = db.list_question_objects()
-    info_plot = db.make_bar_plot(data)
+    # data, _ = db.list_question_objects()
+    # info_plot = db.make_bar_plot(data)
     perceived_difficulty = db.get_avg_perceived_difficulty(question_id)
 
     return render_template(
         "submit_answer/answer_submitted_successfully.html",
         answer=display_answer,
-        question=answered_question_obj.question,
-        plot=info_plot,
+        question=answered_question_obj.body,
+        # plot=info_plot,
         perceived_difficulty=perceived_difficulty,
     )
 

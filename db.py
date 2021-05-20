@@ -67,7 +67,7 @@ def list_question_objects():
     return list_of_questions_attributes, list_of_questions_IDs
 
 
-def write_answer_to_mongo(question, txt_answer, selected_option, perceived_difficulty):
+def write_answer_to_mongo(question, txt_answer, selected_answer, perceived_difficulty):
     """
         Given a question object and an answer to that question the function updates the Answer collection with the provided answer.
         If the question has already been answered by the same user, the answer is overridden, otherwise a new answer object is added to collection.
@@ -87,13 +87,13 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
     # user = User.objects(email=user_email).first()
 
     # If difficulty is not rated, set the rating to -1
-    print(perceived_difficulty)
+    print(selected_answer)
     if perceived_difficulty == None:
         perceived_difficulty = -1
 
     QuestionAnswer.objects(question = question, user = user).update_one( \
-            answer=txt_answer,
-            selected_option=selected_option,
+            #answer=txt_answer,
+            selected_answer=selected_answer,
             perceived_difficulty=perceived_difficulty,
             upsert=True)
 
@@ -184,6 +184,7 @@ def make_bar_plot(question_data):
         which is easy to display in HTML
     """
     course_data = []
+    print(question_data)
     for row in question_data:
         course_data.append(row[1])
 

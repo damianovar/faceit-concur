@@ -399,6 +399,8 @@ class QuestionAnswer(Document):
     # fact that John's answer refers to V1, and not V2 (so that
     # one can do learning analytics in a more rigorous way)
     question_version = IntField(default=1, required=True)
+
+    selected_answer = ListField(IntField(), required=True)
     #
     # independently of the question_type, this is going to be a string.
     # More precisely,
@@ -406,7 +408,7 @@ class QuestionAnswer(Document):
     #                           '2,4,5'. May also be empty, i.e., ''
     # type = open            => a LaTeX string
     # type = numeric         => a number or a LaTeX expression
-    answer = StringField(max_length=20000, required=True)
+    # answer = StringField(max_length=20000, required=True)
 
     perceived_difficulty = IntField(
         min_value=1, max_value=5, required=True)
