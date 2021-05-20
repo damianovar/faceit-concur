@@ -227,13 +227,18 @@ def answer_selected_question():
         selected_multiple_choice_answer = request.form.get("id")
         if not selected_multiple_choice_answer:
             return render_template(
-                "submit_answer/error_no_answer_selected.html",
-                title="Answer not submitted",
+                "submit_answer/error_missing_selection.html",
+                title="Answer not submitted", message="Answer not submitted"
             )
 
         question_id = request.form.get("multiple_choice_button")
         written_answer = request.form.get("written_answer")
         perceived_difficulty = request.form.get("rating")
+        if not perceived_difficulty:
+            return render_template(
+                "submit_answer/error_missing_selection.html",
+                title="Perceived difficulty not submitted", message="Perceived difficulty not submitted"
+            )            
 
         messages = json.dumps(
             {
