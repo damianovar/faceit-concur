@@ -89,7 +89,7 @@ class User(Document):
     preferred_languages = ListField(ReferenceField(
         Language, reverse_delete_rule=CASCADE), required=False)
 
-    confirmed_at = DateTimeField(required=True)
+    #confirmed_at = DateTimeField(required=True)
 
 
     @queryset_manager
