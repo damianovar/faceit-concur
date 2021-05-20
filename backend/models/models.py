@@ -407,6 +407,9 @@ class QuestionAnswer(Document):
     # type = open            => a LaTeX string
     # type = numeric         => a number or a LaTeX expression
     answer = StringField(max_length=20000, required=True)
+
+    perceived_difficulty = IntField(
+        min_value=1, max_value=5, required=True)
     #
     # notation:
     # 0 = the answer I inserted was a purely random guess;

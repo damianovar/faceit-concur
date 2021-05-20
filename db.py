@@ -72,23 +72,26 @@ def write_answer_to_mongo(question, txt_answer, selected_option, perceived_diffi
         Given a question object and an answer to that question the function updates the Answer collection with the provided answer.
         If the question has already been answered by the same user, the answer is overridden, otherwise a new answer object is added to collection.
     """
-    session_data_string = session["user"]
+    #session_data_string = session["user"]
 
-    username_str_start = session_data_string.find('username') + 9
-    username_str_end = session_data_string.find('email') - 4
-    email_str_start = session_data_string.find('email') + 9
-    email_str_end = session_data_string.find('password') - 4
+    #username_str_start = session_data_string.find('username') + 9
+    username = session.get("user").get("username")
+    user = User.objects(username=username).first()
+    # email = user.get("email")
+    # username_str_end = session_data_string.find('email') - 4
+    # email_str_start = session_data_string.find('email') + 9
+    # email_str_end = session_data_string.find('password') - 4
 
-    user_name = session["user"][username_str_start:username_str_end]
-    user_email = session["user"][email_str_start:email_str_end]
-    user = User.objects(email=user_email).first()
+    # user_name = session["user"][username_str_start:username_str_end]
+    # user_email = session["user"][email_str_start:email_str_end]
+    # user = User.objects(email=user_email).first()
 
     # If difficulty is not rated, set the rating to -1
+    print(perceived_difficulty)
     if perceived_difficulty == None:
         perceived_difficulty = -1
 
     QuestionAnswer.objects(question = question, user = user).update_one( \
-            user_name=user_name,
             answer=txt_answer,
             selected_option=selected_option,
             perceived_difficulty=perceived_difficulty,

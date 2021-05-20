@@ -34,9 +34,9 @@
             {% for row in data %}
             <tr>
                 <td> {{ selection_data[loop.index0] }}</td>
-                {% for col in row %}
-                <td> {{ col }}</td>
-                {% endfor %}
+                
+                <td> {{ row }}</td>
+              
                 <td></td>
             </tr>
             {% endfor %}
