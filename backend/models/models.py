@@ -191,6 +191,8 @@ class Course(Document):
     # the course
     taught_cus_list = ListField(ReferenceField(
         CU, reverse_delete_rule=CASCADE), required=True)
+
+    course_graph = StringField()
     #
     # intended learning flow within the course, as the teacher
     # imagines it. Note that these connections will also contain
