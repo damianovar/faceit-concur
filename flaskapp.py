@@ -25,6 +25,8 @@ import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
+from backend.graph.graphDb import get_course_names_and_id
+
 
 import db
 import matrix
@@ -156,14 +158,19 @@ def graphs(sheet, mode):
 
 @app.route("/graph_list", methods=["GET", "POST"])
 def graph_list():
-    print("Hei")
     if request.method == "POST":
         if request.form['delete_button']:
             sheet = request.form['delete_button']
             ss.delete_CU_file(sheet)
     available_CU_files = ss.get_available_CU_files()
+
+    for course in Course.objects():
+        print(course.name)
+
+    course_names, course_ids = get_course_names_and_id()
+
     return render_template(
-        "graphlist.html", title="Graph list", CU_files=available_CU_files
+        "graphlist.html", title="Graph list", CU_files=course_names
     )
 
 
