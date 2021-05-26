@@ -21,12 +21,10 @@ from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
 
 import backend.graph.visualization as vis
-import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
-from backend.graph.graphDb import get_course_names_and_id, insert_graph_into_course, get_graph_from_id, create_course, delete_course
-
+from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, extract_CU_file
 
 import db
 import matrix
@@ -35,7 +33,6 @@ import uuid
 
 import random
 import numpy as np
-import time
 import json
 
 
@@ -151,8 +148,7 @@ def graphs(sheet, mode):
 def graph_list():
     if request.method == "POST":
         if request.form['delete_button']:
-            sheet = request.form['delete_button']
-            delete_course(sheet)
+            delete_course(request.form['delete_button'])
 
     return render_template(
         "graphlist.html", title="Graph list", CU_files=zip(*get_course_names_and_id())
@@ -168,49 +164,16 @@ def upload_excel():
             course_code = request.form["course_code"]
             course_institution = request.form["course_institution"]
 
-            #print("Course name:", course_name)
-            #print("Course code:", course_code)
-            #print("Course institution:", course_institution)
             if excel_file.filename[-5:] == ".xlsx":
-                cu_rel, hiearchy_list = ss.extract_CU_file(excel_file)
-                #print("List:", hiearchy_list)
+                cu_rel, hiearchy_list = extract_CU_file(excel_file)
                 rel_nodes, rel_edges = vis.get_nodes_and_edges_cu_relations(cu_rel, "")
                 hir_nodes, hir_edges = vis.get_nodes_and_edges_cu_hierarchies(hiearchy_list, course_name)
-                
-                #print("Hir nodes:", hir_nodes)
-                #print("Hir edges", hir_edges)
-                #ss.read_cu_hierarchies()
+
                 relationship_graph = {"nodes":rel_nodes, "edges":rel_edges}
                 hierarchy_graph = {"nodes":hir_nodes, "edges":hir_edges}
                 create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
-                # Hent ut informasjon fra filen
-                # Lagre den i korrekt format
-                # Send det over i parseren
-                # Last opp den informasjonen
-                
-            
-            
-                #ss.upload_CU_file(excel_file)
 
-            # Lag en course ting
-            # Lagre denne
             return redirect(request.url)
-        # Get the graph decomposition
-        # Add it to a course variable
-        # Upload it 
-
-        """
-        if request.files:
-            print("Files: ", request.form)
-            excel_file = request.files["xlsx"]
-            if excel_file.filename == "":
-                return redirect(request.url)
-            if excel_file.filename[-5:] == ".xlsx":
-                ss.upload_CU_file(excel_file)
-                return redirect(request.url)
-            else:
-                return redirect(request.url)
-        """
 
     return render_template("upload_excel.html", title="Upload Excel")
 
