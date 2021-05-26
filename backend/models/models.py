@@ -192,8 +192,8 @@ class Course(Document):
     taught_cus_list = ListField(ReferenceField(
         CU, reverse_delete_rule=CASCADE), required=True)
 
-    hierarchies_graph = DictField(default="")
-    relations_graph = DictField(default="")
+    hierarchies_graph = DictField()
+    relations_graph = DictField()
     #
     # intended learning flow within the course, as the teacher
     # imagines it. Note that these connections will also contain

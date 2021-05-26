@@ -6,6 +6,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from pathlib import Path
 import numpy as np
 import pandas as pd
+from pandas.io import excel
 from .cu_rel import CU_Relations
 
 KC_COLUMN = 9
@@ -222,6 +223,39 @@ def upload_CU_file(file) -> None:
 
     print("Upload complete")
 
+
+def extract_CU_file(file) -> None:
+    excelFile = pd.ExcelFile(file, engine='openpyxl')
+
+    relationDataframe = excelFile.parse("content units relations")
+    hierarchiesDataframe = excelFile.parse("content units hierarchies")
+
+    relation_cu = read_cu_realtions(relationDataframe)
+    return relation_cu
+
+def read_cu_realtions(relationDataframe):
+    relationDataframe.fillna('', inplace=True)
+    cu_rel_names = ['Content Unit (CU)','which other CUs are necessary for the CU in column A?', 'which other CUs are useful for the CU in column A?', 'which CUs contain / generalize the CU in column A?', 'which CUs are a synonym of the CU in column A?', 'which CUs are directly logically connected to the CU in column A?']
+    cu_rel = CU_Relations(relationDataframe[cu_rel_names[0]].tolist(), relationDataframe[cu_rel_names[1]].tolist(), relationDataframe[cu_rel_names[2]].tolist(), relationDataframe[cu_rel_names[3]].tolist(), relationDataframe[cu_rel_names[4]].tolist(), relationDataframe[cu_rel_names[5]].tolist())
+    return cu_rel
+
+def read_cu_hierarchies(hierarchiesDataframe):
+    pass
+        
+"""
+def read_cu_relations(spreadsheet: str, worksheet: str):
+    ws = connect_to_spreadsheet(spreadsheet, worksheet)
+    # There are 6 columns to care about and store
+    cu_rel = CU_Relations(ws.col_values(1), ws.col_values(2), ws.col_values(
+        3), ws.col_values(4), ws.col_values(5), ws.col_values(6))
+    cu_rel.cus = cu_rel.cus[1:-1]
+    cu_rel.necessary = cu_rel.necessary[1:-1]
+    cu_rel.useful = cu_rel.useful[1:-1]
+    cu_rel.generalize = cu_rel.generalize[1:-1]
+    cu_rel.synonym = cu_rel.synonym[1:-1]
+    cu_rel.dlc = cu_rel.dlc[1:-1]
+    return cu_rel
+"""
 
 def delete_all_files():
     client = connect_to_CU_database()

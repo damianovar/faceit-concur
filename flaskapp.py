@@ -25,7 +25,7 @@ import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
-from backend.graph.graphDb import get_course_names_and_id, insert_graph_into_course, get_graph_from_id
+from backend.graph.graphDb import get_course_names_and_id, insert_graph_into_course, get_graph_from_id, create_course
 
 
 import db
@@ -142,7 +142,7 @@ def allowed_file(filename):
 
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
-    graph = eval(get_graph_from_id(sheet, mode))
+    graph = dict(get_graph_from_id(sheet, mode))
     return render_template("graphviz.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
 
 
@@ -152,15 +152,9 @@ def graph_list():
         if request.form['delete_button']:
             sheet = request.form['delete_button']
             ss.delete_CU_file(sheet)
-    available_CU_files = ss.get_available_CU_files()
-
-    for course in Course.objects():
-        print(course.name)
-
-    course_names, course_ids = get_course_names_and_id()
 
     return render_template(
-        "graphlist.html", title="Graph list", CU_files=zip(course_names, course_ids)
+        "graphlist.html", title="Graph list", CU_files=zip(*get_course_names_and_id())
     )
 
 
@@ -169,6 +163,40 @@ def upload_excel():
     if request.method == "POST":
         if request.files:
             excel_file = request.files["xlsx"]
+            course_name = request.form["course_name"]
+            course_code = request.form["course_code"]
+            course_institution = request.form["course_institution"]
+
+            #print("Course name:", course_name)
+            #print("Course code:", course_code)
+            #print("Course institution:", course_institution)
+            if excel_file.filename[-5:] == ".xlsx":
+                cu_rel = ss.extract_CU_file(excel_file)
+                nodes, edges = vis.get_nodes_and_edges_cu_relations(cu_rel, "")
+
+                relationship_graph = {"nodes":nodes, "edges":edges}
+                hierarchy_graph = {"nodes":"", "edges":""}
+                create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
+                # Hent ut informasjon fra filen
+                # Lagre den i korrekt format
+                # Send det over i parseren
+                # Last opp den informasjonen
+                
+            
+            
+                #ss.upload_CU_file(excel_file)
+
+            # Lag en course ting
+            # Lagre denne
+            return redirect(request.url)
+        # Get the graph decomposition
+        # Add it to a course variable
+        # Upload it 
+
+        """
+        if request.files:
+            print("Files: ", request.form)
+            excel_file = request.files["xlsx"]
             if excel_file.filename == "":
                 return redirect(request.url)
             if excel_file.filename[-5:] == ".xlsx":
@@ -176,6 +204,7 @@ def upload_excel():
                 return redirect(request.url)
             else:
                 return redirect(request.url)
+        """
 
     return render_template("upload_excel.html", title="Upload Excel")
 
