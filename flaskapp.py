@@ -25,7 +25,7 @@ import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
-from backend.graph.graphDb import get_course_names_and_id, insert_graph_into_course, get_graph_from_id, create_course
+from backend.graph.graphDb import get_course_names_and_id, insert_graph_into_course, get_graph_from_id, create_course, delete_course
 
 
 import db
@@ -151,7 +151,7 @@ def graph_list():
     if request.method == "POST":
         if request.form['delete_button']:
             sheet = request.form['delete_button']
-            ss.delete_CU_file(sheet)
+            delete_course(sheet)
 
     return render_template(
         "graphlist.html", title="Graph list", CU_files=zip(*get_course_names_and_id())
@@ -171,12 +171,16 @@ def upload_excel():
             #print("Course code:", course_code)
             #print("Course institution:", course_institution)
             if excel_file.filename[-5:] == ".xlsx":
-                cu_rel = ss.extract_CU_file(excel_file)
-                nodes, edges = vis.get_nodes_and_edges_cu_relations(cu_rel, "")
-
-                relationship_graph = {"nodes":nodes, "edges":edges}
-                hierarchy_graph = {"nodes":"", "edges":""}
-                create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
+                cu_rel, hiearchy_list = ss.extract_CU_file(excel_file)
+                #print("List:", hiearchy_list)
+                rel_nodes, rel_edges = vis.get_nodes_and_edges_cu_relations(cu_rel, "")
+                hir_nodes, hir_edges = vis.get_nodes_and_edges_cu_hierarchies(hiearchy_list, course_name)
+                #print("Hir nodes:", hir_nodes)
+                #print("Hir edges", hir_edges)
+                #ss.read_cu_hierarchies()
+                relationship_graph = {"nodes":rel_nodes, "edges":rel_edges}
+                hierarchy_graph = {"nodes":hir_nodes, "edges":hir_edges}
+                #create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
                 # Hent ut informasjon fra filen
                 # Lagre den i korrekt format
                 # Send det over i parseren

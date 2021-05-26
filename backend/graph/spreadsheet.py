@@ -229,9 +229,10 @@ def extract_CU_file(file) -> None:
 
     relationDataframe = excelFile.parse("content units relations")
     hierarchiesDataframe = excelFile.parse("content units hierarchies")
-
+    
+    hiearchy_list = read_cu_hierarchies(hierarchiesDataframe)
     relation_cu = read_cu_realtions(relationDataframe)
-    return relation_cu
+    return relation_cu, hiearchy_list
 
 def read_cu_realtions(relationDataframe):
     relationDataframe.fillna('', inplace=True)
@@ -240,22 +241,52 @@ def read_cu_realtions(relationDataframe):
     return cu_rel
 
 def read_cu_hierarchies(hierarchiesDataframe):
-    pass
+    hierarchiesDataframe.fillna('', inplace=True)
+
+    column_names = hierarchiesDataframe.columns
+    
+    # Find the longest row
+    largest_row = 0
+    for index in range(hierarchiesDataframe.shape[0]):
+        if all(x == '' for x in hierarchiesDataframe.iloc[index]):
+            largest_row = index
+            break
+    #print("Largest row:", largest_row)
+
+    # Add all the columns into topic cols
+    topic_cols = []
+    for name in column_names:
+        col = hierarchiesDataframe[name].tolist()[:largest_row]
+        if all(x=='' for x in col):
+            break
+        topic_cols.append(col)
+
+    print("Topic cols",topic_cols)
+    return topic_cols
         
 """
-def read_cu_relations(spreadsheet: str, worksheet: str):
+def read_course_category_tree(spreadsheet, worksheet, num_of_subtopics: int):
     ws = connect_to_spreadsheet(spreadsheet, worksheet)
-    # There are 6 columns to care about and store
-    cu_rel = CU_Relations(ws.col_values(1), ws.col_values(2), ws.col_values(
-        3), ws.col_values(4), ws.col_values(5), ws.col_values(6))
-    cu_rel.cus = cu_rel.cus[1:-1]
-    cu_rel.necessary = cu_rel.necessary[1:-1]
-    cu_rel.useful = cu_rel.useful[1:-1]
-    cu_rel.generalize = cu_rel.generalize[1:-1]
-    cu_rel.synonym = cu_rel.synonym[1:-1]
-    cu_rel.dlc = cu_rel.dlc[1:-1]
-    return cu_rel
+
+    topic_cols = []
+    for col in range(num_of_subtopics):
+        if not topic_cols:
+            topic_cols = [ws.col_values(col+1)]
+        else:
+            topic_cols.append(ws.col_values(col+1))
+
+    # Find the largest column
+    desired_size = 0
+    for col in topic_cols:
+        desired_size = max(desired_size, len(col))
+
+    for iterator in range(len(topic_cols)):
+        topic_cols[iterator] = augment_column(
+            topic_cols[iterator], desired_size)
+
+    return topic_cols
 """
+
 
 def delete_all_files():
     client = connect_to_CU_database()
