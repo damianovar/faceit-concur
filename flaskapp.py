@@ -25,7 +25,7 @@ import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
-from backend.graph.graphDb import get_course_names_and_id
+from backend.graph.graphDb import get_course_names_and_id, insert_graph_into_course, get_graph_from_id
 
 
 import db
@@ -142,6 +142,7 @@ def allowed_file(filename):
 
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
+    """
     if mode == "relations":
         lists = ss.read_cu_relations(sheet, "content units relations")
         nodes, edges = vis.get_nodes_and_edges_cu_relations(lists, sheet)
@@ -153,7 +154,15 @@ def graphs(sheet, mode):
         nodes = []
         edges = []
 
-    return render_template("graphviz.html", title='Visualize graphs', nodes=nodes, edges=edges)
+    node_dict = {"nodes":nodes, "edges":edges}
+    print(node_dict)
+    """
+
+    course_names, course_ids = get_course_names_and_id()
+
+    graph = eval(get_graph_from_id(course_ids[1], mode))
+
+    return render_template("graphviz.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
 
 
 @app.route("/graph_list", methods=["GET", "POST"])

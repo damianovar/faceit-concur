@@ -1,6 +1,6 @@
 # user.py
 import re
-from mongoengine import Document, StringField, IntField, FloatField, ImageField, ListField, ReferenceField, DateTimeField
+from mongoengine import Document, StringField, IntField, FloatField, ImageField, ListField, ReferenceField, DateTimeField, DictField
 from mongoengine.queryset.base import NULLIFY, CASCADE
 from mongoengine.queryset.manager import queryset_manager
 
@@ -192,7 +192,8 @@ class Course(Document):
     taught_cus_list = ListField(ReferenceField(
         CU, reverse_delete_rule=CASCADE), required=True)
 
-    course_graph = StringField()
+    hierarchies_graph = DictField(default="")
+    relations_graph = DictField(default="")
     #
     # intended learning flow within the course, as the teacher
     # imagines it. Note that these connections will also contain

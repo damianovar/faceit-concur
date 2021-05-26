@@ -10,13 +10,26 @@ def get_course_names_and_id():
 
     return course_names, course_ids
 
-def get_graph_as_json_from_id():
-    raise NotImplementedError
+def get_graph_from_id(id, graph_type):
+    if graph_type == "hierarchies":
+        return Course.objects(id=id).first().hierarchies_graph
+    elif graph_type == "relations":
+        return Course.objects(id=id).first().relations_graph
+    
 
-def insert_graph(graph_as_json, graph_type):
-    raise NotImplementedError
+def insert_graph_into_course(graph_dict, graph_type, course_id):
+    if graph_dict:
+        course_obj = Course.objects(id = str(course_id)).first()
+        if graph_type == "hierarchies":
+            course_obj.hierarchies_graph = graph_dict
+        elif graph_type == "relations":
+            course_obj.relations_graph = graph_dict
+        course_obj.save()
+    else:
+        print("Graph is empty")
+    
 
 
 def delete_graph(graph_id):
     raise NotImplementedError
-
+1
