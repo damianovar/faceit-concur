@@ -259,7 +259,7 @@ def read_cu_hierarchies(hierarchiesDataframe):
         col = hierarchiesDataframe[name].tolist()[:largest_row]
         if all(x=='' for x in col):
             break
-        topic_cols.append(col)
+        topic_cols.append([name, *col])
 
     print("Topic cols",topic_cols)
     return topic_cols

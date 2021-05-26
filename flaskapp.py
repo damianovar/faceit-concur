@@ -143,6 +143,7 @@ def allowed_file(filename):
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
     graph = dict(get_graph_from_id(sheet, mode))
+    print(graph)
     return render_template("graphviz.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
 
 
@@ -175,12 +176,13 @@ def upload_excel():
                 #print("List:", hiearchy_list)
                 rel_nodes, rel_edges = vis.get_nodes_and_edges_cu_relations(cu_rel, "")
                 hir_nodes, hir_edges = vis.get_nodes_and_edges_cu_hierarchies(hiearchy_list, course_name)
+                
                 #print("Hir nodes:", hir_nodes)
                 #print("Hir edges", hir_edges)
                 #ss.read_cu_hierarchies()
                 relationship_graph = {"nodes":rel_nodes, "edges":rel_edges}
                 hierarchy_graph = {"nodes":hir_nodes, "edges":hir_edges}
-                #create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
+                create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
                 # Hent ut informasjon fra filen
                 # Lagre den i korrekt format
                 # Send det over i parseren

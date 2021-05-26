@@ -34,7 +34,7 @@ def create_course(course_name, course_code, course_institution, relationship_gra
     creator = User.objects(email="iverau@stud.ntnu.no").first()
     taught_cus_list = [CU.objects(name="time constant").first()]
     prerequisite_cus_list = [CU.objects(name="time constant").first()]
-    Course(name=course_name, creator=creator, course_code=course_code, institution=course_institution, relations_graph=relationship_graph, prerequisite_cus_list=prerequisite_cus_list, taught_cus_list=taught_cus_list).save()
+    Course(name=course_name, creator=creator, course_code=course_code, institution=course_institution, relations_graph=relationship_graph, hierarchies_graph=hierarchy_graph, prerequisite_cus_list=prerequisite_cus_list, taught_cus_list=taught_cus_list).save()
 
 def delete_course(id):
     Course.objects(id=id).delete()
