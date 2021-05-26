@@ -6,19 +6,19 @@
 
 <h1 style="margin-bottom: 10px;">Select a course to visualize</h1>
 <ol style="list-style-type: none;">
-{% for sheet in CU_files %} 
+{% for name, id in CU_files %} 
 <div>
-    <h2 style="text-transform: capitalize;">{{sheet}}</h2>
+    <h2 style="text-transform: capitalize;">{{name}}</h2>
     <hr>
-    <a href={{url_for('graphs', sheet=sheet, mode="hierarchies")}}>
+    <a href={{url_for('graphs', sheet=id, mode="hierarchies")}}>
         <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit hierarchies</button>
     </a>
-    <a href={{url_for('graphs', sheet=sheet, mode="relations")}}>
+    <a href={{url_for('graphs', sheet=id, mode="relations")}}>
         <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit relations</button>
     </a>
    
     <form action="/graph_list" method="POST">
-        <button type="submit" name="delete_button" value="{{sheet}}" style="margin:5px; margin-bottom:30px;" class="btn btn-secondary">Delete graph</button>
+        <button type="submit" name="delete_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" class="btn btn-secondary">Delete graph</button>
     </form>
 
 </div>

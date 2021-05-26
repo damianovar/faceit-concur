@@ -32,4 +32,3 @@ def insert_graph_into_course(graph_dict, graph_type, course_id):
 
 def delete_graph(graph_id):
     raise NotImplementedError
-1

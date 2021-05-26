@@ -142,26 +142,7 @@ def allowed_file(filename):
 
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
-    """
-    if mode == "relations":
-        lists = ss.read_cu_relations(sheet, "content units relations")
-        nodes, edges = vis.get_nodes_and_edges_cu_relations(lists, sheet)
-    elif mode == "hierarchies":
-        lists = ss.read_course_category_tree(
-            sheet, "content units hierarchies", 5)
-        nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists, sheet)
-    else:
-        nodes = []
-        edges = []
-
-    node_dict = {"nodes":nodes, "edges":edges}
-    print(node_dict)
-    """
-
-    course_names, course_ids = get_course_names_and_id()
-
-    graph = eval(get_graph_from_id(course_ids[1], mode))
-
+    graph = eval(get_graph_from_id(sheet, mode))
     return render_template("graphviz.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
 
 
@@ -179,7 +160,7 @@ def graph_list():
     course_names, course_ids = get_course_names_and_id()
 
     return render_template(
-        "graphlist.html", title="Graph list", CU_files=course_names
+        "graphlist.html", title="Graph list", CU_files=zip(course_names, course_ids)
     )
 
 
