@@ -71,15 +71,12 @@ def requires_access_level(access_level):
     def decorator(f):
         @wraps(f)
         def wrap(*args, **kwargs):
-            try:
-                if access_level == session.get("user").get("role"):
-                    return f(*args, **kwargs)    
-                else:
-                    flash("You do not have access to this page. Sorry!")
-                    return redirect(url_for('index'))
-            except:
-                    flash("You must be logged in to access this page. Sorry!")
-                    return redirect(url_for('index'))
+            if access_level == session.get("user").get("role"):
+                print(session.get("user").get("role"))
+                return f(*args, **kwargs)    
+            else:
+                flash("You do not have access to this page. Sorry!")
+                return redirect(url_for('index'))
         return wrap
     return decorator
 

@@ -44,7 +44,7 @@ def zip_of_tex_files_to_questions(zipf):
     for current_file in file_list:
 
         # check things only if you have a .tex file
-        if current_file[-4:] == '.tex':
+        if current_file[-4:] == '.tex' and current_file != 'contentsmapping.tex':
 
             # read the file
             zfile = zip_file.open(current_file)
