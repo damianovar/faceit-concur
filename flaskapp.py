@@ -140,7 +140,6 @@ def allowed_file(filename):
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
     graph = dict(get_graph_from_id(sheet, mode))
-    print(graph)
     return render_template("graphviz.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
 
 
@@ -166,6 +165,7 @@ def upload_excel():
 
             if excel_file.filename[-5:] == ".xlsx":
                 cu_rel, hiearchy_list = extract_CU_file(excel_file)
+
                 rel_nodes, rel_edges = vis.get_nodes_and_edges_cu_relations(cu_rel, "")
                 hir_nodes, hir_edges = vis.get_nodes_and_edges_cu_hierarchies(hiearchy_list, course_name)
 
