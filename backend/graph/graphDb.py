@@ -62,8 +62,8 @@ def extract_CU_file(file) -> None:
 
 def read_cu_realtions(relationDataframe):
     relationDataframe.fillna('', inplace=True)
-    cu_rel_names = ['Content Unit (CU)','which other CUs are necessary for the CU in column A?', 'which other CUs are useful for the CU in column A?', 'which CUs contain / generalize the CU in column A?', 'which CUs are a synonym of the CU in column A?', 'which CUs are directly logically connected to the CU in column A?']
-    cu_rel = CU_Relations(relationDataframe[cu_rel_names[0]].tolist(), relationDataframe[cu_rel_names[1]].tolist(), relationDataframe[cu_rel_names[2]].tolist(), relationDataframe[cu_rel_names[3]].tolist(), relationDataframe[cu_rel_names[4]].tolist(), relationDataframe[cu_rel_names[5]].tolist())
+    cu_rel_names = ['Content Unit (CU)','which other CUs are necessary for the CU in column A?', 'which other CUs are useful for the CU in column A?', 'which CUs contain / generalize the CU in column A?', 'which CUs are a synonym of the CU in column A?', 'which CUs are directly logically connected to the CU in column A?', 'Links']
+    cu_rel = CU_Relations(relationDataframe[cu_rel_names[0]].tolist(), relationDataframe[cu_rel_names[1]].tolist(), relationDataframe[cu_rel_names[2]].tolist(), relationDataframe[cu_rel_names[3]].tolist(), relationDataframe[cu_rel_names[4]].tolist(), relationDataframe[cu_rel_names[5]].tolist(), relationDataframe[cu_rel_names[6]].tolist())
     return cu_rel
 
 def read_cu_hierarchies(hierarchiesDataframe):

@@ -9,7 +9,7 @@
 
         #mynetwork {
             width: 80%;
-            height: 1500px;
+            height: 90%;
             background-color: #222222;
             border: 1px solid lightgray;
             position: relative;
@@ -116,8 +116,8 @@
 
 <div id="node_options" style="margin-top: 20%; display:none">
     <h3 id="node_options_title">Node options</h3>
-    <button type="submit" name="question_querry_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" class="btn btn-primary">Get questions</button>
-    <button type="submit" name="link_querry_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" class="btn btn-primary">Get link</button>
+    <button type="submit" name="question_querry_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" onclick="query_for_question()" class="btn btn-primary">Get questions</button>
+    <button type="submit" name="link_querry_button" value="{{id}}"  style="margin:5px; margin-bottom:30px;" class="btn btn-primary">Get link</button>
 </div>
 
 
@@ -135,25 +135,7 @@
     var options, data;
 
     
-    function node_click(properties) {
-        node_options = document.getElementById("node_options");
-        var ids = properties.nodes;
-        var clickedNodes = nodes.get(ids);
-
-        if (clickedNodes.length != 0){
-            node_options.style.display = "initial";
-            console.log('clicked nodes:', clickedNodes);
-            var name = clickedNodes[0].id;
-            name = name.charAt(0).toUpperCase() + name.slice(1)
-            node_options.querySelector("#node_options_title").innerHTML = name;
-            
-        }
-        else{
-            node_options.style.display = "none";
-        }
-
-    }
-
+    
 
     // This method is responsible for drawing the graph, returns the drawn network
     function drawGraph() {
@@ -215,5 +197,5 @@
     drawGraph();
 
 </script>
-
+<script src="/static/js/graph_interaction/node_options_handler.js"></script>
 {% endblock %}
