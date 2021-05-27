@@ -140,7 +140,11 @@ def allowed_file(filename):
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
     graph = dict(get_graph_from_id(sheet, mode))
-    return render_template("graphviz.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
+    if mode == "hierarchies":
+        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
+    else: 
+        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
+    
 
 
 @app.route("/graph_list", methods=["GET", "POST"])
