@@ -24,7 +24,7 @@ import backend.graph.visualization as vis
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
-from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, extract_CU_file
+from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, get_graphs_from_excel_file
 
 import db
 import matrix
@@ -163,15 +163,8 @@ def upload_excel():
             course_code = request.form["course_code"]
             course_institution = request.form["course_institution"]
 
-            if excel_file.filename[-5:] == ".xlsx":
-                cu_rel, hiearchy_list = extract_CU_file(excel_file)
-
-                rel_nodes, rel_edges = vis.get_nodes_and_edges_cu_relations(cu_rel, "")
-                hir_nodes, hir_edges = vis.get_nodes_and_edges_cu_hierarchies(hiearchy_list, course_name)
-
-                relationship_graph = {"nodes":rel_nodes, "edges":rel_edges}
-                hierarchy_graph = {"nodes":hir_nodes, "edges":hir_edges}
-                create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
+            relationship_graph, hierarchy_graph = get_graphs_from_excel_file(excel_file, course_name)
+            create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
 
             return redirect(request.url)
 

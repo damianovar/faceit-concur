@@ -2,6 +2,7 @@ from ..models.models import Course, Institution, User, CU
 from flask import session
 from .cu_rel import CU_Relations
 import pandas as pd
+from .visualization import get_nodes_and_edges_cu_relations, get_nodes_and_edges_cu_hierarchies
 
 def get_course_names_and_id():
     course_names = []
@@ -43,12 +44,20 @@ def delete_course(id):
 
 def extract_CU_file(file) -> None:
     excelFile = pd.ExcelFile(file, engine='openpyxl')
+    print("Sheetnames:",excelFile.sheet_names)
+    if 'content units relations' in excelFile.sheet_names:
+        relationDataframe = excelFile.parse("content units relations")
+        relation_cu = read_cu_realtions(relationDataframe)
+    else:
+        relation_cu = CU_Relations([],[],[],[],[],[])
 
-    relationDataframe = excelFile.parse("content units relations")
-    hierarchiesDataframe = excelFile.parse("content units hierarchies")
+    if 'content units hierarchies' in excelFile.sheet_names:
+        hierarchiesDataframe = excelFile.parse("content units hierarchies")
+        hiearchy_list = read_cu_hierarchies(hierarchiesDataframe)
+    else:
+
+        hiearchy_list = []
     
-    hiearchy_list = read_cu_hierarchies(hierarchiesDataframe)
-    relation_cu = read_cu_realtions(relationDataframe)
     return relation_cu, hiearchy_list
 
 def read_cu_realtions(relationDataframe):
@@ -78,3 +87,16 @@ def read_cu_hierarchies(hierarchiesDataframe):
         topic_cols.append([name, *col])
 
     return topic_cols
+
+def get_graphs_from_excel_file(excel_file, course_name):
+    if excel_file.filename[-5:] == ".xlsx":
+        cu_rel, hiearchy_list = extract_CU_file(excel_file)
+
+        rel_nodes, rel_edges = get_nodes_and_edges_cu_relations(cu_rel, "")
+        hir_nodes, hir_edges = get_nodes_and_edges_cu_hierarchies(hiearchy_list, course_name)
+
+        relationship_graph = {"nodes":rel_nodes, "edges":rel_edges}
+        hierarchy_graph = {"nodes":hir_nodes, "edges":hir_edges}
+        return relationship_graph, hierarchy_graph
+    else:
+        return {"nodes":"", "edges":""}
