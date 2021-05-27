@@ -5,9 +5,10 @@
 
 
 <h1 style="margin-bottom: 10px;">Select a course to visualize</h1>
-<ol style="list-style-type: none;">
+<input type="text" id="graph_list_searchbar" onkeyup="graph_list_filter()" placeholder="Search for courses"> 
+<ol style="list-style-type: none;" id="graph_list">
 {% for name, id in CU_files %} 
-<div>
+<li>
     <h2 style="text-transform: capitalize;">{{name}}</h2>
     <hr>
     <a href={{url_for('graphs', sheet=id, mode="hierarchies")}}>
@@ -21,7 +22,7 @@
         <button type="submit" name="delete_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" class="btn btn-secondary">Delete graph</button>
     </form>
 
-</div>
+</li>
 {% endfor %}
 </ol>
 {% endblock %}
