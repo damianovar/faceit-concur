@@ -182,15 +182,12 @@
         // if this network requires displaying the configure window,
         // put it in its div
         options.configure["container"] = document.getElementById("config");
-
-
         network = new vis.Network(container, data, options);
-
-
-
-
-
-
+        network.on( 'click', function(properties) {
+            var ids = properties.nodes;
+            var clickedNodes = nodes.get(ids);
+            console.log('clicked nodes:', clickedNodes);
+        });
         return network;
 
     }

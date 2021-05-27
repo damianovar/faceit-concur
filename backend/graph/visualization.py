@@ -73,14 +73,8 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
             g.nodes[iterate]['color'] = "#735702"
         print(length)
     """
-    #print("Done rumbeling")
     node, edge, _, _, _ = g.get_network_data()
-    #print("Nodes:", node)
-    #print("Edges:", edge)
 
-    print("Setup for a test", remove_text_inside_parantheses(
-        "ODEs (e2), linearity (e2, u1), time invariance (e2, u1), causality (e2)"))
-    # g.show('cu_relations.html')
     return json.dumps(node), json.dumps(edge)
 
 
