@@ -26,7 +26,7 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
         cu = cu.split("(")[0].strip().lower()
         g.add_node(n_id=cu, label=cu, shape='ellipse')
 
-    cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
+    cus, necessary, useful, generalize, synonym, dlc, links = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc, CU_REL.link
 
     for cu, nec, usef, gen, syn, dlc in zip_longest(cus, necessary, useful, generalize, synonym, dlc):
         cu = cu.split("(")[0].strip().lower()
@@ -60,6 +60,11 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
                 dl = dl.strip().lower()
                 g.add_node(dl)
                 g.add_edge(dl, cu, color="#ffffff")
+    
+    # Add links to them
+    for iterate, node in enumerate(g.get_nodes()):
+        g.nodes[iterate]["link"] = links[iterate]
+    
     """
     for iterate, node in enumerate(g.get_nodes()):
         length = len(g.neighbors(node))
@@ -74,6 +79,8 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
         print(length)
     """
     node, edge, _, _, _ = g.get_network_data()
+
+    print("Node:", node)
 
     return json.dumps(node), json.dumps(edge)
 
