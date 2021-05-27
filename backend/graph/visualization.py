@@ -22,11 +22,18 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
     g.width = "75%"
     # nodes, layout, interaction, selection, renderer, physics
     g.show_buttons(filter_=["edges", "physics"])
-    for cu in CU_REL.cus:
-        cu = cu.split("(")[0].strip().lower()
-        g.add_node(n_id=cu, label=cu, shape='ellipse')
 
-    cus, necessary, useful, generalize, synonym, dlc, links = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc, CU_REL.link
+
+    if CU_REL.link is not []:
+        for cu, link in zip(CU_REL.cus, CU_REL.link):
+            cu = cu.split("(")[0].strip().lower()
+            g.add_node(n_id=cu, label=cu, shape='ellipse', link=link)
+    else:
+        for cu in CU_REL.cus:
+            cu = cu.split("(")[0].strip().lower()
+            g.add_node(n_id=cu, label=cu, shape='ellipse')
+
+    cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
 
     for cu, nec, usef, gen, syn, dlc in zip_longest(cus, necessary, useful, generalize, synonym, dlc):
         cu = cu.split("(")[0].strip().lower()
@@ -62,8 +69,10 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
                 g.add_edge(dl, cu, color="#ffffff")
     
     # Add links to them
+    """
     for iterate, node in enumerate(g.get_nodes()):
         g.nodes[iterate]["link"] = links[iterate]
+    """
     
     """
     for iterate, node in enumerate(g.get_nodes()):

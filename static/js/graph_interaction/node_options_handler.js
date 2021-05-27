@@ -12,10 +12,15 @@ function node_click(properties) {
     var clickedNodes = nodes.get(ids);
 
     if (clickedNodes.length != 0){
-        node_options.style.display = "initial";
-        console.log('clicked nodes:', clickedNodes);
         node_info = clickedNodes[0];
-        //console.log(node_info)
+        if (node_info.link == undefined){
+            document.getElementById("link_querry_button").style.display = "none";
+        }
+        else{
+            console.log("Hahahahahahah")
+            document.getElementById("link_querry_button").style.display = "initial";
+        }
+        node_options.style.display = "initial";
         var name = capitalize_first_letter(clickedNodes[0].id);
         node_options.querySelector("#node_options_title").innerHTML = name;
         
@@ -28,7 +33,7 @@ function node_click(properties) {
 
 function redirect_to_link(){
     console.log(node_info);
-    if (node_info.link != ""){
+    if (node_info.link != undefined){
         window.open(node_info.link, '_blank').focus()
     }
 }
