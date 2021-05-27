@@ -5,7 +5,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
 
-
 <style type="text/css">
 
         #mynetwork {
@@ -115,11 +114,18 @@
     </ol>
 </div>
 
+<div id="node_options" style="margin-top: 20%; display:none">
+    <h3 id="node_options_title">Node options</h3>
+    <button type="submit" name="question_querry_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" class="btn btn-primary">Get questions</button>
+    <button type="submit" name="link_querry_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" class="btn btn-primary">Get link</button>
+</div>
+
 
 
 
 
 <script type="text/javascript">
+    
 
     // initialize global variables.
     var edges;
@@ -128,8 +134,25 @@
     var container;
     var options, data;
 
+    
+    function node_click(properties) {
+        node_options = document.getElementById("node_options");
+        var ids = properties.nodes;
+        var clickedNodes = nodes.get(ids);
 
+        if (clickedNodes.length != 0){
+            node_options.style.display = "initial";
+            console.log('clicked nodes:', clickedNodes);
+            var name = clickedNodes[0].id;
+            name = name.charAt(0).toUpperCase() + name.slice(1)
+            node_options.querySelector("#node_options_title").innerHTML = name;
+            
+        }
+        else{
+            node_options.style.display = "none";
+        }
 
+    }
 
 
     // This method is responsible for drawing the graph, returns the drawn network
@@ -183,11 +206,8 @@
         // put it in its div
         options.configure["container"] = document.getElementById("config");
         network = new vis.Network(container, data, options);
-        network.on( 'click', function(properties) {
-            var ids = properties.nodes;
-            var clickedNodes = nodes.get(ids);
-            console.log('clicked nodes:', clickedNodes);
-        });
+        
+        network.on( 'click', (properties) => node_click(properties));
         return network;
 
     }
