@@ -105,10 +105,7 @@ function create_list_of_listed_courses(){
     for (var i = 0; i < list_items.length; i++){
         listed_courses.push(list_items[i].id);
     }
-    console.log("Listed courses" , listed_courses);
-
-    console.log("Course string", create_course_string(listed_courses));
-    return  create_course_string(listed_courses);
+    return listed_courses
     
 }
 
@@ -120,6 +117,41 @@ function create_course_string(listed_courses){
     return course_string.slice(0, -1);
 }
 
-function display_multi_graph(graph, mode){
+function get_graph_mode(){
+    if (current_interface == "multi_relation_graph_button"){
+        return "relations";
+    }
+    return "hierarchies";
+}
 
+
+function display_multi_graph(){
+    let courses = create_course_string(create_list_of_listed_courses());
+    let mode = get_graph_mode();
+    let url = "/multi_graphviz/" + courses + "/" + mode;
+    window.location.href = url;
+
+}
+
+function display_multi_graph2(){
+    console.log("Hei")
+    //$("#submit_multigraph").val("jQuery Hello world example"); 
+
+    var graph = create_list_of_listed_courses();
+    var mode = get_graph_mode();
+    $.ajax(
+        {
+            type: "POST",
+            url: "/multi_graph",
+            data: JSON.stringify({ "graph" : graph, "mode": mode } ),
+            contentType: "application/json; charset=utf-8",
+            success: function(response) {
+                console.log("Success")
+                document.write(response); 
+
+        }
+
+        }
+    )
+    
 }

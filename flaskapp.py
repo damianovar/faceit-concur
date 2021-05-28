@@ -146,6 +146,43 @@ def graphs(sheet, mode):
         return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
     
 
+@app.route("/multi_graphviz/<sheet>/<mode>")
+def multi_graph(sheet, mode):
+
+    list_of_courses = sheet.split("-")
+    node_list = []
+    edge_list = []
+    node_ids = []
+    for course in list_of_courses:
+        course_dict = dict(get_graph_from_id(course, mode))
+        if type(course_dict["nodes"]) is str and type(course_dict["edges"]) is str:
+            nodes = json.loads(course_dict["nodes"])
+            edges = json.loads(course_dict["edges"])
+            
+            for node in nodes:
+                if node["id"] not in node_ids:
+                    node_list.append(node)
+                    node_ids.append(node["id"])
+            
+            edge_list.extend(edges)
+
+        
+    node_list = json.dumps(node_list)
+    edge_list = json.dumps(edge_list)
+    if mode == "hierarchies":
+        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
+    else: 
+        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
+    
+
+
+@app.route("/multi_graph", methods=["POST"])    
+def multi_graph_parser():
+    if request.method == 'POST':
+        search = request.get_json()
+        return render_template("upload_tex.html", title="Upload")
+    return render_template("upload_excel.html", title="Upload Excel")
+
 
 @app.route("/graph_list", methods=["GET", "POST"])
 def graph_list():
