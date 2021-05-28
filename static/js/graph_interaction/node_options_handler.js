@@ -13,7 +13,7 @@ function node_click(properties) {
 
     if (clickedNodes.length != 0){
         node_info = clickedNodes[0];
-        if (node_info.link == undefined){
+        if (node_info.link == undefined || node_info.link == ""){
             document.getElementById("link_querry_button").style.display = "none";
         }
         else{
@@ -32,8 +32,7 @@ function node_click(properties) {
 }
 
 function redirect_to_link(){
-    console.log(node_info);
-    if (node_info.link != undefined){
+    if (node_info.link != undefined && node_info.link != ""){
         window.open(node_info.link, '_blank').focus()
     }
 }
