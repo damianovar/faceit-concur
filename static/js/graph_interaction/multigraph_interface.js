@@ -90,3 +90,36 @@ function clear_graph_list(){
     graph_list = document.getElementById("multigraph_list");
     graph_list.innerHTML  = '';
 }
+
+function create_list_of_listed_courses(){
+    var mode = "";
+    if (current_interface == "multi_relation_graph_button"){
+        mode = "relations";  
+    }
+    else{
+        mode = "hierarchies";
+    }
+
+    var list_items = document.getElementById("multigraph_list").getElementsByTagName("li");
+    var listed_courses = [];
+    for (var i = 0; i < list_items.length; i++){
+        listed_courses.push(list_items[i].id);
+    }
+    console.log("Listed courses" , listed_courses);
+
+    console.log("Course string", create_course_string(listed_courses));
+    return  create_course_string(listed_courses);
+    
+}
+
+function create_course_string(listed_courses){
+    var course_string = "";
+    for (var i = 0; i < listed_courses.length; i++){
+        course_string += listed_courses[i] + "-";
+    }
+    return course_string.slice(0, -1);
+}
+
+function display_multi_graph(graph, mode){
+
+}
