@@ -153,14 +153,16 @@ def multi_graph(sheet, mode):
     node_list = []
     edge_list = []
     node_ids = []
-    for course in list_of_courses:
+    colors = ['blue', ' red', 'green']
+    for index, course in enumerate(list_of_courses):
         course_dict = dict(get_graph_from_id(course, mode))
         if type(course_dict["nodes"]) is str and type(course_dict["edges"]) is str:
             nodes = json.loads(course_dict["nodes"])
             edges = json.loads(course_dict["edges"])
-            
+            print(nodes)
             for node in nodes:
                 if node["id"] not in node_ids:
+                    node['color'] = colors[index]
                     node_list.append(node)
                     node_ids.append(node["id"])
             
