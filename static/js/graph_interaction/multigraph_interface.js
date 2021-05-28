@@ -14,6 +14,7 @@ function switch_to_multigraph_interface(desired_interface){
     }
     show_interface(current_interface);
     toggle_multigraph_button_color();
+    clear_graph_list();
 }
 
 function show_interface(desired_interface){
@@ -69,4 +70,23 @@ function toggle_multigraph_button_color(){
         relation_button.classList.remove('btn-secondary');
     }
 
+}
+
+function add_course_to_graph_list(name, id){
+    graph_list = document.getElementById("multigraph_list");
+    new_list_item = document.createElement("li");
+    new_list_item.id = id;
+    text = document.createTextNode(name);
+    new_list_item.appendChild(text);
+
+    console.log("list item", new_list_item);
+
+    graph_list.appendChild(new_list_item);
+
+
+}
+
+function clear_graph_list(){
+    graph_list = document.getElementById("multigraph_list");
+    graph_list.innerHTML  = '';
 }
