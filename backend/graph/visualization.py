@@ -9,6 +9,10 @@ import json
 from itertools import zip_longest
 
 
+multigraph_colors = ['cyan', 'salmon', 'chartreuse']
+merged_node_in_multiple_graph_color = 'grey'
+
+
 def get_nodes_and_edges_cu_relations(CU_REL, sheet):
     """
     1: Go through spreadsheet, add every single one of the kcs in first column to kcs in database
@@ -161,3 +165,6 @@ def get_nodes_and_edges_cu_hierarchies(lists, sheet):
     node, edge, _, _, _ = g.get_network_data()
     # g.save_graph("grap.html")
     return json.dumps(node), json.dumps(edge)
+
+def get_multigraph_color(index):
+    return multigraph_colors[index]

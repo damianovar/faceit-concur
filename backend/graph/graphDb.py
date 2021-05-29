@@ -2,7 +2,9 @@ from ..models.models import Course, Institution, User, CU
 from flask import session
 from .cu_rel import CU_Relations
 import pandas as pd
-from .visualization import get_nodes_and_edges_cu_relations, get_nodes_and_edges_cu_hierarchies
+from .visualization import get_nodes_and_edges_cu_relations, get_nodes_and_edges_cu_hierarchies, get_multigraph_color, merged_node_in_multiple_graph_color
+import json
+
 
 def get_course_names_and_id():
     course_names = []
@@ -104,3 +106,31 @@ def get_graphs_from_excel_file(excel_file, course_name):
         return relationship_graph, hierarchy_graph
     else:
         return {"nodes":"", "edges":""}
+
+
+def get_multiple_graph(graph_id_string, mode):
+    list_of_courses = graph_id_string.split("-")
+    list_of_courses = list(set(list_of_courses))
+
+    return extract_nodes_and_edges_in_multiple_graph(list_of_courses, mode)
+
+
+def extract_nodes_and_edges_in_multiple_graph(list_of_courses, mode):
+    node_dict = {}
+    edge_list = []
+    for index, course in enumerate(list_of_courses):
+        course_dict = dict(get_graph_from_id(course, mode))
+        if type(course_dict["nodes"]) is str and type(course_dict["edges"]) is str:
+            nodes = json.loads(course_dict["nodes"])
+            edges = json.loads(course_dict["edges"])
+            for node in nodes:
+                if node["id"] not in node_dict:
+                    node['color'] = get_multigraph_color(index)
+                    node_dict[node["id"]] = node
+                else:
+                    node_dict[node["id"]]['color'] = merged_node_in_multiple_graph_color
+            
+            edge_list.extend(edges)
+    node_list = json.dumps(list(node_dict.values()))
+    edge_list = json.dumps(edge_list)
+    return node_list, edge_list

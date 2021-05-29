@@ -24,7 +24,7 @@ import backend.graph.visualization as vis
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
-from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, get_graphs_from_excel_file
+from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, get_graphs_from_excel_file, get_multiple_graph
 
 import db
 import matrix
@@ -148,29 +148,7 @@ def graphs(sheet, mode):
 
 @app.route("/multi_graphviz/<sheet>/<mode>")
 def multi_graph(sheet, mode):
-
-    list_of_courses = sheet.split("-")
-    list_of_courses = list(set(list_of_courses))
-    node_dict = {}
-    edge_list = []
-    colors = ['cyan', 'salmon', 'chartreuse']
-    for index, course in enumerate(list_of_courses):
-        course_dict = dict(get_graph_from_id(course, mode))
-        if type(course_dict["nodes"]) is str and type(course_dict["edges"]) is str:
-            nodes = json.loads(course_dict["nodes"])
-            edges = json.loads(course_dict["edges"])
-            for node in nodes:
-                if node["id"] not in node_dict:
-                    node['color'] = colors[index]
-                    node_dict[node["id"]] = node
-                else:
-                    node_dict[node["id"]]['color'] = 'grey' 
-            
-            edge_list.extend(edges)
-
-        
-    node_list = json.dumps(list(node_dict.values()))
-    edge_list = json.dumps(edge_list)
+    node_list, edge_list = get_multiple_graph(sheet, mode)
     if mode == "hierarchies":
         return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
     else: 
