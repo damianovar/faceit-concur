@@ -126,32 +126,14 @@ function get_graph_mode(){
 
 
 function display_multi_graph(){
-    let courses = create_course_string(create_list_of_listed_courses());
-    let mode = get_graph_mode();
-    let url = "/multi_graphviz/" + courses + "/" + mode;
-    window.location.href = url;
-
+    if (!mutligraph_list_is_empty()){
+        let courses = create_course_string(create_list_of_listed_courses());
+        let mode = get_graph_mode();
+        let url = "/multi_graphviz/" + courses + "/" + mode;
+        window.location.href = url;
+    }
 }
 
-function display_multi_graph2(){
-    console.log("Hei")
-    //$("#submit_multigraph").val("jQuery Hello world example"); 
-
-    var graph = create_list_of_listed_courses();
-    var mode = get_graph_mode();
-    $.ajax(
-        {
-            type: "POST",
-            url: "/multi_graph",
-            data: JSON.stringify({ "graph" : graph, "mode": mode } ),
-            contentType: "application/json; charset=utf-8",
-            success: function(response) {
-                console.log("Success")
-                document.write(response); 
-
-        }
-
-        }
-    )
-    
+function mutligraph_list_is_empty(){
+    return document.getElementById("multigraph_list").innerHTML.trim() == "";
 }
