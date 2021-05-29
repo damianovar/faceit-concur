@@ -151,7 +151,7 @@ def multi_graph(sheet, mode):
 
     list_of_courses = sheet.split("-")
     list_of_courses = list(set(list_of_courses))
-    node_list = {}
+    node_dict = {}
     edge_list = []
     colors = ['cyan', 'salmon', 'chartreuse']
     for index, course in enumerate(list_of_courses):
@@ -160,16 +160,16 @@ def multi_graph(sheet, mode):
             nodes = json.loads(course_dict["nodes"])
             edges = json.loads(course_dict["edges"])
             for node in nodes:
-                if node["id"] not in node_list:
+                if node["id"] not in node_dict:
                     node['color'] = colors[index]
-                    node_list[node["id"]] = node
+                    node_dict[node["id"]] = node
                 else:
-                    node_list[node["id"]]['color'] = 'grey' 
+                    node_dict[node["id"]]['color'] = 'grey' 
             
             edge_list.extend(edges)
 
         
-    node_list = json.dumps(list(node_list.values()))
+    node_list = json.dumps(list(node_dict.values()))
     edge_list = json.dumps(edge_list)
     if mode == "hierarchies":
         return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
