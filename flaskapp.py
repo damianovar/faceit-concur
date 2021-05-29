@@ -150,9 +150,9 @@ def graphs(sheet, mode):
 def multi_graph(sheet, mode):
 
     list_of_courses = sheet.split("-")
+    list_of_courses = list(set(list_of_courses))
     node_list = {}
     edge_list = []
-    node_ids = []
     colors = ['cyan', 'salmon', 'chartreuse']
     for index, course in enumerate(list_of_courses):
         course_dict = dict(get_graph_from_id(course, mode))
@@ -165,12 +165,6 @@ def multi_graph(sheet, mode):
                     node_list[node["id"]] = node
                 else:
                     node_list[node["id"]]['color'] = 'grey' 
-                """
-                if node["id"] not in node_ids:
-                    node['color'] = colors[index]
-                    node_list.append(node)
-                    node_ids.append(node["id"])
-                """
             
             edge_list.extend(edges)
 
