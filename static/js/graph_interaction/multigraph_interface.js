@@ -74,16 +74,50 @@ function toggle_multigraph_button_color(){
 
 function add_course_to_graph_list(name, id){
     graph_list = document.getElementById("multigraph_list");
+    // Create list item
     new_list_item = document.createElement("li");
+    //new_list_item.style = "margin: 0 0 5px 0";
     new_list_item.id = id;
-    text = document.createTextNode(name);
-    new_list_item.appendChild(text);
 
-    console.log("list item", new_list_item);
+    // Create text div
+    text_div = document.createElement("div")
+    text_div.style ="float:left; width:70%; margin: 0 0 20px 0"
+    text = document.createTextNode(name);
+    text_div.appendChild(text)
+
+    // Create delete button div
+    button_div = document.createElement("div")
+    button_div.style = "float:right; width=20%;"
+
+    button = document.createElement("button")
+    button.classList.add("btn");
+    button.classList.add("btn-danger");
+    button.innerHTML = "x";
+    button.onclick = function(event) {remove_item_from_graph_list(id);}
+    button_div.appendChild(button)
+
+    // Add elements to list
+    new_list_item.appendChild(text_div);
+    new_list_item.appendChild(button_div);
 
     graph_list.appendChild(new_list_item);
 
 
+}
+
+
+function remove_item_from_graph_list(id){
+    list_of_graphs = document.getElementById("multigraph_list")
+    list_items = list_of_graphs.childNodes;
+    nodes_to_remove = []
+    for (var i = 0; i < list_items.length; i++){
+        if (list_items[i].id == id) {
+            nodes_to_remove.push(list_items[i])
+        }
+    }
+    for (var i = 0; i < nodes_to_remove.length; i++){
+        list_of_graphs.removeChild(nodes_to_remove[i]);
+    }
 }
 
 function clear_graph_list(){
