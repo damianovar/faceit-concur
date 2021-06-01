@@ -1,3 +1,14 @@
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+</script>
+
 {% extends "base/base.html" %}
 {% set active_page = "menu8" %}
 {% block title %}Submit answer{% endblock %}
@@ -34,9 +45,9 @@
             {% for row in data %}
             <tr>
                 <td> {{ selection_data[loop.index0] }}</td>
-                {% for col in row %}
-                <td> {{ col }}</td>
-                {% endfor %}
+                
+                <td> {{ row }}</td>
+              
                 <td></td>
             </tr>
             {% endfor %}

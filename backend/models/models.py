@@ -1,4 +1,5 @@
 # user.py
+import re
 from mongoengine import Document, StringField, IntField, FloatField, ImageField, ListField, ReferenceField, DateTimeField
 from mongoengine.queryset.base import NULLIFY, CASCADE
 from mongoengine.queryset.manager import queryset_manager
@@ -87,6 +88,9 @@ class User(Document):
         Institution, reverse_delete_rule=CASCADE), required=True)
     preferred_languages = ListField(ReferenceField(
         Language, reverse_delete_rule=CASCADE), required=False)
+
+    #confirmed_at = DateTimeField(required=True)
+
 
     @queryset_manager
     def objects(doc_cls, queryset):
@@ -252,7 +256,7 @@ class Question(Document):
     #
     # useful only in 'multiple choice' questions:
     # save the list of potential answers each as a separate string
-    potential_answers = ListField(StringField, required=False)
+    potential_answers = ListField(StringField(), required=False)
     #
     # useful only in 'multiple choice' questions:
     # save for each potential answer how correct that answer is
@@ -287,9 +291,12 @@ class Question(Document):
 
     # to ease the debug
     def print(self):
-        print("question ID: {}".format(self._ID))
+        #print("question ID: {}".format(self._ID))
+        print("creator:        {}".format(self.creator))
+        print("current version:        {}".format(self.current_version))
+        print("content units:        {}".format(self.content_units))
         print("body:        {}".format(self.body))
-        print("type:        {}".format(self.type))
+        print("type:        {}".format(self.question_type))
 
 
 class QuestionSolution(Document):
@@ -392,6 +399,8 @@ class QuestionAnswer(Document):
     # fact that John's answer refers to V1, and not V2 (so that
     # one can do learning analytics in a more rigorous way)
     question_version = IntField(default=1, required=True)
+
+    selected_answer = ListField(IntField(), required=True)
     #
     # independently of the question_type, this is going to be a string.
     # More precisely,
@@ -399,7 +408,10 @@ class QuestionAnswer(Document):
     #                           '2,4,5'. May also be empty, i.e., ''
     # type = open            => a LaTeX string
     # type = numeric         => a number or a LaTeX expression
-    answer = StringField(max_length=20000, required=True)
+    # answer = StringField(max_length=20000, required=True)
+
+    perceived_difficulty = IntField(
+        min_value=1, max_value=5, required=True)
     #
     # notation:
     # 0 = the answer I inserted was a purely random guess;

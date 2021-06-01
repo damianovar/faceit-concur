@@ -1,16 +1,14 @@
-from flask import session
-from os import name
 import pandas as pd
 import re
 import zipfile
 from TexSoup import TexSoup  # , TokenWithPosition
-
-from backend.models.models import Language, Question, CU, User, NotationStandard
-
+from backend.models.models import Question, CU
+#from backend.upload.state import State
 
 # ---------------- HELPER METHODS ------------------
 
 __alphabet__ = "abcdefghij"
+#state = State()  # GLOBAL STATE - make into a singleton
 
 
 # class to extract the questions from the zip files uploaded
@@ -36,6 +34,7 @@ def zip_of_tex_files_to_questions(zipf):
 
     # storage allocation
     questions = []
+
     # get the various files within the zip file uploaded in the portal
     zip_file = zipfile.ZipFile(zipf)
     file_list = zip_file.namelist()
@@ -44,29 +43,30 @@ def zip_of_tex_files_to_questions(zipf):
     for current_file in file_list:
 
         # check things only if you have a .tex file
-        if current_file[-4:] == '.tex' and current_file != 'contentsmapping.tex':
+        if current_file[-4:] == '.tex':
 
             # read the file
             zfile = zip_file.open(current_file)
             data = zfile.read().decode('UTF-8')
-            # create an ad-hoc object to search, navigate, and modify the LaTeX document.
-            # Here each frame is an environment \begin{smt} ... \end{smt}
-            tex = TexSoup(data)
-            #frames = list(tex.children)
 
-            frames = tex.find_all("IndexedQuestion")
+            # create an ad-hoc object to search, navigate, and modify the LaTeX document.
+            # Here each frame is an environment "\begin{smt} ... \end{smt}"
+            tex = TexSoup(data)
+            frames = list(tex.children)
+
             # check every "\begin{smt} ... \end{smt}" in the .tex
             # file under investigation
-            for frame in frames:
+            for frame in frames: 
 
                 # check things only if it is an "IndexedQuestion"
                 if frame.name == 'IndexedQuestion':
 
                     # get the .tex string
                     tex_frame_contents = list(frame.children)
+
                     # convert the .tex string into the object for the database
-                    q = tex_string_to_question(
-                        tex_frame_contents, file_list, zip_file)
+                    q = tex_string_to_question(tex_frame_contents)
+
                     # add it to the list
                     questions.append(q)
 
@@ -85,112 +85,62 @@ def zip_of_tex_files_to_questions(zipf):
     return questions
 
 
+
 # method to convert the text within a
 # \begin{IndexedQuestion} ... \end{IndexedQuestion}
 # frame into a "Question" object
 #
-def tex_string_to_question(tex_frame_contents, file_list, zip_file):
+def tex_string_to_question(tex_frame_contents):
     # Current version: 0.12
 
     # allocate the object before getting the various fields
     q = Question()
 
-    q.creator = get_user()
+    content_units              = str(get_field("QuestionContentUnits", tex_frame_contents))[1:-1]
+    q.content_units            = content_units.replace(' ,', ',').replace(', ', ',').split(",")
 
-    q.content_units = get_content_units(tex_frame_contents, q.creator)
-    # taxonomy_levels            = str(get_field("QuestionTaxonomyLevels", tex_frame_contents))[1:-1]
-    # q.taxonomy_levels          = taxonomy_levels.replace(' ,', ',').replace(', ', ',').replace(' ', '').split(",")
+    taxonomy_levels            = str(get_field("QuestionTaxonomyLevels", tex_frame_contents))[1:-1]
+    q.taxonomy_levels          = taxonomy_levels.replace(' ,', ',').replace(', ', ',').replace(' ', '').split(",")
 
-    q.body = get_question_body(tex_frame_contents)
+    q.body                     = get_question_body(tex_frame_contents)
 
-    q.body_image = get_image(
-        tex_frame_contents, file_list, zip_file, "QuestionBodyImage")
+    q.body_image               = get_image(tex_frame_contents, file_list, "QuestionBodyImage")
 
-    q.question_type = str(get_field("QuestionType", tex_frame_contents))[1:-1]
+    q.question_type            = str(get_field("QuestionType", tex_frame_contents))[1:-1]
 
-    potential_answers, correct_answers = \
-        get_answers_for_multiple_choice_questions(
-            tex_frame_contents, q.question_type)
+    potential_answers, correct_answers   = \
+        get_answers_for_multiple_choice_questions(tex_frame_contents, question_type)
+    q.potential_answers        = potential_answers
+    q.correct_answers          = correct_answers
 
-    q.potential_answers = potential_answers
+    q.solutions                = str(get_field("QuestionSolutions", tex_frame_contents))[1:-1]
 
-    q.correct_answers = correct_answers
+    q.solutions_image          = get_image(tex_frame_contents, file_list, "QuestionSolutionsImage")
 
-    q.solutions = str(get_field("QuestionSolutions", tex_frame_contents))[1:-1]
+    q.authors                  = state.user
 
-    q.solutions_image = get_image(
-        tex_frame_contents, file_list, zip_file, "QuestionSolutionsImage")
+    q.notes_for_the_teacher    = str(get_field("QuestionNotesForTheTeachers", tex_frame_contents))[1:-1]
 
-    #q.authors = state.user
+    q.notes_for_the_student    = str(get_field("QuestionNotesForTheStudents", tex_frame_contents))[1:-1]
 
-    q.notes_for_the_teacher = str(
-        get_field("QuestionNotesForTheTeachers", tex_frame_contents))[1:-1]
+    q.feedback_for_the_student = str(get_field("QuestionFeedbackForTheStudents", tex_frame_contents))[1:-1]
 
-    q.notes_for_the_student = str(
-        get_field("QuestionNotesForTheStudents", tex_frame_contents))[1:-1]
+    q.question_disclosability  = str(get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
 
-    q.feedback_for_the_student = str(
-        get_field("QuestionFeedbackForTheStudents", tex_frame_contents))[1:-1]
+    q.solution_disclosability  = str(get_field("QuestionSolutionDisclosability", tex_frame_contents))[1:-1]
 
-    #q.question_disclosability = str(
-    #    get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
-    q.question_disclosability = 'me'
-    #print(q.question_disclosability)
+    q.language                 = str(get_field("QuestionLanguage", tex_frame_contents))[1:-1]
 
-    q.solution_disclosability = str(
-        get_field("QuestionSolutionDisclosability", tex_frame_contents))[1:-1]
-
-    language = str(get_field("QuestionLanguage", tex_frame_contents))[1:-1]
-    q.language = get_language(language)
-
-    notation_standard = str(
-        get_field("QuestionNotationStandard", tex_frame_contents))[1:-1]
-    q.notation_standard = get_notation_standard(notation_standard)
+    q.notation_standard        = str(get_field("QuestionNotationStandard", tex_frame_contents))[1:-1]
 
     # sanity check
     assert is_question_type_well_defined(q.question_type), \
-        "WARNING -- question {} has a ill-defined question type. \
+           "WARNING -- question {} has a ill-defined question type. \
            Check the .tex template!".format(q.question_counter)
 
     # return the object
     return q
 
-
-def get_user():
-    try:
-        user = session.get("user").get("username")
-        return User.objects(username=user).first()
-    except Exception as e:
-        print("User not found - a valid user is required to upload questions") 
-        return None
-
-def get_content_units(tex_frame_contents, creator):
-    content_units = str(
-        get_field("QuestionContentUnits", tex_frame_contents))[1:-1]
-    content_units = content_units.replace(
-        ' ,', ',').replace(', ', ',').split(",")
-    cu = []
-    for content_unit in content_units:
-        if CU.objects(name=content_unit).first() is not None:
-            cu.append(CU.objects(name=content_unit).first())
-            print("CU found: " + str(content_unit))
-        else:
-            print("CU not found - creating a new CU")
-            cu.append(CU(name=content_unit, creator=creator).save())
-    return cu
-
-def get_language(language):
-    try:
-        return Language.objects(name=language).first()
-    except Exception as e:
-        return None
-
-
-def get_notation_standard(notation):
-    try:
-        return NotationStandard.objects(name=notation).first()
-    except Exception as e:
-        return None
 
 
 def get_field(token_name, tex_frame_contents):
@@ -201,8 +151,9 @@ def get_field(token_name, tex_frame_contents):
     """
     for token in tex_frame_contents:
         if token.name == token_name:
-            return [token.args[-1] for token in tex_frame_contents if token.name == token_name][0]
+            return [token.args[0] for token in tex_frame_contents if token.name == token_name][0]
     return {None}
+
 
 
 def get_question_body(tex_frame_contents):
@@ -232,7 +183,7 @@ def get_question_body(tex_frame_contents):
     return q
 
 
-def get_image(tex_frame_contents, file_list, zip_file, field_name):
+def get_image(tex_frame_contents, file_list, field_name):
     """
     Parameters
     ----------
@@ -252,10 +203,11 @@ def get_image(tex_frame_contents, file_list, zip_file, field_name):
 
     # get the name of the image
     image_string = str(get_field(field_name, tex_frame_contents))[1:-1]
+
     if image_string != 'None':
-        #image_string = re.findall(r'{(?:[^{}])*}', image_string)
+        image_string = re.findall(r'{(?:[^{}])*}', image_string)
         for fil in file_list:
-            if fil == image_string:
+            if fil == image_string[0][1:-1]:
                 image = zip_file.open(fil)
 
     return image
@@ -267,7 +219,7 @@ def get_answers_for_multiple_choice_questions(tex_frame_contents, question_type)
     if question_type != "multiple choice":
         potential_answers = correct_answers = None
         return potential_answers, correct_answers
-
+        
     # answers = str(get_field("QuestionAnswers", tex_frame_contents))[1:-1]
     answers_i = 3  # Usually where the framecontents is
     # in case first field is \vspace or another setting instead
@@ -280,7 +232,7 @@ def get_answers_for_multiple_choice_questions(tex_frame_contents, question_type)
         [token for token in tex_frame_contents[answers_i]])
 
     potential_answers = []
-    correct_answers = []
+    correct_answers   = []
     for i, entry in enumerate(answers):
 
         if '\\answer' in entry:
@@ -303,14 +255,15 @@ def is_question_type_well_defined(question_type):
         # debug
         print('well-defined question type: {}'.format(question_type))
 
-        return True
+        return true
 
     else:
 
         # debug
         print('!!! ILL-DEFINED QUESTION TYPE: {}'.format(question_type))
 
-        return True
+        return true
+
 
 
 def format_answers(answers):
@@ -345,3 +298,5 @@ def format_answers(answers):
     formatted_answers.append(answer)
 
     return formatted_answers
+
+

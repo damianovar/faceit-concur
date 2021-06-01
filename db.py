@@ -17,9 +17,9 @@ from collections import Counter
 
 # uppsala trondheim padova magdeburg bruxelles
 
-client = connect(db       ="KCMap",
+client = connect(db       ="FaceIT-DB",
                  username ="developer",
-                 password ="bruxellesmagdeburgpadovatrondheimuppsala",
+                 password ="bruxelles magdeburg padova trondheim uppsala",
                  host     ="mongodb+srv://developer:bruxellesmagdeburgpadovatrondheimuppsala@la.ntmol.mongodb.net/FaceIT-DB?retryWrites=true&w=majority",
                  connectTimeoutMS =30000,
                  socketTimeoutMS  =None,
@@ -53,12 +53,13 @@ def list_question_objects():
         if course_name is None:
             course_name = 'empty'
 
-        # store the interesting attributes
+       # store the interesting attributes
         attributes_of_current_question = \
                 [question.body,
                  course_name,
-                 question.content_units,
-                 question.taxonomy_levels]
+                 [cu.name for cu in question.content_units],
+                 #question.taxonomy_levels
+                 ]
 
         # push them in the list
         list_of_questions_attributes.append(attributes_of_current_question)
@@ -66,37 +67,40 @@ def list_question_objects():
     return list_of_questions_attributes, list_of_questions_IDs
 
 
-def write_answer_to_mongo(question, txt_answer, selected_option, perceived_difficulty):
+def write_answer_to_mongo(question, txt_answer, selected_answer, perceived_difficulty):
     """
         Given a question object and an answer to that question the function updates the Answer collection with the provided answer.
         If the question has already been answered by the same user, the answer is overridden, otherwise a new answer object is added to collection.
     """
-    session_data_string = session["user"]
+    #session_data_string = session["user"]
 
-    username_str_start = session_data_string.find('username') + 9
-    username_str_end = session_data_string.find('email') - 4
-    email_str_start = session_data_string.find('email') + 9
-    email_str_end = session_data_string.find('password') - 4
+    #username_str_start = session_data_string.find('username') + 9
+    username = session.get("user").get("username")
+    user = User.objects(username=username).first()
+    # email = user.get("email")
+    # username_str_end = session_data_string.find('email') - 4
+    # email_str_start = session_data_string.find('email') + 9
+    # email_str_end = session_data_string.find('password') - 4
 
-    user_name = session["user"][username_str_start:username_str_end]
-    user_email = session["user"][email_str_start:email_str_end]
-    user = User.objects(email=user_email).first()
+    # user_name = session["user"][username_str_start:username_str_end]
+    # user_email = session["user"][email_str_start:email_str_end]
+    # user = User.objects(email=user_email).first()
 
     # If difficulty is not rated, set the rating to -1
+    print(selected_answer)
     if perceived_difficulty == None:
         perceived_difficulty = -1
 
     QuestionAnswer.objects(question = question, user = user).update_one( \
-            user_name=user_name,
-            answer=txt_answer,
-            selected_option=selected_option,
+            #answer=txt_answer,
+            selected_answer=selected_answer,
             perceived_difficulty=perceived_difficulty,
             upsert=True)
 
 
 def get_user_obj():
     """
-        Accesses the session data and retrives the current user obj
+        Accesses the session data and retrieves the current user obj
     """
     session_data_string = session["user"]
 
@@ -114,7 +118,8 @@ def get_user_role():
     """
         Retrives user role and returns it as a string: "Admin", "Teacher" or "Student"
     """
-    return get_user_obj().role
+    user = session.get("user").get("username")
+    return User.objects(username=user).first().role
 
 
 def get_question_image(question_id):
@@ -125,7 +130,7 @@ def get_question_image(question_id):
 
     question_obj = Question.objects(id = str(question_id)).first()
 
-    image_raw = question_obj.image.read()
+    image_raw = question_obj.body_image.read()
     if image_raw is None:
         return None
 
@@ -146,9 +151,12 @@ def get_answer_options_from_question_obj(selected_question_obj):
     """
         For a given question object, returns a list of answer options with a list of corresponding indices
     """
-    list_of_options = [[x] for x in selected_question_obj.options]
-    idx_list_for_options = list(range(0, len(selected_question_obj.options)))
-    return list_of_options, idx_list_for_options
+    # list_of_options = [[x] for x in selected_question_obj.options]
+    # idx_list_for_options = list(range(0, len(selected_question_obj.options)))
+    if selected_question_obj.question_type == 'multiple choice':
+        list_of_options = selected_question_obj.potential_answers
+        idx_list_for_options = list(range(0, len(selected_question_obj.potential_answers)))  
+        return list_of_options, idx_list_for_options
 
 
 def get_avg_perceived_difficulty(question_id):
@@ -176,6 +184,7 @@ def make_bar_plot(question_data):
         which is easy to display in HTML
     """
     course_data = []
+    print(question_data)
     for row in question_data:
         course_data.append(row[1])
 
@@ -246,7 +255,6 @@ def add_institution():
         c = Country.objects(name="Norway").first()
         return Institution(name="NTNU", country=c).save()
     return "This institution already exists!"
-
 
 # def add_cuconnection():
 #     creator = User.objects(username="chlang").first()

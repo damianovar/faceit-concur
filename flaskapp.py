@@ -10,9 +10,10 @@ from flask import (
     abort,
     session,
     jsonify,
+    flash
 )
 from functools import wraps
-from werkzeug.utils import secure_filename
+
 from typing import *
 
 from backend.upload.upload_script import Upload
@@ -43,7 +44,7 @@ if not os.path.exists(app.config["TEX_UPLOADS"]):
     os.makedirs(app.config["TEX_UPLOADS"])
 
 
-def login_requiered(f):
+def login_required(f):
     """
     Check if user is logged in.
 
@@ -60,6 +61,26 @@ def login_requiered(f):
     return wrap
 
 
+"""
+Restrict access to certain access level e.g. Teacher, Admin, ... (TODO: list of roles)
+
+str access_level
+
+"""
+def requires_access_level(access_level):
+    def decorator(f):
+        @wraps(f)
+        def wrap(*args, **kwargs):
+            if access_level == session.get("user").get("role"):
+                print(session.get("user").get("role"))
+                return f(*args, **kwargs)    
+            else:
+                flash("You do not have access to this page. Sorry!")
+                return redirect(url_for('index'))
+        return wrap
+    return decorator
+
+
 @app.route("/")
 def index() -> Any:
     """Return homepage."""
@@ -68,9 +89,9 @@ def index() -> Any:
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-
     """Return a page for registering a user."""
     db.add_institution()
+    print("A")
     form = RegistrationForm()
     form.institution.choices = [
         institutions.name for institutions in Institution.objects()]
@@ -160,6 +181,7 @@ def upload_excel():
 
 
 @app.route("/upload", methods=["GET", "POST"])
+@requires_access_level("Admin")
 def upload_tex():
     """Upload a tex-file."""
     if request.method == "POST":
@@ -178,7 +200,7 @@ def upload_tex():
 
 
 @app.route("/submit_answer", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def show_questions():
     data, selection_data = db.list_question_objects()
 
@@ -193,7 +215,7 @@ def show_questions():
 
 
 @app.route("/submit_answer/answer_selected_question", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def answer_selected_question():
     messages = request.args["messages"]
     selected_question_id = json.loads(messages)["selected_question_id"]
@@ -202,13 +224,18 @@ def answer_selected_question():
         selected_multiple_choice_answer = request.form.get("id")
         if not selected_multiple_choice_answer:
             return render_template(
-                "submit_answer/error_no_answer_selected.html",
-                title="Answer not submitted",
+                "submit_answer/error_missing_selection.html",
+                title="Answer not submitted", message="Answer not submitted"
             )
 
         question_id = request.form.get("multiple_choice_button")
         written_answer = request.form.get("written_answer")
         perceived_difficulty = request.form.get("rating")
+        if not perceived_difficulty:
+            return render_template(
+                "submit_answer/error_missing_selection.html",
+                title="Perceived difficulty not submitted", message="Perceived difficulty not submitted"
+            )            
 
         messages = json.dumps(
             {
@@ -230,7 +257,7 @@ def answer_selected_question():
     current_user_role = db.get_user_role()
     if current_user_role == "Admin" or current_user_role == "Teacher":
         correct_answer = (
-            "The correct answer is: " + selected_question_obj.correct_answer[0]
+            "The correct answer is: " + selected_question_obj.potential_answers[0]
         )
     else:  # current_user_role == 'Student'
         correct_answer = None
@@ -240,14 +267,14 @@ def answer_selected_question():
         data=list_of_options,
         selection_data=idx_list_for_options,
         question_id=selected_question_obj.id,
-        question_text=selected_question_obj.question,
+        question_text=selected_question_obj.body,
         correct_answer=correct_answer,
         question_image=question_image,
     )
 
 
 @app.route("/submit_answer/successfully_submitted", methods=["GET"])
-@login_requiered
+@login_required
 def show_submission_info():
     messages = request.args["messages"]
     selected_multiple_choice_answer = json.loads(messages)[
@@ -265,18 +292,18 @@ def show_submission_info():
         perceived_difficulty,
     )
 
-    options_list = answered_question_obj.options
+    options_list = answered_question_obj.potential_answers
     display_answer = str(options_list[int(selected_multiple_choice_answer)])
 
-    data, _ = db.list_question_objects()
-    info_plot = db.make_bar_plot(data)
+    # data, _ = db.list_question_objects()
+    # info_plot = db.make_bar_plot(data)
     perceived_difficulty = db.get_avg_perceived_difficulty(question_id)
 
     return render_template(
         "submit_answer/answer_submitted_successfully.html",
         answer=display_answer,
-        question=answered_question_obj.question,
-        plot=info_plot,
+        question=answered_question_obj.body,
+        # plot=info_plot,
         perceived_difficulty=perceived_difficulty,
     )
 
@@ -299,9 +326,8 @@ def get_image(tex_name):
 
 
 @app.route("/downloads", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def downloads():
-
     """Let a user download questions."""
 
     # Check one which is used - 1 or 2
@@ -324,7 +350,7 @@ def downloads():
 
 
 @app.route("/game", methods=["GET", "POST"])
-@login_requiered
+@login_required
 def game() -> Any:
     cu_amount = db.get_amount_of_cus_in_course("Operating Systems")
 
@@ -341,7 +367,8 @@ def game() -> Any:
     cu1 = None
     cu2 = None
 
-    reshaped_user_matrix = np.fromiter(matrix.reshape_for_db(user_matrix), float)
+    reshaped_user_matrix = np.fromiter(
+        matrix.reshape_for_db(user_matrix), float)
     unused_cu_indeces = np.where(reshaped_user_matrix == -1)
     unused_cu_indeces = unused_cu_indeces[0]
 
@@ -417,7 +444,8 @@ def add_headers(response):
     return str response
     """
     response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type,Authorization")
+    response.headers.add("Access-Control-Allow-Headers",
+                         "Content-Type,Authorization")
     return response
 
 
