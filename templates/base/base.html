@@ -48,14 +48,29 @@
     var sidebar = document.querySelector("#sidebar")
     var content_container = document.querySelector(".content-container")
     var active = document.querySelector(".active")
-    $(".toggle-sidebar").click(function(event) {
-      event.preventDefault();
-      $("#fold-sidebar").toggle();
-      $("#unfold-sidebar").toggle();
-      sidebar.classList.toggle("inactive-sidebar");
-      content_container.classList.toggle("inactive-container");
-      //active.classList.toggle("active")
-   });
+    $(document).ready(function () {
+      if (localStorage.getItem("toggleState") == "0") {
+        $("#fold-sidebar").hide();
+        $("#unfold-sidebar").show();
+        sidebar.classList.add("inactive-sidebar");
+        content_container.classList.add("inactive-container");
+      }
+
+      $(".toggle-sidebar").click(function (event) {
+        if (sidebar.classList.contains("inactive-sidebar")) {
+          localStorage.setItem("toggleState", "1");
+        }
+        else {
+          localStorage.setItem("toggleState", "0");
+        }
+        $("#fold-sidebar").toggle();
+        $("#unfold-sidebar").toggle();
+        sidebar.classList.toggle("inactive-sidebar");
+        content_container.classList.toggle("inactive-container");
+        //active.classList.toggle("active")
+      });
+    });
+
   </script>
 
   <script src="/static/js/bootstrap-table/bootstrap-table.min.js"></script>
@@ -74,6 +89,12 @@
     });
   </script> -->
 
+  <!-- wait for page to load, before displaying content -->
+  <script>
+    $(window).on('load', function () {
+      $('body').show();
+    })
+  </script>
 </body>
 
 </html>
