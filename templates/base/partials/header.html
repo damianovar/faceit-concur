@@ -1,52 +1,165 @@
-<nav class="navbar bg-primary navbar-icon-top navbar-expand flex-column flex-md-row p-0 shadow navbar-custom fixed-top">
-    <a class="navbar-brand col-md-2 mr-0" href="#">.#.</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+<div class="banner d-flex flex-row">
+    <ul class="navbar-nav ml-auto">
+        {% if session['logged_in'] %}
+        <button id="profile-btn" class="btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                class="bi bi-person-circle" viewBox="0 0 16 16">
+                <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+                <path fill-rule="evenodd"
+                    d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+            </svg>
+        </button>
+        {% endif %}
+    </ul>
+    <ul class="navbar-nav d-flex flex-row">
+        {% if session['logged_in'] %}
+        <li>
+            <p class="login-text">You are currently logged in.</p>
+        </li>
+        <li class="login-item">
+            <a class="nav-link h-100 mr-4" href="/logout"> Sign Out </a>
+        </li>
+        {% else %}
+        <li class="login-item {{ 'active' if active_page == 'menu3' else '' }}">
+            <a class="nav-link h-100" href="{{url_for('login') }}"> Login </a>
+        </li>
+        <li class="login-item {{ 'active' if active_page == 'menu4' else '' }}">
+            <a class="nav-link h-100 mr-4" href="{{url_for('register') }}"> Register </a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav mr-auto">
-            <li class="nav-item {{ 'active' if active_page == 'menu1' else '' }}">
-                <a class="nav-link" href="{{url_for('index') }}"> Home </a>
-            </li>
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    Dropdown
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item"
-                        href="https://drive.google.com/file/d/13ihYK6Zo7YwZflL0-PC7RQXXmSEJm2uV/view?usp=sharing">manual</a>
-                </div>
-            </li>
-        </ul>
-        <ul class="navbar-nav">
-            <button id="profile-btn" class="btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
-                    class="bi bi-person-circle" viewBox="0 0 16 16">
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" />
+<nav class="navbar navbar-expand d-flex flex-column px-0" id="sidebar">
+    <div class="menu-header d-flex flex-row w-100">
+        <div class="brand">
+            <h2>FaceIt</h2>
+        </div>
+        <div class="toggle-sidebar ml-auto">
+            <button class="btn mt-1 mr-2" id="fold-sidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem" height="1.4rem" fill="currentColor"
+                    class="bi bi-arrows-collapse" viewBox="0 0 16 16">
                     <path fill-rule="evenodd"
-                        d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z" />
+                        d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8zm7-8a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 1 1 .708-.708L7.5 4.293V.5A.5.5 0 0 1 8 0zm-.5 11.707-1.146 1.147a.5.5 0 0 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 11.707V15.5a.5.5 0 0 1-1 0v-3.793z" />
                 </svg>
             </button>
+            <button class="btn mt-1 mr-2" style="display: none;" id="unfold-sidebar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.4rem" height="1.4rem" fill="currentColor"
+                    class="bi bi-arrows-expand" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M1 8a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13A.5.5 0 0 1 1 8zM7.646.146a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 1.707V5.5a.5.5 0 0 1-1 0V1.707L6.354 2.854a.5.5 0 1 1-.708-.708l2-2zM8 10a.5.5 0 0 1 .5.5v3.793l1.146-1.147a.5.5 0 0 1 .708.708l-2 2a.5.5 0 0 1-.708 0l-2-2a.5.5 0 0 1 .708-.708L7.5 14.293V10.5A.5.5 0 0 1 8 10z" />
+                </svg>
+            </button>
+        </div>
+
+    </div>
+    
+    <div class="menu-wrapper mt-4 w-100">
+        <ul class="navbar-nav d-flex flex-column w-100">
+            <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu1' else ''}} ">
+                <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('index') }}">
+                    <div>Home </div>
+                    <div class="ml-auto pr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" fill="currentColor"
+                            class="bi bi-house-fill" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6zm5-.793V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z" />
+                            <path fill-rule="evenodd"
+                                d="M7.293 1.5a1 1 0 0 1 1.414 0l6.647 6.646a.5.5 0 0 1-.708.708L8 2.207 1.354 8.854a.5.5 0 1 1-.708-.708L7.293 1.5z" />
+                        </svg>
+                    </div>
+                </a>
+            </li>
+
         </ul>
-        <ul class="navbar-nav">
-            {% if session['logged_in'] %}
-            <li class="nav-item">
-                <p class="login-text">You are currently logged in.</p>
+        <ul class="navbar-nav d-flex flex-column w-100">
+            <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu5' else ''}} ">
+                <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('upload_tex') }}">
+                    <div>Upload</div>
+                    <div class="ml-auto pr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" fill="currentColor"
+                            class="bi bi-upload" viewBox="0 0 16 16">
+                            <path
+                                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                            <path
+                                d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z" />
+                        </svg>
+                    </div>
+                </a>
             </li>
-            <li class="nav-item login-item">
-                <a href="/logout" class="nav-link"> Sign Out </a>
+        </ul>
+        <ul class="navbar-nav d-flex flex-column w-100">
+            <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu6' else ''}} ">
+                <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('downloads') }}">
+                    <div>Download</div>
+                    <div class="ml-auto pr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" fill="currentColor"
+                            class="bi bi-download" viewBox="0 0 16 16">
+                            <path
+                                d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z" />
+                            <path
+                                d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z" />
+                        </svg>
+                    </div>
+                </a>
             </li>
-            {% else %}
-            <li class="nav-item login-item {{ 'active' if active_page == 'menu3' else '' }}">
-                <a class="nav-link" href="{{url_for('login') }}"> Login </a>
+        </ul>
+        <ul class="navbar-nav d-flex flex-column w-100">
+            <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu7' else ''}} ">
+                <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('show_questions') }}">
+                    <div>Submit Answer</div>
+                    <div class="ml-auto pr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" fill="currentColor"
+                            class="bi bi-patch-exclamation-fill" viewBox="0 0 16 16">
+                            <path
+                                d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zM8 4c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995A.905.905 0 0 1 8 4zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+                        </svg>
+                    </div>
+                </a>
             </li>
-            <li class="nav-item login-item {{ 'active' if active_page == 'menu4' else '' }}">
-                <a class="nav-link" href="{{url_for('register') }}"> Register </a>
+        </ul>
+        <ul class="navbar-nav d-flex flex-column w-100">
+            <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu8' else ''}} ">
+                <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('upload_excel') }}">
+                    <div>Upload Excel files</div>
+                    <div class="ml-auto pr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" fill="currentColor"
+                            class="bi bi-file-earmark-spreadsheet-fill" viewBox="0 0 16 16">
+                            <path d="M6 12v-2h3v2H6z" />
+                            <path
+                                d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM3 9h10v1h-3v2h3v1h-3v2H9v-2H6v2H5v-2H3v-1h2v-2H3V9z" />
+                        </svg>
+                    </div>
+                </a>
             </li>
-            {% endif %}
+        </ul>
+        <ul class="navbar-nav d-flex flex-column w-100">
+            <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu9' else ''}} ">
+                <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('graph_list') }}">
+                    <div>Graphlist</div>
+                    <div class="ml-auto pr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" fill="currentColor"
+                            class="bi bi-diagram-3-fill" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M6 3.5A1.5 1.5 0 0 1 7.5 2h1A1.5 1.5 0 0 1 10 3.5v1A1.5 1.5 0 0 1 8.5 6v1H14a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0V8h-5v.5a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 2 7h5.5V6A1.5 1.5 0 0 1 6 4.5v-1zm-6 8A1.5 1.5 0 0 1 1.5 10h1A1.5 1.5 0 0 1 4 11.5v1A1.5 1.5 0 0 1 2.5 14h-1A1.5 1.5 0 0 1 0 12.5v-1zm6 0A1.5 1.5 0 0 1 7.5 10h1a1.5 1.5 0 0 1 1.5 1.5v1A1.5 1.5 0 0 1 8.5 14h-1A1.5 1.5 0 0 1 6 12.5v-1zm6 0a1.5 1.5 0 0 1 1.5-1.5h1a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-1.5 1.5h-1a1.5 1.5 0 0 1-1.5-1.5v-1z" />
+                        </svg>
+                    </div>
+                </a>
+            </li>
+        </ul>
+        <ul class="navbar-nav d-flex flex-column w-100">
+            <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu10' else ''}} ">
+                <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('game') }}">
+                    <div>Play Game</div>
+                    <div class="ml-auto pr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.7rem" height="1.7rem" fill="currentColor"
+                            class="bi bi-puzzle-fill" viewBox="0 0 16 16">
+                            <path
+                                d="M3.112 3.645A1.5 1.5 0 0 1 4.605 2H7a.5.5 0 0 1 .5.5v.382c0 .696-.497 1.182-.872 1.469a.459.459 0 0 0-.115.118.113.113 0 0 0-.012.025L6.5 4.5v.003l.003.01c.004.01.014.028.036.053a.86.86 0 0 0 .27.194C7.09 4.9 7.51 5 8 5c.492 0 .912-.1 1.19-.24a.86.86 0 0 0 .271-.194.213.213 0 0 0 .036-.054l.003-.01v-.008a.112.112 0 0 0-.012-.025.459.459 0 0 0-.115-.118c-.375-.287-.872-.773-.872-1.469V2.5A.5.5 0 0 1 9 2h2.395a1.5 1.5 0 0 1 1.493 1.645L12.645 6.5h.237c.195 0 .42-.147.675-.48.21-.274.528-.52.943-.52.568 0 .947.447 1.154.862C15.877 6.807 16 7.387 16 8s-.123 1.193-.346 1.638c-.207.415-.586.862-1.154.862-.415 0-.733-.246-.943-.52-.255-.333-.48-.48-.675-.48h-.237l.243 2.855A1.5 1.5 0 0 1 11.395 14H9a.5.5 0 0 1-.5-.5v-.382c0-.696.497-1.182.872-1.469a.459.459 0 0 0 .115-.118.113.113 0 0 0 .012-.025L9.5 11.5v-.003l-.003-.01a.214.214 0 0 0-.036-.053.859.859 0 0 0-.27-.194C8.91 11.1 8.49 11 8 11c-.491 0-.912.1-1.19.24a.859.859 0 0 0-.271.194.214.214 0 0 0-.036.054l-.003.01v.002l.001.006a.113.113 0 0 0 .012.025c.016.027.05.068.115.118.375.287.872.773.872 1.469v.382a.5.5 0 0 1-.5.5H4.605a1.5 1.5 0 0 1-1.493-1.645L3.356 9.5h-.238c-.195 0-.42.147-.675.48-.21.274-.528.52-.943.52-.568 0-.947-.447-1.154-.862C.123 9.193 0 8.613 0 8s.123-1.193.346-1.638C.553 5.947.932 5.5 1.5 5.5c.415 0 .733.246.943.52.255.333.48.48.675.48h.238l-.244-2.855z" />
+                        </svg>
+                    </div>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

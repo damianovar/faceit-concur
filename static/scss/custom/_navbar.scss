@@ -1,11 +1,7 @@
 .navbar {
   padding-bottom: 0.1em;
 }
-.navbar-brand {
-  @include media-breakpoint-up(xl) {
-    flex: 0 1 320px;
-  }
-}
+
 
 .navbar-brand {
   font-size: 1.75rem;

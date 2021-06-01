@@ -1,5 +1,9 @@
-{% extends "base/base.html" %} {% set active_page = "menu9" %} {% block head %}
-{{ super()}} {% endblock %} {% block main %}
+{% extends "base/base.html" %}
+{% set active_page = "menu9" %} 
+{% block head %}
+{{ super()}}
+{% endblock %}
+{% block main %}
 
 <div class="container mb-2">
   <h1>Welcome to the mapping game!</h1>
@@ -20,21 +24,11 @@
       <tbody>
         <br />
         {% for i in range(1, 11) %}
-        <button
-          class="btn btn-secondary"
-          type="submit"
-          name="btn_value"
-          value="{{i}}"
-        >
+        <button class="btn btn-secondary" type="submit" name="btn_value" value="{{i}}">
           {{ i }}
         </button>
         {% endfor %}
-        <button
-          class="btn btn-outline-secondary"
-          type="submit"
-          name="btn_value"
-          value="-1"
-        >
+        <button class="btn btn-outline-secondary" type="submit" name="btn_value" value="-1">
           Don't know
         </button>
       </tbody>

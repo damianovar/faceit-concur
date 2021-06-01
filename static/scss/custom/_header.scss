@@ -1,0 +1,104 @@
+header {
+    display: inline-block;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 999;
+}
+
+.navbar {
+    width: 20rem;
+    height: 100vh;
+    position: fixed !important;
+    margin-left: 0px;
+    background-color: #040f3c;
+    transition: 0.4s;
+}
+
+.brand{
+    color: #fff;
+    padding-top: 0.5rem;
+    padding-left: 1rem;
+}
+
+.nav-link,
+.nav-link:active,
+.nav-link:hover {
+    font-size: 1.35rem;
+    font-weight: 200;
+    padding: 0.75rem 1rem;
+    color: #fff;
+}
+
+.nav-item.active,
+.nav-item:active,
+.nav-item:focus,
+.nav-item:hover {
+    border-right: 5px solid #fff;
+    background-color: #f43000;
+    
+}
+
+.banner {
+    background-color: #fcf5eb;
+    background-repeat: no-repeat;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    position: fixed;
+    width: 100%;
+    height: 2.3rem;
+}
+
+.banner .navbar-nav .nav-link {
+    color: rgb(255, 255, 255);
+    padding: 0.2rem 0.7rem 0rem 0.7rem;
+}
+
+.banner .navbar-nav .login-item .nav-link {
+    color: #040f3c;
+    font-size: 1.25rem;
+}
+
+.banner .navbar-nav .login-item.active .nav-link,
+.banner .navbar-nav .login-item:hover .nav-link {
+    color: #ffffff;
+    background-color: #040f3c;
+}
+
+.banner .navbar-nav .login-text {
+    color: #040f3c;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.75rem;
+    padding: 0.5rem 0.7rem 0rem 0.7rem;
+}
+
+#profile-btn {
+    padding: 0.2rem 0.7rem 0rem 0.7rem !important;
+    color: #040f3c;
+}
+
+.toggle-sidebar{
+    margin-right: 0.25rem;
+    margin-top: 0.5rem;
+}
+
+#fold-sidebar,
+#unfold-sidebar {
+    background-color: #fcf5eb;
+    color: #040f3c;
+    transform: rotate(90deg);
+    padding: 5px 5px 5px 5px !important;
+    line-height: 0px;
+    border-radius: 50%;
+}
+
+#fold-navbar:hover {
+    box-shadow: 0 0 0 0.25rem #d1cac1;
+}
+
+.inactive-sidebar {
+    margin-left: -16rem;
+}

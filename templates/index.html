@@ -1,15 +1,26 @@
 {% extends "base/base.html" %}
 {% set active_page = "menu1" %}
-{% block main %}
+{% block main%}
+{% if action %}
+<div class="alert alert-success alter-dismissible fade show" role="alert">
+  {{action}}
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{% endif %}
 
-<div class="container">
-  <div class="row">
-    <div class="col">
-      {{session['logged_in']}}
-      {{session['user']}}
-    </div>
-  </div>
+<div class="d-flex align-items-center flex-column h-100">
+  <p style="word-break: break-all">{{session['user']}}</p>
 </div>
 
-
+{% endblock %}
+{% block scripts%}
+<script>
+  window.setTimeout(function () {
+    $(".alert").fadeTo(500, 0).slideUp(500, function () {
+      $(this).remove();
+    });
+  }, 3000);
+</script>
 {% endblock %}

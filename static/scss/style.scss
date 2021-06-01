@@ -1,7 +1,3 @@
-$theme-colors: (
-    "primary": #ff5500,
-    "secondary":#333333,
-);
 /* 
 @import "../bootstrap/functions";
 @import "../bootstrap/variables";
@@ -20,12 +16,23 @@ $theme-colors: (
 @import "../bootstrap/close";
 @import "../bootstrap/transitions";
 @import "../bootstrap/type";
-@import "../bootstrap/tables"; */
-@import "bootstrap/bootstrap.scss";
+@import "../bootstrap/tables"; 
+*/
 @import "bootstrap-table/bootstrap-table.scss";
 @import "bootstrap-table/extension/bootstrap-table-filter-control.scss";
 
 @import "custom/custom";
-@import "custom/navbar";
-@import "custom/sidebar";
-@import "custom/registerlogin"
+@import "custom/header";
+@import "custom/registerlogin";
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif !important;
+    min-height: 100vh;
+    background-color: #fff;
+}
