@@ -95,6 +95,7 @@ def register():
     form = RegistrationForm()
     form.institution.choices = [
         institutions.name for institutions in Institution.objects()]
+    form.institution.choices.insert(0," ")
     if request.method == 'POST' and form.validate():
         if Account().signup(form):
             return redirect("/")

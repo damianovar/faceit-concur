@@ -1,14 +1,6 @@
 {% extends "base/base.html" %}
 {% set active_page = "menu1" %}
 {% block main%}
-{% if action %}
-<div class="alert alert-success alter-dismissible fade show" role="alert">
-  {{action}}
-  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
-  </button>
-</div>
-{% endif %}
 
 <div class="d-flex align-items-center flex-column h-100">
   <p style="word-break: break-all">{{session['user']}}</p>
@@ -16,6 +8,7 @@
 
 {% endblock %}
 {% block scripts%}
+
 <script>
   window.setTimeout(function () {
     $(".alert").fadeTo(500, 0).slideUp(500, function () {
@@ -23,4 +16,5 @@
     });
   }, 3000);
 </script>
+
 {% endblock %}

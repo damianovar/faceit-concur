@@ -21,10 +21,10 @@
         </li>
         {% else %}
         <li class="login-item {{ 'active' if active_page == 'menu3' else '' }}">
-            <a class="nav-link h-100" href="{{url_for('login') }}"> Login </a>
+            <a class="nav-link h-100" href="{{url_for('login') }}"> Log In </a>
         </li>
         <li class="login-item {{ 'active' if active_page == 'menu4' else '' }}">
-            <a class="nav-link h-100 mr-4" href="{{url_for('register') }}"> Register </a>
+            <a class="nav-link h-100 mr-4" href="{{url_for('register') }}"> Sign Up </a>
         </li>
         {% endif %}
     </ul>
@@ -51,9 +51,7 @@
                 </svg>
             </button>
         </div>
-
     </div>
-    
     <div class="menu-wrapper mt-4 w-100">
         <ul class="navbar-nav d-flex flex-column w-100">
             <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu1' else ''}} ">
@@ -70,8 +68,8 @@
                     </div>
                 </a>
             </li>
-
         </ul>
+        {% if session['logged_in'] %}
         <ul class="navbar-nav d-flex flex-column w-100">
             <li class="d-flex flex-row nav-item w-100 {{'active' if active_page == 'menu5' else ''}} ">
                 <a class="d-flex flex-row nav-link pl-4 w-100" href="{{url_for('upload_tex') }}">
@@ -161,5 +159,6 @@
                 </a>
             </li>
         </ul>
+        {% endif %}
     </div>
 </nav>
