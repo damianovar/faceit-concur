@@ -9,6 +9,10 @@ import json
 from itertools import zip_longest
 
 
+multigraph_colors = ['cyan', 'salmon', 'chartreuse']
+merged_node_in_multiple_graph_color = 'grey'
+
+
 def get_nodes_and_edges_cu_relations(CU_REL, sheet):
     """
     1: Go through spreadsheet, add every single one of the kcs in first column to kcs in database
@@ -22,9 +26,16 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
     g.width = "75%"
     # nodes, layout, interaction, selection, renderer, physics
     g.show_buttons(filter_=["edges", "physics"])
-    for cu in CU_REL.cus:
-        cu = cu.split("(")[0].strip().lower()
-        g.add_node(n_id=cu, label=cu, shape='ellipse')
+
+
+    if CU_REL.link is not []:
+        for cu, link in zip(CU_REL.cus, CU_REL.link):
+            cu = cu.split("(")[0].strip().lower()
+            g.add_node(n_id=cu, label=cu, shape='ellipse', link=link)
+    else:
+        for cu in CU_REL.cus:
+            cu = cu.split("(")[0].strip().lower()
+            g.add_node(n_id=cu, label=cu, shape='ellipse')
 
     cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
 
@@ -60,6 +71,13 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
                 dl = dl.strip().lower()
                 g.add_node(dl)
                 g.add_edge(dl, cu, color="#ffffff")
+    
+    # Add links to them
+    """
+    for iterate, node in enumerate(g.get_nodes()):
+        g.nodes[iterate]["link"] = links[iterate]
+    """
+    
     """
     for iterate, node in enumerate(g.get_nodes()):
         length = len(g.neighbors(node))
@@ -73,14 +91,10 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
             g.nodes[iterate]['color'] = "#735702"
         print(length)
     """
-    #print("Done rumbeling")
     node, edge, _, _, _ = g.get_network_data()
-    #print("Nodes:", node)
-    #print("Edges:", edge)
 
-    print("Setup for a test", remove_text_inside_parantheses(
-        "ODEs (e2), linearity (e2, u1), time invariance (e2, u1), causality (e2)"))
-    # g.show('cu_relations.html')
+    print("Node:", node)
+
     return json.dumps(node), json.dumps(edge)
 
 
@@ -104,7 +118,8 @@ def get_nodes_and_edges_cu_hierarchies(lists, sheet):
     :param lists:
     :return:
     """
-
+    if len(lists) == 0:
+        return [], []
     trans_mat = tuple(zip(*lists))
     col_size = len(trans_mat)
     num_of_cols = len(trans_mat[0])
@@ -150,3 +165,6 @@ def get_nodes_and_edges_cu_hierarchies(lists, sheet):
     node, edge, _, _, _ = g.get_network_data()
     # g.save_graph("grap.html")
     return json.dumps(node), json.dumps(edge)
+
+def get_multigraph_color(index):
+    return multigraph_colors[index]

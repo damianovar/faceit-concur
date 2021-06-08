@@ -21,10 +21,10 @@ from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
 
 import backend.graph.visualization as vis
-import backend.graph.spreadsheet as ss
 
 from backend.user.models import Account
 from backend.models.models import Institution, Course, User
+from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, get_graphs_from_excel_file, get_multiple_graph
 
 import db
 import matrix
@@ -33,7 +33,6 @@ import uuid
 
 import random
 import numpy as np
-import time
 import json
 
 
@@ -141,30 +140,39 @@ def allowed_file(filename):
 
 @app.route("/graphviz/<sheet>/<mode>")
 def graphs(sheet, mode):
-    if mode == "relations":
-        lists = ss.read_cu_relations(sheet, "content units relations")
-        nodes, edges = vis.get_nodes_and_edges_cu_relations(lists, sheet)
-    elif mode == "hierarchies":
-        lists = ss.read_course_category_tree(
-            sheet, "content units hierarchies", 5)
-        nodes, edges = vis.get_nodes_and_edges_cu_hierarchies(lists, sheet)
-    else:
-        nodes = []
-        edges = []
+    graph = dict(get_graph_from_id(sheet, mode))
+    if mode == "hierarchies":
+        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
+    else: 
+        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
+    
 
-    return render_template("graphviz.html", title='Visualize graphs', nodes=nodes, edges=edges)
+@app.route("/multi_graphviz/<sheet>/<mode>")
+def multi_graph(sheet, mode):
+    node_list, edge_list = get_multiple_graph(sheet, mode)
+    if mode == "hierarchies":
+        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
+    else: 
+        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
+    
+
+
+@app.route("/multi_graph", methods=["POST"])    
+def multi_graph_parser():
+    if request.method == 'POST':
+        search = request.get_json()
+        return render_template("upload_tex.html", title="Upload")
+    return render_template("upload_excel.html", title="Upload Excel")
 
 
 @app.route("/graph_list", methods=["GET", "POST"])
 def graph_list():
-    print("Hei")
     if request.method == "POST":
         if request.form['delete_button']:
-            sheet = request.form['delete_button']
-            ss.delete_CU_file(sheet)
-    available_CU_files = ss.get_available_CU_files()
+            delete_course(request.form['delete_button'])
+
     return render_template(
-        "graphlist.html", title="Graph list", CU_files=available_CU_files
+        "graphlist.html", title="Graph list", CU_files=zip(*get_course_names_and_id())
     )
 
 
@@ -173,13 +181,14 @@ def upload_excel():
     if request.method == "POST":
         if request.files:
             excel_file = request.files["xlsx"]
-            if excel_file.filename == "":
-                return redirect(request.url)
-            if excel_file.filename[-5:] == ".xlsx":
-                ss.upload_CU_file(excel_file)
-                return redirect(request.url)
-            else:
-                return redirect(request.url)
+            course_name = request.form["course_name"]
+            course_code = request.form["course_code"]
+            course_institution = request.form["course_institution"]
+
+            relationship_graph, hierarchy_graph = get_graphs_from_excel_file(excel_file, course_name)
+            create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
+
+            return redirect(request.url)
 
     return render_template("upload_excel.html", title="Upload Excel")
 

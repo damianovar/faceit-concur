@@ -78,46 +78,6 @@
 
 <div id = "config"></div>
 
-<div id ="labels">
-    <h3>Edge labels:</h3>
-    <hr>
-    <ol style="list-style-type: none;">
-        <li>
-            <div class="label">
-                <h5 class="label_text">Necessary</h5> 
-                <div class="colorbox necessary_edge"></div>
-            </div>
-        </li>
-        <li>
-            <div class="label">
-                <h5 class="label_text">Useful</h5> 
-                <div class="colorbox usefull_edge"  ></div>
-            </div>
-        </li>
-        <li> 
-            <div class="label">
-                <h5 class="label_text">Generalize</h5> 
-                <div class="colorbox generalize_edge"></div>
-            </div>
-        </li>
-        <li>
-            <div class="label">
-                <h5 class="label_text">Synonym</h5> 
-                <div class="colorbox synonym_edge"></div>
-            </div>
-        </li>
-        <li>
-            <div class="label">
-                <h5 class="label_text ">DLC</h5> 
-                <div class="colorbox dlc_edge"></div>
-            </div>
-        </li>
-    </ol>
-</div>
-
-
-
-
 
 <script type="text/javascript">
 
@@ -127,9 +87,6 @@
     var network;
     var container;
     var options, data;
-
-
-
 
 
     // This method is responsible for drawing the graph, returns the drawn network
@@ -182,15 +139,12 @@
         // if this network requires displaying the configure window,
         // put it in its div
         options.configure["container"] = document.getElementById("config");
-
-
         network = new vis.Network(container, data, options);
-
-
-
-
-
-
+        network.on( 'click', function(properties) {
+            var ids = properties.nodes;
+            var clickedNodes = nodes.get(ids);
+            console.log('clicked nodes:', clickedNodes);
+        });
         return network;
 
     }

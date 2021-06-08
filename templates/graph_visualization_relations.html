@@ -1,0 +1,201 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu9" %}
+{% block title %}Upload{% endblock %}
+{% block main %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 80%;
+            height: 90%;
+            background-color: #222222;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+
+
+
+        #config {
+            float: left;
+            width: 0px;
+            height: 0px;
+        }
+
+        #lables{
+            width:20%;
+            height: 1500px;
+        }
+
+        .label{
+            width:20%;
+            display: block; 
+            position: relative;
+            float: left;
+        }
+
+        .label_text {
+            float: left;
+            width: 50%;
+        }
+
+        .colorbox{
+            float: left;
+            width: 20px;
+            height: 20px;
+            margin: 5px;
+            border: 1px solid rgba(0, 0, 0, .2);
+        }
+
+        .usefull_edge{
+            background-color: #f0fc00;
+        }
+
+        .necessary_edge{
+            background-color: #32a852;
+        }
+
+        .generalize_edge{
+            background-color: #00f4fc;
+        }
+
+        .synonym_edge{
+            background-color: #fc0022;
+        }
+
+        .dlc_edge{
+            background-color: #ffffff;
+        }
+
+</style>
+<h1>Graph visualization</h1>
+<div id = "mynetwork"></div>
+
+
+<div id = "config"></div>
+
+<div id ="labels">
+    <h3>Edge labels:</h3>
+    <hr>
+    <ol style="list-style-type: none;">
+        <li>
+            <div class="label">
+                <h5 class="label_text">Necessary</h5> 
+                <div class="colorbox necessary_edge"></div>
+            </div>
+        </li>
+        <li>
+            <div class="label">
+                <h5 class="label_text">Useful</h5> 
+                <div class="colorbox usefull_edge"  ></div>
+            </div>
+        </li>
+        <li> 
+            <div class="label">
+                <h5 class="label_text">Generalize</h5> 
+                <div class="colorbox generalize_edge"></div>
+            </div>
+        </li>
+        <li>
+            <div class="label">
+                <h5 class="label_text">Synonym</h5> 
+                <div class="colorbox synonym_edge"></div>
+            </div>
+        </li>
+        <li>
+            <div class="label">
+                <h5 class="label_text ">DLC</h5> 
+                <div class="colorbox dlc_edge"></div>
+            </div>
+        </li>
+    </ol>
+</div>
+
+<div id="node_options" style="margin-top: 20%; display:none">
+    <h3 id="node_options_title">Node options</h3>
+    <button type="submit" id="question_querry_button" name="question_querry_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" onclick="query_for_question()" class="btn btn-primary">Get questions</button>
+    <button type="submit" id="link_querry_button" name="link_querry_button" value="{{id}}"  style="margin:5px; margin-bottom:30px;" onclick="redirect_to_link()" class="btn btn-primary">Get link</button>
+</div>
+
+
+
+
+
+<script type="text/javascript">
+    
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network;
+    var container;
+    var options, data;
+
+    
+    
+
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        nodes = new vis.DataSet(JSON.parse('{{ nodes|safe}}'));
+        edges = new vis.DataSet(JSON.parse('{{ edges|safe}}'))
+        
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {
+    "configure": {
+        "enabled": false,
+        "filter": [
+            "edges",
+            "physics"
+        ]
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": false,
+            "type": "continuous"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "centralGravity": 0.05, 
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+        // if this network requires displaying the configure window,
+        // put it in its div
+        options.configure["container"] = document.getElementById("config");
+        network = new vis.Network(container, data, options);
+        
+        network.on( 'click', (properties) => node_click(properties));
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+<script src="/static/js/graph_interaction/node_options_handler.js"></script>
+{% endblock %}

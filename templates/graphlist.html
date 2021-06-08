@@ -3,25 +3,58 @@
 {% block title %}Upload{% endblock %}
 {% block main %}
 
-
+<script src="/static/js/graph_interaction/graph_list_filter.js"></script>
 <h1 style="margin-bottom: 10px;">Select a course to visualize</h1>
-<ol style="list-style-type: none;">
-{% for sheet in CU_files %} 
-<div>
-    <h2 style="text-transform: capitalize;">{{sheet}}</h2>
-    <hr>
-    <a href={{url_for('graphs', sheet=sheet, mode="hierarchies")}}>
-        <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit hierarchies</button>
-    </a>
-    <a href={{url_for('graphs', sheet=sheet, mode="relations")}}>
-        <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit relations</button>
-    </a>
-   
-    <form action="/graph_list" method="POST">
-        <button type="submit" name="delete_button" value="{{sheet}}" style="margin:5px; margin-bottom:30px;" class="btn btn-secondary">Delete graph</button>
-    </form>
+<div style="width: 75%; float:left;">
+    <ol style="list-style-type: none;" id="graph_list">
+        {% for name, id in CU_files %} 
+        <li>
+            <h2 style="text-transform: capitalize;">{{name}}</h2>
+            <hr>
+            <div class="single_graph_button">
+                <a href={{url_for('graphs', sheet=id, mode="hierarchies")}}>
+                    <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit hierarchies</button>
+                </a>
+                <a href={{url_for('graphs', sheet=id, mode="relations")}}>
+                    <button type="button" class="btn btn-primary" style="margin:5px;">Visualize course unit relations</button>
+                </a>
+            </div>
 
+            <button type="button" class="btn btn-primary multi_relation_graph_button" style="margin:5px; display:none;" onclick="add_course_to_graph_list('{{name}}', '{{id}}')">Add course unit relations</button>
+            
+   
+            <button type="button" class="btn btn-primary multi_hierarchies_graph_button" style="margin:5px; display:none;" onclick="add_course_to_graph_list('{{name}}', '{{id}}')">Add course unit hierarchies</button>
+
+            <form action="/graph_list" method="POST">
+                <button type="submit" name="delete_button" value="{{id}}" style="margin:5px; margin-bottom:30px;" class="btn btn-secondary">Delete graph</button>
+            </form>
+        
+        </li>
+        {% endfor %}
+        </ol>
 </div>
-{% endfor %}
-</ol>
+<div style="width:20%; float:left;">
+    <div style="width: 100%; float:right;">
+        <input style="float:left;" type="text" id="graph_list_searchbar" onkeyup="graph_list_filter()" placeholder="Search for courses"> 
+    </div>
+    
+
+    <div style="width:100%; float: right; margin-top: 30%;">
+        <h5>Multigraph visualization</h5>
+        <input type="button" id="select_multigraph_hierarchy" value="Enable multigraph hierarchies" onclick="switch_to_multigraph_interface('multi_hierarchies_graph_button')" class="btn btn-primary"> 
+        <input type="button" id="select_multigraph_relations" value="Enable multigraph relations" onclick="switch_to_multigraph_interface('multi_relation_graph_button')" class="btn btn-primary"> 
+        <div style="margin-top: 20%;">
+
+            <h5>Graphs ready to merge:</h5>
+            <hr>
+            <ol style="list-style-type: none;" id="multigraph_list"> 
+                
+            </ol>
+                <input type="button" id="submit_multigraph" value="Submit multigraph" onclick="display_multi_graph()" class="btn btn-primary">
+        </div>
+
+    </div>
+</div>
+
+
 {% endblock %}
