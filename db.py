@@ -48,19 +48,20 @@ def list_question_objects():
         list_of_questions_IDs.append(question.id)
 
         # save the course name
-        course_name = question.courses
+        course_list = [course.name for course in question.courses]
+        if not course_list:
+            course_list = ['N.D.']
 
-        if course_name is None:
-            course_name = 'empty'
+        # if course_name is None:
+        #     course_name = 'empty'
 
        # store the interesting attributes
         attributes_of_current_question = \
                 [question.body,
-                 course_name,
+                 course_list,
                  [cu.name for cu in question.content_units],
                  #question.taxonomy_levels
                  ]
-
         # push them in the list
         list_of_questions_attributes.append(attributes_of_current_question)
 
@@ -172,7 +173,73 @@ def get_avg_perceived_difficulty(question_id):
     else:
         perceived_difficulty = 0
     return perceived_difficulty
+
+def make_correctness_percentage_plot(question_id):
+    """
+        Example function which retrives desired data,
+        in this case number of total questions and number of
+        unanswered questions by the current user
+        and creates a matplotlib barplot based on that data.
+        The barplot is returned as a base64 byte string
+        which is easy to display in HTML
+    """
+    question_correct_answer = np.argmax(np.array(get_question_by_obj_id(question_id).correctness_of_the_answers))
+    question_answers = QuestionAnswer.objects(question=question_id)
+    selected_answers_array = np.array([question_answer.selected_answer for question_answer in question_answers])
+    #print(selected_answer_array[selected_answers_array == question_correct_answer] = 0)
+
+
+def make_course_plot(question_id):
+    #courses_name = [course.name for course in courses]
+    course_dict = dict()
+    # Get the courses associated to the questions
+    if not get_question_by_obj_id(question_id).courses:
+        return None
+
+    for course in get_question_by_obj_id(question_id).courses:
+        questions_of_course = Question.objects(courses__in=[course])
+        number_of_course_questions = len(questions_of_course)
+        number_of_course_answers = 0
+        number_of_course_correct_answers = 0
+        for question in questions_of_course:
+            user = User.objects(username=session.get("user").get("username")).first()
+            question_correct_answer_idx = np.argmax(np.array(question.correctness_of_the_answers))
+            if QuestionAnswer.objects(user=user, question=question): # if current user has answered the current question of the course           
+                number_of_course_answers += 1               
+                if QuestionAnswer.objects(user=user, question=question).first().selected_answer == question_correct_answer_idx:
+                    number_of_course_correct_answers += 1
+
+        course_dict[course.name] = [number_of_course_questions, number_of_course_answers, number_of_course_correct_answers]
     
+    labels = list(course_dict.keys())
+    total = np.array(list(course_dict.values()))[:,0]
+    answered = np.array(list(course_dict.values()))[:,1]
+    correct = np.array(list(course_dict.values()))[:,2]
+    x = np.arange(len(labels))  # the label locations
+    width = 0.20  # the width of the bars
+
+    # Create barplot
+    fig, ax = plt.subplots()
+    ax.bar(x - width, total, width, label='total')
+    ax.bar(x, answered, width, label='answered')
+    ax.bar(x + width, correct, width, label='correct')
+    ax.set_ylabel('Number of questions')
+    ax.set_xlabel('Courses')
+    ax.set_title('answered question per course')
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels)
+    ax.legend()
+    ax.grid()
+    fig.tight_layout()
+
+    figfile = BytesIO()
+    plt.savefig(figfile, format='png')
+    figfile.seek(0)  # rewind to beginning of file
+    
+    # Turn the figure into a base64 byte string (decoded using utf-8 charset)
+    figdata_png = base64.b64encode(figfile.read()).decode("utf-8")
+    return figdata_png
+
 
 def make_bar_plot(question_data):
     """
@@ -184,7 +251,6 @@ def make_bar_plot(question_data):
         which is easy to display in HTML
     """
     course_data = []
-    print(question_data)
     for row in question_data:
         course_data.append(row[1])
 

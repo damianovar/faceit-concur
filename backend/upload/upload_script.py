@@ -5,7 +5,7 @@ import re
 import zipfile
 from TexSoup import TexSoup  # , TokenWithPosition
 
-from backend.models.models import Language, Question, CU, User, NotationStandard
+from backend.models.models import Course, Language, Question, CU, User, NotationStandard
 
 
 # ---------------- HELPER METHODS ------------------
@@ -65,11 +65,12 @@ def zip_of_tex_files_to_questions(zipf):
                     # get the .tex string
                     tex_frame_contents = list(frame.children)
                     # convert the .tex string into the object for the database
+                     
                     q = tex_string_to_question(
                         tex_frame_contents, file_list, zip_file)
                     # add it to the list
-                    questions.append(q)
-
+                    if not question_already_in_db(q):
+                        questions.append(q)
                     # debug
                     print("added question {}".format(len(questions)))
                     q.print()
@@ -89,6 +90,13 @@ def zip_of_tex_files_to_questions(zipf):
 # \begin{IndexedQuestion} ... \end{IndexedQuestion}
 # frame into a "Question" object
 #
+def question_already_in_db(q):
+    if not Question.objects(body=q.body):
+        print("question does not exists in db")
+        return False
+    print("question already in db, skipping it..")
+    return True
+
 def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     # Current version: 0.12
 
@@ -103,16 +111,19 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
 
     q.body = get_question_body(tex_frame_contents)
 
+    q.courses = get_question_courses(tex_frame_contents)
+
     q.body_image = get_image(
         tex_frame_contents, file_list, zip_file, "QuestionBodyImage")
 
     q.question_type = str(get_field("QuestionType", tex_frame_contents))[1:-1]
 
-    potential_answers, correct_answers = \
+    potential_answers, correct_answers, correctness_of_the_answers = \
         get_answers_for_multiple_choice_questions(
             tex_frame_contents, q.question_type)
 
     q.potential_answers = potential_answers
+    q.correctness_of_the_answers = correctness_of_the_answers
 
     q.correct_answers = correct_answers
 
@@ -132,10 +143,14 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     q.feedback_for_the_student = str(
         get_field("QuestionFeedbackForTheStudents", tex_frame_contents))[1:-1]
 
-    #q.question_disclosability = str(
-    #    get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
-    q.question_disclosability = 'me'
-    #print(q.question_disclosability)
+    q.question_disclosability = str(
+        get_field("QuestionDisclosability", tex_frame_contents))[1:-1]
+
+    if q.question_disclosability == 'me':
+        print('ok')
+    else:
+        q.question_disclosability = 'me'
+    print(q.question_disclosability)
 
     q.solution_disclosability = str(
         get_field("QuestionSolutionDisclosability", tex_frame_contents))[1:-1]
@@ -163,6 +178,23 @@ def get_user():
     except Exception as e:
         print("User not found - a valid user is required to upload questions") 
         return None
+
+def get_question_courses(tex_frame_contents):
+    courses = str(
+        get_field("QuestionCourses", tex_frame_contents))[1:-1]
+    courses = courses.replace(
+        ' ,', ',').replace(', ', ',').split(",")
+    course_list = []
+    for course in courses:
+        print(Course.objects())
+        if Course.objects(name=course).first() is not None:
+            course_list.append(Course.objects(name=course).first())
+            print("Course found: " + str(course))
+        else:
+            print("Course not found - creating a new Course")
+            continue
+    return course_list
+
 
 def get_content_units(tex_frame_contents, creator):
     content_units = str(
@@ -280,21 +312,24 @@ def get_answers_for_multiple_choice_questions(tex_frame_contents, question_type)
         [token for token in tex_frame_contents[answers_i]])
 
     potential_answers = []
+    correctness_of_the_answers = []
     correct_answers = []
     for i, entry in enumerate(answers):
 
         if '\\answer' in entry:
             potential_answers.append(answers[i + 1])
+            correctness_of_the_answers.append(0.0)
 
         elif '\\correctanswer' in entry:
             potential_answers.append(answers[i + 1])
             correct_answers.append(answers[i + 1])
+            correctness_of_the_answers.append(1.0)
 
     # separator = " , "
     # #potential_answers = separator.join(potential_answers)
     # correct_answers = separator.join(correct_answers)
 
-    return potential_answers, correct_answers
+    return potential_answers, correct_answers, correctness_of_the_answers
 
 
 def is_question_type_well_defined(question_type):

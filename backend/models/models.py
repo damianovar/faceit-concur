@@ -1,6 +1,7 @@
 # user.py
 import re
 from mongoengine import Document, StringField, IntField, FloatField, ImageField, ListField, ReferenceField, DateTimeField
+from mongoengine.fields import DynamicField
 from mongoengine.queryset.base import NULLIFY, CASCADE
 from mongoengine.queryset.manager import queryset_manager
 
@@ -200,6 +201,9 @@ class Course(Document):
     #   successfully
     # - the ideal levels of how well the students should know things after
     #   having taken successfully the course
+    hierarchies_graph = DynamicField(required=False)
+    relations_graph = DynamicField(required=False)
+
     cu_connections = ListField(ReferenceField(
         CUConnection, reverse_delete_rule=CASCADE), required=False)
 
