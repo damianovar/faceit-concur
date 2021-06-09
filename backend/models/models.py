@@ -203,6 +203,9 @@ class Course(Document):
     #   successfully
     # - the ideal levels of how well the students should know things after
     #   having taken successfully the course
+    hierarchies_graph = DynamicField(required=False)
+    relations_graph = DynamicField(required=False)
+
     cu_connections = ListField(ReferenceField(
         CUConnection, reverse_delete_rule=CASCADE), required=False)
 

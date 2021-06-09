@@ -55,6 +55,7 @@ def login_required(f):
         if "logged_in" in session:
             return f(*args, **kwargs)
         else:
+            flash("You must be logged in to access this page")
             return redirect("/")
 
     return wrap
@@ -70,7 +71,10 @@ def requires_access_level(access_level):
     def decorator(f):
         @wraps(f)
         def wrap(*args, **kwargs):
-            if access_level == session.get("user").get("role"):
+            if session.get("user") is None:
+                flash("You must be logged in to access this page")
+                return redirect(url_for('index'))
+            elif access_level == session.get("user").get("role"):
                 print(session.get("user").get("role"))
                 return f(*args, **kwargs)    
             else:
@@ -265,8 +269,9 @@ def answer_selected_question():
 
     current_user_role = db.get_user_role()
     if current_user_role == "Admin" or current_user_role == "Teacher":
+        correct_answer_idx = selected_question_obj.correctness_of_the_answers.index(max(selected_question_obj.correctness_of_the_answers))
         correct_answer = (
-            "The correct answer is: " + selected_question_obj.potential_answers[0]
+            "The correct answer is: " + selected_question_obj.potential_answers[correct_answer_idx]
         )
     else:  # current_user_role == 'Student'
         correct_answer = None
@@ -304,15 +309,17 @@ def show_submission_info():
     options_list = answered_question_obj.potential_answers
     display_answer = str(options_list[int(selected_multiple_choice_answer)])
 
-    # data, _ = db.list_question_objects()
-    # info_plot = db.make_bar_plot(data)
+    #data, _ = db.list_question_objects()
+    info_plot  = db.make_course_plot(question_id)
+    #info_plot = db.make_bar_plot(data)
+    # db.make_correctness_percentage_plot(question_id)
     perceived_difficulty = db.get_avg_perceived_difficulty(question_id)
 
     return render_template(
         "submit_answer/answer_submitted_successfully.html",
         answer=display_answer,
         question=answered_question_obj.body,
-        # plot=info_plot,
+        plot=info_plot,
         perceived_difficulty=perceived_difficulty,
     )
 
