@@ -1,6 +1,6 @@
 # user.py
 import re
-from mongoengine import Document, StringField, IntField, FloatField, ImageField, ListField, ReferenceField, DateTimeField, DictField
+from mongoengine import Document, StringField, IntField, FloatField, ImageField, ListField, ReferenceField, DateTimeField, DictField, DynamicField
 from mongoengine.queryset.base import NULLIFY, CASCADE
 from mongoengine.queryset.manager import queryset_manager
 
