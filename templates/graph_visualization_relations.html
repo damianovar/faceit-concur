@@ -77,6 +77,15 @@
 
 <div id = "config"></div>
 
+
+<div id ="labels">
+    <h3>Node labels:</h3>
+    <hr>
+    <ol style="list-style-type: none;" id ="node_labels_list">
+       
+    </ol>
+</div>  
+
 <div id ="labels">
     <h3>Edge labels:</h3>
     <hr>
@@ -113,14 +122,6 @@
         </li>
     </ol>
 </div>
-
-<div id ="labels">
-    <h3>Node labels:</h3>
-    <hr>
-    <ol style="list-style-type: none;" id ="node_labels_list">
-       
-    </ol>
-</div>  
 
 <div id="node_options" style="margin-top: 20%; display:none">
     <h3 id="node_options_title">Node options</h3>
@@ -200,56 +201,56 @@
 
     }
     function render_node_labels(list_of_courses){
-    var list_of_labeling_colors = ['cyan', 'salmon', 'chartreuse'];
-    var common_node_color = 'grey';
-    node_label_list = document.getElementById("node_labels_list");
+        var list_of_labeling_colors = ['cyan', 'salmon', 'chartreuse'];
+        var common_node_color = 'grey';
+        node_label_list = document.getElementById("node_labels_list");
 
-    // Add the merged graph list item
-    list_item = document.createElement("li");
-        
-    list_item_div = document.createElement("div");
-    list_item_div.classList.add("label");
-    
-    // Create text for the labeling
-    div_text = document.createElement("h5");
-    div_text.classList.add("label_text");
-    div_text.innerHTML = "Subjects present in both courses";
-
-    // Create a colorbox for the labeling
-    color_box = document.createElement("div")
-    color_box.classList.add("colorbox");
-    color_box.style.setProperty('background-color', common_node_color );
-    
-    list_item_div.appendChild(div_text);
-    list_item_div.appendChild(color_box);
-    list_item.appendChild(list_item_div);
-    node_label_list.appendChild(list_item);
-    // Populate the list 
-    for (var i = 0; i < list_of_courses.length; i++){
-
-        // Create an list item
+        // Add the merged graph list item
         list_item = document.createElement("li");
-        
+            
         list_item_div = document.createElement("div");
         list_item_div.classList.add("label");
         
         // Create text for the labeling
         div_text = document.createElement("h5");
         div_text.classList.add("label_text");
-        div_text.innerHTML = list_of_courses[i];
+        div_text.innerHTML = "Subjects present in both courses";
 
         // Create a colorbox for the labeling
         color_box = document.createElement("div")
         color_box.classList.add("colorbox");
-        color_box.style.setProperty('background-color', list_of_labeling_colors[i]);
-       
+        color_box.style.setProperty('background-color', common_node_color );
+        
         list_item_div.appendChild(div_text);
         list_item_div.appendChild(color_box);
         list_item.appendChild(list_item_div);
         node_label_list.appendChild(list_item);
-    }
+        // Populate the list 
+        for (var i = 0; i < list_of_courses.length; i++){
 
-    
+            // Create an list item
+            list_item = document.createElement("li");
+            
+            list_item_div = document.createElement("div");
+            list_item_div.classList.add("label");
+            
+            // Create text for the labeling
+            div_text = document.createElement("h5");
+            div_text.classList.add("label_text");
+            div_text.innerHTML = list_of_courses[i];
+
+            // Create a colorbox for the labeling
+            color_box = document.createElement("div")
+            color_box.classList.add("colorbox");
+            color_box.style.setProperty('background-color', list_of_labeling_colors[i]);
+        
+            list_item_div.appendChild(div_text);
+            list_item_div.appendChild(color_box);
+            list_item.appendChild(list_item_div);
+            node_label_list.appendChild(list_item);
+        }
+
+        
 };
 
     render_node_labels(JSON.parse('{{course_names|safe}}'));
