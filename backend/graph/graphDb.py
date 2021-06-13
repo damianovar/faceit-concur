@@ -23,6 +23,9 @@ def get_graph_from_id(id, graph_type):
         return Course.objects(id=id).first().relations_graph
     
 
+def get_course_name_from_id(id):
+    return Course.objects(id=id).first()["name"]
+
 def insert_graph_into_course(graph_dict, graph_type, course_id):
     if graph_dict:
         course_obj = Course.objects(id = str(course_id)).first()
@@ -111,8 +114,9 @@ def get_graphs_from_excel_file(excel_file, course_name):
 def get_multiple_graph(graph_id_string, mode):
     list_of_courses = graph_id_string.split("-")
     list_of_courses = list(set(list_of_courses))
+    course_names = [get_course_name_from_id(course_id) for course_id in list_of_courses]
 
-    return extract_nodes_and_edges_in_multiple_graph(list_of_courses, mode)
+    return *extract_nodes_and_edges_in_multiple_graph(list_of_courses, mode), json.dumps(course_names)
 
 
 def extract_nodes_and_edges_in_multiple_graph(list_of_courses, mode):

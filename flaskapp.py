@@ -149,11 +149,12 @@ def graphs(sheet, mode):
 
 @app.route("/multi_graphviz/<sheet>/<mode>")
 def multi_graph(sheet, mode):
-    node_list, edge_list = get_multiple_graph(sheet, mode)
+    node_list, edge_list, course_names = get_multiple_graph(sheet, mode)
+    print("Course names:", course_names)
     if mode == "hierarchies":
-        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
+        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=node_list, edges=edge_list, course_names=course_names)
     else: 
-        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=node_list, edges=edge_list)
+        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=node_list, edges=edge_list, course_names=course_names)
     
 
 

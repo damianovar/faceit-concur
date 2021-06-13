@@ -1,6 +1,7 @@
 var node_info;
 
 
+
 function query_for_question() {
     console.log('Hahaha:');
 }
@@ -40,3 +41,5 @@ function redirect_to_link(){
 function capitalize_first_letter(word){
     return word.charAt(0).toUpperCase() + word.slice(1)
 }
+
+
