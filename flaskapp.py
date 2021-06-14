@@ -185,7 +185,7 @@ def upload_excel():
             course_name = request.form["course_name"]
             course_code = request.form["course_code"]
             course_institution = request.form["course_institution"]
-
+            
             relationship_graph, hierarchy_graph = get_graphs_from_excel_file(excel_file, course_name)
             create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
 
@@ -216,7 +216,7 @@ def upload_tex():
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_required
 def show_questions():
-    data, selection_data = db.list_question_objects()
+    data, selection_data = db.list_filtered_question_objects()
 
     if request.method == "POST":
         selected_question = request.form.get("question_button")
@@ -227,6 +227,12 @@ def show_questions():
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )
 
+@app.route("/submit_answer/<querry>")
+def filtered_question_list(querry):
+    data, selection_data = db.list_question_objects()
+    return render_template(
+        "submit_answer/question_list.html", data=data, selection_data=selection_data
+    )
 
 @app.route("/submit_answer/answer_selected_question", methods=["GET", "POST"])
 @login_required
