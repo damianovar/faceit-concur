@@ -2,8 +2,11 @@ var node_info;
 
 
 
-function query_for_question() {
-    console.log('Hahaha:');
+function query_for_question(question) {
+    let courses = create_course_string(create_list_of_listed_courses());
+    let mode = get_graph_mode();
+    let url = "/multi_graphviz/" + "complex numbers";
+    window.location.href = url;
 }
 
 function node_click(properties) {
