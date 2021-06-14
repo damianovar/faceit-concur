@@ -369,30 +369,26 @@ def downloads():
 @app.route("/game", methods=["GET", "POST"])
 @login_required
 def game() -> Any:
-    cu_amount = db.get_amount_of_cus_in_course("Operating Systems")
+    cu_amount = db.get_amount_of_cus_in_course("Linear algebra")
 
     # This is for when the user resets its progress on the game or we create an entire new connection
     matrix_cp = matrix.init_matrix(cu_amount)
 
     # matrix_cp =
-    course = Course.objects(name="Operating Systems").first()
-    user = User.objects(first_name="Jøren", last_name="Fagervik").first()
+    course = Course.objects(name="Linear algebra").first()
+    user = User.objects(first_name="Jørgen", last_name="Fagervik").first()
     user_matrix = matrix.get_matrix(user, course, cu_amount)
     # if not np.array_equal(user_matrix, matrix_cp):
-
-    # List of cu's
-    cu1 = None
-    cu2 = None
 
     reshaped_user_matrix = np.fromiter(
         matrix.reshape_for_db(user_matrix), float)
     unused_cu_indeces = np.where(reshaped_user_matrix == -1)
     unused_cu_indeces = unused_cu_indeces[0]
 
-    cu_list = db.get_course("Operating Systems")
+    cu_list = db.get_course("Linear algebra")
     # unused_cu_list = np.take(cu_list, unused_cu_indeces)
 
-    cu_vectors = ((x, y) for x in cu_list for y in cu_list)
+    cu_vectors = ((u, v) for u in cu_list for v in cu_list)
     cu_tuple_list = []
     cu_number = 0
     for u, v in cu_vectors:
@@ -412,7 +408,6 @@ def game() -> Any:
     print(cu1_index, cu2_index)
     question_string = f"How important is {cu1} to {cu2}?"
 
-    new_cu_matrix = []
     """Let user play game to map out a course"""
     # data, sel_data = db.list_question_objects_2()
     if request.method == "POST":
@@ -446,8 +441,8 @@ def game() -> Any:
 
     return render_template(
         "game.html",
-        course="Operating Systems",
-        code="TDT4186",
+        course="Linear algebra",
+        code="TMA4140",
         title="Game",
         question_string=question_string,
     )

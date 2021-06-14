@@ -1,5 +1,5 @@
 from config import ProductionConfig
-from typing import List, Tuple
+from typing import List, Tuple, Any
 
 from mongoengine import connect
 from flask import session
@@ -300,7 +300,7 @@ def make_bar_plot(question_data):
     return figdata_png
 
 
-def get_course(name):
+def get_course(name) -> list:
     cu_list = []
     for c in Course.objects():
         if name == c.name:
@@ -341,13 +341,10 @@ def add_institution():
 #     return 
 
 # Test/Utility function, opens locally stored png image and uploads it to mongodb Question collection given question id 
-def upload_image_to_question(question_id):
+def upload_image_to_question(question_id) -> Any:
     question_id = "5f72f0e58373664b8505ea6b"
     question_obj = Question.objects(id = str(question_id)).first()
     with open('3x3_matrix.png', 'rb') as fd:
         question_obj.image.put(fd, content_type = 'image/png')
     question_obj.save()
     print("UPLOADED")
-    return
-
-
