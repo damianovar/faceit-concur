@@ -78,7 +78,7 @@
 <div id = "config"></div>
 
 
-<div id ="labels">
+<div id ="node_labels" style="display:none;">
     <h3>Node labels:</h3>
     <hr>
     <ol style="list-style-type: none;" id ="node_labels_list">
@@ -201,6 +201,7 @@
 
     }
     function render_node_labels(list_of_courses){
+        document.getElementById("node_labels").style.setProperty('display', 'initial');
         var list_of_labeling_colors = ['cyan', 'salmon', 'chartreuse'];
         var common_node_color = 'grey';
         node_label_list = document.getElementById("node_labels_list");
@@ -252,8 +253,12 @@
 
         
 };
+    var list_of_courses = JSON.parse('{{course_names|safe}}');
+    console.log("Courses", list_of_courses)
+    if (list_of_courses.length > 0){
+        render_node_labels(list_of_courses);
+    }
 
-    render_node_labels(JSON.parse('{{course_names|safe}}'));
     drawGraph();
 
 </script>

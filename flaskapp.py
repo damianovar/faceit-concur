@@ -142,9 +142,9 @@ def allowed_file(filename):
 def graphs(sheet, mode):
     graph = dict(get_graph_from_id(sheet, mode))
     if mode == "hierarchies":
-        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
+        return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"], course_names=json.dumps([]))
     else: 
-        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"])
+        return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"],  course_names=json.dumps([]))
     
 
 @app.route("/multi_graphviz/<sheet>/<mode>")
