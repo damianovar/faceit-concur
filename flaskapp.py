@@ -385,6 +385,10 @@ def game() -> Any:
     unused_cu_indeces = np.where(reshaped_user_matrix == -1)
     unused_cu_indeces = unused_cu_indeces[0]
 
+    if not unused_cu_indeces:
+        print("ALL RELATIONS MAPPED BY GAME")
+        return
+
     cu_list = db.get_course("Linear algebra")
     # unused_cu_list = np.take(cu_list, unused_cu_indeces)
 

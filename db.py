@@ -99,6 +99,13 @@ def write_answer_to_mongo(question, txt_answer, selected_answer, perceived_diffi
             upsert=True)
 
 
+def post_cu_connection_to_db(course: str, cu_matrix) -> any:
+    """
+        Posts a CU connection to a course object in the mongo db
+    """
+    Course.objects(name=course).update_one(cu_connections=cu_matrix)
+
+
 def get_user_obj():
     """
         Accesses the session data and retrieves the current user obj
@@ -129,7 +136,7 @@ def get_question_image(question_id):
         and returns the decoded image as base64 byte string.
     """
 
-    question_obj = Question.objects(id = str(question_id)).first()
+    question_obj = Question.objects(id=str(question_id)).first()
 
     image_raw = question_obj.body_image.read()
     if image_raw is None:
@@ -144,7 +151,7 @@ def get_question_by_obj_id(question_id):
     """
         Retrieves question object from Question collection given question-object id
     """
-    question_obj = Question.objects(id = str(question_id)).first()
+    question_obj = Question.objects(id=str(question_id)).first()
     return question_obj
 
 
@@ -173,6 +180,7 @@ def get_avg_perceived_difficulty(question_id):
     else:
         perceived_difficulty = 0
     return perceived_difficulty
+
 
 def make_correctness_percentage_plot(question_id):
     """
@@ -212,9 +220,9 @@ def make_course_plot(question_id):
         course_dict[course.name] = [number_of_course_questions, number_of_course_answers, number_of_course_correct_answers]
     
     labels = list(course_dict.keys())
-    total = np.array(list(course_dict.values()))[:,0]
-    answered = np.array(list(course_dict.values()))[:,1]
-    correct = np.array(list(course_dict.values()))[:,2]
+    total = np.array(list(course_dict.values()))[:, 0]
+    answered = np.array(list(course_dict.values()))[:, 1]
+    correct = np.array(list(course_dict.values()))[:, 2]
     x = np.arange(len(labels))  # the label locations
     width = 0.20  # the width of the bars
 
@@ -250,9 +258,9 @@ def make_bar_plot(question_data):
         The barplot is returned as a base64 byte string
         which is easy to display in HTML
     """
-    course_data = []
-    for row in question_data:
-        course_data.append(row[1])
+    course_data = [row[1] for row in question_data]
+    #for row in question_data:
+    #   course_data.append(row[1])
 
     unique_courses_names = list(Counter(course_data).keys()) # equals to list(set(words))
     unique_courses_instances = Counter(course_data).values() # counts the elements' frequency
@@ -340,11 +348,12 @@ def add_institution():
 #     CUConnection(creator=creator,course=course,cu_matrix=cu_matrix ).save()
 #     return 
 
+
 # Test/Utility function, opens locally stored png image and uploads it to mongodb Question collection given question id 
-def upload_image_to_question(question_id) -> Any:
-    question_id = "5f72f0e58373664b8505ea6b"
+def upload_image_to_question(question_id: str = "") -> Any:
+    question_id = "5f72f0e58373664b8505ea6b" or question_id
     question_obj = Question.objects(id = str(question_id)).first()
     with open('3x3_matrix.png', 'rb') as fd:
-        question_obj.image.put(fd, content_type = 'image/png')
+        question_obj.image.put(fd, content_type='image/png')
     question_obj.save()
     print("UPLOADED")
