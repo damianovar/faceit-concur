@@ -206,8 +206,10 @@ def upload_tex():
                 return redirect(request.url)
             if allowed_file(zipf.filename):
                 Upload.register_question(zipf)
+                print("Upload complete")
                 return redirect(request.url)
             else:
+                print("Upload not complete")
                 print("That file extension is not allowed")
                 return redirect(request.url)
     return render_template("upload_tex.html", title="Upload")
