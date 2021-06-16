@@ -26,3 +26,4 @@ class LoginForm(FlaskForm):
 class DownloadForm(FlaskForm):
     submit = SubmitField('Send')
 
+

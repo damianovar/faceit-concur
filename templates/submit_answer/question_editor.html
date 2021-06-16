@@ -20,14 +20,18 @@
             <label for="question_text">Question text</label><br>
             <textarea class="form-control" name="Text1" cols="10" rows="3"></textarea>
         
-        <div>
-            <label for="multiple_choice_answers">Multiple choice answers</label>
-            <ol style="list-style-type: none;" id="multiple_choice_answers_list"></ol>
-            <input type="text" id="multiple_choice_answer" class="form-control" placeholder="Write multiple choice answers here">
-            <br>
-            <input type="button" id="sumbit_multiple_choice_question" value="Add answer" class="btn btn-success" onclick="add_answer_to_list()">
+            <div>
+                <label for="multiple_choice_answers">Multiple choice answers</label>
+                <ol style="list-style-type: none;" id="multiple_choice_answers_list"></ol>
+                <input type="text" id="multiple_choice_answer" class="form-control" placeholder="Write multiple choice answers here">
+                <br>
+                <input type="button" id="sumbit_multiple_choice_question" value="Add answer" class="btn btn-success" onclick="add_answer_to_list()">
+            </div>
         </div>
-    </div>
+
+        <div class="form-group">
+            <label>Select institution</label>
+        </div>
     </form>
 </div>
 
