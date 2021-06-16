@@ -233,7 +233,7 @@ def show_questions():
 @app.route("/guides_and_templates", methods=['GET', 'POST'])
 def guides_and_templates():
     current_dir = os.getcwd()
-    items = os.listdir(os.getcwd() + '\\faceit-concur\\guides')
+    items = os.listdir(os.getcwd() + '/faceit-concur/guides')
 
     if request.method == "POST":
         full_filename = ""
@@ -241,7 +241,7 @@ def guides_and_templates():
             if item.startswith(request.form["filename"]):
                 full_filename = item
                 break 
-        return send_from_directory(directory=os.getcwd() + '\\faceit-concur\\guides', filename=full_filename, as_attachment=True)
+        return send_from_directory(directory=os.getcwd() + '/faceit-concur/guides', filename=full_filename, as_attachment=True)
 
 
     items_in_directory = [os.path.splitext(item)[0] for item in items]
