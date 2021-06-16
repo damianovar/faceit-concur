@@ -5,20 +5,34 @@
 
 <div class="container">
     <h1>Create new question</h1>
-
-    <form>
+    <br>
+    <form method="POST">
         <div class="form-group">
             <label for="question_type">Select a question type:</label>
-            <select name="question_type"id="question_type" class="form-select-lg mb-3">
+            <select name="question_type"id="question_type" class="form-select-lg mb-3" onchange="change_to_correct_question_type_form()">
                 <option selected value="multiple choice">Multiple choice</option>
                 <option value="open">Open</option>
                 <option value="numeric">Numeric</option>
             </select>
         </div>
 
+        <div class="form-group" id="multiple_choice_form">
+            <label for="question_text">Question text</label><br>
+            <textarea class="form-control" name="Text1" cols="10" rows="3"></textarea>
+        </div>
+        <div>
+            <label for="multiple_choice_answers">Multiple choice answers</label>
+            <ol style="list-style-type: none;" id="multiple_choice_answers_list"></ol>
+            <input type="text" id="multiple_choice_answer" class="form-control" placeholder="Write multiple choice answers here">
+            <br>
+            <input type="button" id="sumbit_multiple_choice_question" value="Add answer" class="btn btn-success" onclick="add_answer_to_list()">
+        </div>
 
     </form>
 </div>
 
+<script type="text/javascript"
+  src="/static/js/question_editor/add_new_question.js">
+</script>
 
 {% endblock %}

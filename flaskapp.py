@@ -230,7 +230,7 @@ def show_questions():
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )
 
-@app.route("/new_question")
+@app.route("/new_question",  methods=["GET","POST"])
 def add_new_question():
     return render_template("submit_answer/question_editor.html")
 
