@@ -1,3 +1,22 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu7" %}
+{% block head %}
+{{ super()}}
+>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script type="text/javascript" id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    ignoreClass: "math-editor" // put this here
+  }
+});
+</script>
 <script>
   MathJax = {
     tex: {
@@ -9,11 +28,8 @@
   };
 </script>
 
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-</script>
-{% extends "base/base.html" %}
-{% set active_page = "menu7" %}
+
+{% endblock %}
 {% block title %}Submit answer{% endblock %}
 {% block main %}
 
@@ -32,7 +48,6 @@
 
           <thead>
             <tr>
-                <th data-field="id" data-valign="middle" data-visible="false"></th>
                 <th data-field="question" data-sortable="true">Question</th>
                 <th data-field="course" data-sortable="true" data-filter-control="select">Course</th>
                 <th data-field="taxonomy" data-sortable="true" data-filter-control="select">CU</th>
@@ -44,7 +59,6 @@
         <tbody>
             {% for row in data %}
             <tr>
-                <td> {{ selection_data[loop.index0] }}</td>
                 {% for col in row %}
                 <td> {{ col }} </td>
                 {% endfor %}
@@ -55,4 +69,8 @@
     </table>
   </form>
 </div>
+
+<script>
+  MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+</script>
 {% endblock %}
