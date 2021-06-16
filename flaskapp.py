@@ -221,13 +221,18 @@ def show_questions():
     data, selection_data = db.list_question_objects()
 
     if request.method == "POST":
-        selected_question = request.form.get("question_button")
-        messages = json.dumps({"selected_question_id": selected_question})
-        return redirect(url_for("answer_selected_question", messages=messages))
+        if request.form:
+            selected_question = request.form.get("question_button")
+            messages = json.dumps({"selected_question_id": selected_question})
+            return redirect(url_for("answer_selected_question", messages=messages))
 
     return render_template(
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )
+
+@app.route("/new_question")
+def add_new_question():
+    return render_template("submit_answer/question_editor.html")
 
 @app.route("/submit_answer/<querry>")
 def filtered_question_list(querry):

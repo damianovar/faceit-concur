@@ -68,9 +68,15 @@ MathJax.Hub.Config({
         </tbody>
     </table>
   </form>
+  <div id="toolbar">
+    <input type="button" id="new_question" class="btn btn-primary mt-2" value="Add new question" onclick="display_new_question_form()"></input>
+</div>
 </div>
 
 <script>
   MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+</script>
+<script type="text/javascript"
+  src="/static/js/question_editor/add_new_question.js">
 </script>
 {% endblock %}
