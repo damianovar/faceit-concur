@@ -42,9 +42,22 @@ function remove_item_from_multiple_choice_answer_list(event){
     }
 }
 
-function testing(){
-    console.log("Sup?")
-    return false;   
+
+
+
+function set_correct_answer(event){
+    item_id = event.srcElement.id;
+    answer_list = document.getElementById("multiple_choice_answers_list");
+    list_items = answer_list.childNodes;
+
+    for (var i = 0; i < list_items.length; i++){
+        if (list_items[i].id == item_id){
+            answer_list.childNodes[i].classList.toggle("list-group-item-success");
+        }
+        else{
+            answer_list.childNodes[i].classList.remove("list-group-item-success");
+        }
+    }
 }
 
 function add_answer_to_list(){
@@ -54,17 +67,31 @@ function add_answer_to_list(){
     // Create new list item
     list_item = document.createElement("li");
     list_item.id = multiple_choice_answer_counter.toString();
-
+    list_item.style.setProperty("width", "100%");
+    list_item.style.setProperty("float", "left");
+    list_item.classList.add("list-group-item");
     // Create a text div
     text_div = document.createElement("div");
-    text_div.style ="float:left; width:70%; margin: 0 0 20px 0";
+    text_div.style ="float:left; width:50%; margin: 0 0 20px 0";
     text = document.createTextNode(answer_field.value)
     text_div.append(text)
 
-    // Create a delete button
-    button_div = document.createElement("div");
-    button_div.style =  "float:right; width=20%;";
 
+    // Create a div for the buttons
+    button_div = document.createElement("div");
+    button_div.style =  "float:right; width=50%;";
+
+    // Create a select-correct answer button
+    correct_button = document.createElement("button");
+    correct_button.type = "button";
+    correct_button.classList.add("btn");
+    correct_button.classList.add("btn-success");
+    correct_button.id = multiple_choice_answer_counter.toString();
+    correct_button.innerHTML = "Set correct answer";
+    correct_button.onclick = function(event) {set_correct_answer(event);}
+    button_div.appendChild(correct_button);
+
+    // Create a delete button
     button = document.createElement("button")
     button.type = "button"; // Necessary to avoid submitting the form
     button.classList.add("btn");
