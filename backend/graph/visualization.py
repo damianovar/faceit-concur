@@ -72,18 +72,14 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
                 g.add_node(dl)
                 g.add_edge(dl, cu, color="#ffffff")
     
-    # Add links to them
-    """
-    for iterate, node in enumerate(g.get_nodes()):
-        g.nodes[iterate]["link"] = links[iterate]
-    """
-
     # Ensure that the text is inside the nodes, scale based on importance
+    node_to_delete = -1
     for iterate, node in enumerate(g.get_nodes()):
         g.nodes[iterate]["shape"] = 'ellipse'
+        #g.nodes[iterate]["label"] = g.nodes[iterate]["label"]
         amount_of_node_connectons = len(g.neighbors(node))
         if g.nodes[iterate]["label"] == "":
-            print("Her?")
+            node_to_delete = iterate
         if amount_of_node_connectons == 2:
             g.nodes[iterate]['font'] = {'size': 30}
         elif amount_of_node_connectons == 3:
@@ -96,22 +92,11 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
             g.nodes[iterate]['font'] = {'size': 90}
         else:
             g.nodes[iterate]['font'] = {'size': 20}
-    """
-    for iterate, node in enumerate(g.get_nodes()):
-        length = len(g.neighbors(node))
-        if length == 0:
-            g.nodes[iterate]['color'] = "#829FD9"
-        if length == 1:
-            g.nodes[iterate]['color'] = "#027368"
-        if length == 2:
-            g.nodes[iterate]['color'] = "#BABF2A"
-        if length > 3:
-            g.nodes[iterate]['color'] = "#735702"
-        print(length)
-    """
+    
+    if node_to_delete != -1:
+        del g.nodes[node_to_delete]
+    
     node, edge, _, _, _ = g.get_network_data()
-
-    print("Node:", node)
 
     return json.dumps(node), json.dumps(edge)
 
