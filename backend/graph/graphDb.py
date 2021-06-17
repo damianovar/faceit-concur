@@ -61,14 +61,13 @@ def extract_CU_file(file) -> None:
         hierarchiesDataframe = excelFile.parse("content units hierarchies")
         hiearchy_list = read_cu_hierarchies(hierarchiesDataframe)
     else:
-
         hiearchy_list = []
     
     return relation_cu, hiearchy_list
 
 def read_cu_realtions(relationDataframe):
     relationDataframe.fillna('', inplace=True)
-    cu_rel_names = ['Content Unit (CU)','which other CUs are necessary for the CU in column A?', 'which other CUs are useful for the CU in column A?', 'which CUs contain / generalize the CU in column A?', 'which CUs are a synonym of the CU in column A?', 'which CUs are directly logically connected to the CU in column A?', 'Links']
+    cu_rel_names = ['Content Unit (CU)','which other CUs are necessary for the CU in column A?', 'which other CUs are useful for the CU in column A?', 'which CUs contain / generalize the CU in column A?', 'which CUs are a synonym of the CU in column A?', 'which CUs are directly logically connected to the CU in column A?', 'web-link, if available, to some learning material that is related to this CU']
     cu_rel = CU_Relations(relationDataframe[cu_rel_names[0]].tolist(), relationDataframe[cu_rel_names[1]].tolist(), relationDataframe[cu_rel_names[2]].tolist(), relationDataframe[cu_rel_names[3]].tolist(), relationDataframe[cu_rel_names[4]].tolist(), relationDataframe[cu_rel_names[5]].tolist(), relationDataframe[cu_rel_names[6]].tolist())
 
 
