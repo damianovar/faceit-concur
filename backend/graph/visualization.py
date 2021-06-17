@@ -81,7 +81,19 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
     # Ensure that the text is inside the nodes
     for iterate, node in enumerate(g.get_nodes()):
         g.nodes[iterate]["shape"] = 'ellipse'
-    
+        amount_of_node_connectons = len(g.neighbors(node))
+        if amount_of_node_connectons == 2:
+            g.nodes[iterate]['font'] = {'size': 30}
+        elif amount_of_node_connectons == 3:
+            g.nodes[iterate]['font'] = {'size': 45}
+        elif amount_of_node_connectons == 4:
+            g.nodes[iterate]['font'] = {'size': 60}
+        elif amount_of_node_connectons == 5:
+            g.nodes[iterate]['font'] = {'size': 75}
+        elif amount_of_node_connectons > 5:
+            g.nodes[iterate]['font'] = {'size': 90}
+        else:
+            g.nodes[iterate]['font'] = {'size': 20}
     """
     for iterate, node in enumerate(g.get_nodes()):
         length = len(g.neighbors(node))

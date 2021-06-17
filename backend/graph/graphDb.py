@@ -61,7 +61,6 @@ def extract_CU_file(file) -> None:
         hierarchiesDataframe = excelFile.parse("content units hierarchies")
         hiearchy_list = read_cu_hierarchies(hierarchiesDataframe)
     else:
-
         hiearchy_list = []
     
     return relation_cu, hiearchy_list
