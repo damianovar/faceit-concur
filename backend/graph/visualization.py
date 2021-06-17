@@ -30,58 +30,55 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
 
     if CU_REL.link is not []:
         for cu, link in zip(CU_REL.cus, CU_REL.link):
-            cu = cu.split("(")[0].strip().lower()
+            cu = cu.split("(")[0].strip().lower().replace("'", "`")
             g.add_node(n_id=cu, label=cu, shape='ellipse', link=link)
     else:
         for cu in CU_REL.cus:
-            cu = cu.split("(")[0].strip().lower()
+            cu = cu.split("(")[0].strip().lower().replace("'", "`")
             g.add_node(n_id=cu, label=cu, shape='ellipse')
 
     cus, necessary, useful, generalize, synonym, dlc = CU_REL.cus, CU_REL.necessary, CU_REL.useful, CU_REL.generalize, CU_REL.synonym, CU_REL.dlc
 
     for cu, nec, usef, gen, syn, dlc in zip_longest(cus, necessary, useful, generalize, synonym, dlc):
-        cu = cu.split("(")[0].strip().lower()
+        cu = cu.split("(")[0].strip().lower().replace("'", "`")
         if nec:
             nec = remove_text_inside_parantheses(nec).split(",")
             for n in nec:
-                n = n.strip().lower()
+                n = n.strip().lower().replace("'", "`")
                 g.add_node(n)
                 g.add_edge(n, cu, color="#32a852")
         if usef:
             usef = remove_text_inside_parantheses(usef).split(",")
             for u in usef:
-                u = u.strip().lower()
+                u = u.strip().lower().replace("'", "`")
                 g.add_node(u)
                 g.add_edge(u, cu, color="#f0fc00")
         if gen:
             gen = remove_text_inside_parantheses(gen).split(",")
             for ge in gen:
-                ge = ge.strip().lower()
+                ge = ge.strip().lower().replace("'", "`")
                 g.add_node(ge)
                 g.add_edge(ge, cu, color="#00f4fc")
         if syn:
             syn = remove_text_inside_parantheses(syn).split(",")
             for sy in syn:
-                sy = sy.strip().lower()
+                sy = sy.strip().lower().replace("'", "`")
                 g.add_node(sy)
                 g.add_edge(sy, cu, color="#fc0022")
         if dlc:
             dlc = remove_text_inside_parantheses(dlc).split(",")
             for dl in dlc:
-                dl = dl.strip().lower()
+                dl = dl.strip().lower().replace("'", "`")
                 g.add_node(dl)
                 g.add_edge(dl, cu, color="#ffffff")
     
-    # Add links to them
-    """
-    for iterate, node in enumerate(g.get_nodes()):
-        g.nodes[iterate]["link"] = links[iterate]
-    """
-
-    # Ensure that the text is inside the nodes
+    # Ensure that the text is inside the nodes, scale based on importance
+    node_to_delete = -1
     for iterate, node in enumerate(g.get_nodes()):
         g.nodes[iterate]["shape"] = 'ellipse'
         amount_of_node_connectons = len(g.neighbors(node))
+        if g.nodes[iterate]["label"] == "":
+            node_to_delete = iterate
         if amount_of_node_connectons == 2:
             g.nodes[iterate]['font'] = {'size': 30}
         elif amount_of_node_connectons == 3:
@@ -94,22 +91,11 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
             g.nodes[iterate]['font'] = {'size': 90}
         else:
             g.nodes[iterate]['font'] = {'size': 20}
-    """
-    for iterate, node in enumerate(g.get_nodes()):
-        length = len(g.neighbors(node))
-        if length == 0:
-            g.nodes[iterate]['color'] = "#829FD9"
-        if length == 1:
-            g.nodes[iterate]['color'] = "#027368"
-        if length == 2:
-            g.nodes[iterate]['color'] = "#BABF2A"
-        if length > 3:
-            g.nodes[iterate]['color'] = "#735702"
-        print(length)
-    """
-    node, edge, _, _, _ = g.get_network_data()
 
-    print("Node:", node)
+    if node_to_delete != -1:
+        del g.nodes[node_to_delete]
+    
+    node, edge, _, _, _ = g.get_network_data()
 
     return json.dumps(node), json.dumps(edge)
 
@@ -179,7 +165,6 @@ def get_nodes_and_edges_cu_hierarchies(lists, sheet):
                 g.add_edge(p2, elem[3])
 
     node, edge, _, _, _ = g.get_network_data()
-    # g.save_graph("grap.html")
     return json.dumps(node), json.dumps(edge)
 
 def get_multigraph_color(index):

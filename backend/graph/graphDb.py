@@ -38,7 +38,6 @@ def insert_graph_into_course(graph_dict, graph_type, course_id):
     
 
 def create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph):
-    print("Session get", session.get("user"))
     creator = User.objects(email=session.get("user")["email"]).first()
     taught_cus_list = [CU.objects(name="time constant").first()]
     prerequisite_cus_list = [CU.objects(name="time constant").first()]
@@ -50,7 +49,6 @@ def delete_course(id):
 
 def extract_CU_file(file) -> None:
     excelFile = pd.ExcelFile(file, engine='openpyxl')
-    print("Sheetnames:",excelFile.sheet_names)
     if 'content units relations' in excelFile.sheet_names:
         relationDataframe = excelFile.parse("content units relations")
         relation_cu = read_cu_realtions(relationDataframe)
