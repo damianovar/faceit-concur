@@ -1,5 +1,3 @@
-// single_graph_button,  multi_relation_graph_button, multi_hierarchies_graph_button
-
 var current_interface = "single_graph_button";
 
 function switch_to_multigraph_interface(desired_interface){
@@ -74,34 +72,37 @@ function toggle_multigraph_button_color(){
 
 function add_course_to_graph_list(name, id){
     graph_list = document.getElementById("multigraph_list");
-    // Create list item
-    new_list_item = document.createElement("li");
-    //new_list_item.style = "margin: 0 0 5px 0";
-    new_list_item.id = id;
+    if (graph_list.childNodes.length < 5){
+            // Create list item
+            new_list_item = document.createElement("li");
+            //new_list_item.style = "margin: 0 0 5px 0";
+            new_list_item.id = id;
 
-    // Create text div
-    text_div = document.createElement("div")
-    text_div.style ="float:left; width:70%; margin: 0 0 20px 0"
-    text = document.createTextNode(name);
-    text_div.appendChild(text)
+            // Create text div
+            text_div = document.createElement("div")
+            text_div.style ="float:left; width:70%; margin: 0 0 20px 0"
+            text = document.createTextNode(name);
+            text_div.appendChild(text)
 
-    // Create delete button div
-    button_div = document.createElement("div")
-    button_div.style = "float:right; width=20%;"
+            // Create delete button div
+            button_div = document.createElement("div")
+            button_div.style = "float:right; width=20%;"
 
-    button = document.createElement("button")
-    button.classList.add("btn");
-    button.classList.add("btn-danger");
-    button.innerHTML = "x";
-    button.onclick = function(event) {remove_item_from_graph_list(id);}
-    button_div.appendChild(button)
+            button = document.createElement("button")
+            button.classList.add("btn");
+            button.classList.add("btn-danger");
+            button.innerHTML = "x";
+            button.onclick = function(event) {remove_item_from_graph_list(id);}
+            button_div.appendChild(button)
 
-    // Add elements to list
-    new_list_item.appendChild(text_div);
-    new_list_item.appendChild(button_div);
+            // Add elements to list
+            new_list_item.appendChild(text_div);
+            new_list_item.appendChild(button_div);
 
-    graph_list.appendChild(new_list_item);
+            graph_list.appendChild(new_list_item);
 
+
+    }
 
 }
 

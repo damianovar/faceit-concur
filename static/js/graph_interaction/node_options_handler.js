@@ -1,7 +1,5 @@
 var node_info;
 
-
-
 function query_for_question(question) {
     let courses = create_course_string(create_list_of_listed_courses());
     let mode = get_graph_mode();
@@ -21,7 +19,6 @@ function node_click(properties) {
             document.getElementById("link_querry_button").style.display = "none";
         }
         else{
-            console.log("Hahahahahahah")
             document.getElementById("link_querry_button").style.display = "initial";
         }
         node_options.style.display = "initial";

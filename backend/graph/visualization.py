@@ -9,7 +9,7 @@ import json
 from itertools import zip_longest
 
 
-multigraph_colors = ['cyan', 'salmon', 'chartreuse']
+multigraph_colors = ['cyan', 'salmon', 'chartreuse', 'navy', 'DarkOliveGreen']
 merged_node_in_multiple_graph_color = 'grey'
 
 
