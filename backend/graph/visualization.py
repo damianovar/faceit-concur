@@ -77,6 +77,10 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
     for iterate, node in enumerate(g.get_nodes()):
         g.nodes[iterate]["link"] = links[iterate]
     """
+
+    # Ensure that the text is inside the nodes
+    for iterate, node in enumerate(g.get_nodes()):
+        g.nodes[iterate]["shape"] = 'ellipse'
     
     """
     for iterate, node in enumerate(g.get_nodes()):
