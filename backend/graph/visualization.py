@@ -78,10 +78,12 @@ def get_nodes_and_edges_cu_relations(CU_REL, sheet):
         g.nodes[iterate]["link"] = links[iterate]
     """
 
-    # Ensure that the text is inside the nodes
+    # Ensure that the text is inside the nodes, scale based on importance
     for iterate, node in enumerate(g.get_nodes()):
         g.nodes[iterate]["shape"] = 'ellipse'
         amount_of_node_connectons = len(g.neighbors(node))
+        if g.nodes[iterate]["label"] == "":
+            print("Her?")
         if amount_of_node_connectons == 2:
             g.nodes[iterate]['font'] = {'size': 30}
         elif amount_of_node_connectons == 3:
