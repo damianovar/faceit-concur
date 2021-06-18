@@ -29,7 +29,7 @@ client = connect(db       ="FaceIT-DB",
                  maxPoolsize      =1,
                 ssl_cert_reqs=ssl.CERT_NONE)
 
-def list_filtered_question_objects():
+def list_filtered_question_objects(querry : str):
     """
         Goes through the collection of questions (object type Question)
         on the MongoDB server, and extracts the data into python lists
@@ -42,9 +42,9 @@ def list_filtered_question_objects():
     list_of_questions_attributes    = []
     list_of_questions_IDs = []
 
-    filtering = CU.objects(name= "complex numbers").first()
+    filtering = CU.objects(name= querry).first()
     # scan all the questions in the MongoDB
-    for question in Question.objects(body__contains = "number"):
+    for question in Question.objects(content_units__contains = filtering):
 
         # save the id
         list_of_questions_IDs.append(question.id)
