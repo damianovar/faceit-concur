@@ -132,7 +132,7 @@ def get_nodes_and_edges_cu_hierarchies(lists, sheet):
     g.width = "75%"
     # nodes, layout, interaction, selection, renderer, physics
     g.show_buttons(filter_=["edges", "physics"])
-
+    sheet = sheet.replace("'", "`")
     c = 0
     p0, p1, p2 = None, None, None
     color = "#FFFFFF"
@@ -145,24 +145,25 @@ def get_nodes_and_edges_cu_hierarchies(lists, sheet):
             # TODO: Make this into a better algorithm
             # Algorithm for determening parents and all that kind of good jazz
             if elem[0] and not (elem[1] or elem[2] or elem[3]):
-                p0 = elem[0]
+                p0 = elem[0].replace("'", "`")
                 g.add_node(n_id=p0, label=p0, color="#735702",
                            shape="ellipse", value=4)
                 g.add_edge(sheet, p0)
             elif elem[1] and not (elem[0] or elem[2] or elem[3]):
-                p1 = elem[1]
+                p1 = elem[1].replace("'", "`")
                 g.add_node(n_id=p1, label=p1, color="#BABF2A",
                            shape="ellipse", value=3)
-                g.add_edge(p0, elem[1])
+                g.add_edge(p0, p1)
             elif elem[2] and not (elem[1] or elem[0] or elem[3]):
-                p2 = elem[2]
+                p2 = elem[2].replace("'", "`")
                 g.add_node(n_id=p2, label=p2, color="#027368",
                            shape="ellipse", value=2)
-                g.add_edge(p1, elem[2])
+                g.add_edge(p1, p2)
             elif elem[3] and not (elem[1] or elem[2] or elem[0]):
-                g.add_node(n_id=elem[3], label=elem[3],
+                p3 = elem[3].replace("'", "`")
+                g.add_node(n_id=p3, label=p3,
                            color="#829FD9", shape="ellipse", value=1)
-                g.add_edge(p2, elem[3])
+                g.add_edge(p2, p3)
 
     node, edge, _, _, _ = g.get_network_data()
     return json.dumps(node), json.dumps(edge)

@@ -122,7 +122,12 @@
     },
     "physics": {
         "enabled": true,
-        "centralGravity": 0.05, 
+        "barnesHut": {
+                    "centralGravity": 0.05,
+                    "avoidOverlap": 0.7,
+                    "springConstant": 0.005,
+                    "springLength": 150
+                },  
         "stabilization": {
             "enabled": true,
             "fit": true,
