@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu9" %}
+{% block title %}Upload{% endblock %}
+{% block main %}
+
+<h1>List of guides and templates</h1>
+
+    <ol style="list-style-type: none;">
+        {% for filename in relevant_files%}
+            <li style="margin-bottom: 2%;">
+            <form method="POST">
+                <h4 style="text-transform: capitalize;">{{filename}}</h4> 
+                <input name="filename" id="filename" value="{{filename}}" style="display: none;">
+                <button class="btn btn-primary">Download</button>  
+            </form>
+            </li>
+            <br>
+        {% endfor%}
+    </ol>
+    
+
+
+
+{% endblock %}

@@ -117,15 +117,15 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
         tex_frame_contents, file_list, zip_file, "QuestionBodyImage")
 
     q.question_type = str(get_field("QuestionType", tex_frame_contents))[1:-1]
+    if q.question_type == "multiple choice":
+        potential_answers, correct_answers, correctness_of_the_answers = \
+            get_answers_for_multiple_choice_questions(
+                tex_frame_contents, q.question_type)
 
-    potential_answers, correct_answers, correctness_of_the_answers = \
-        get_answers_for_multiple_choice_questions(
-            tex_frame_contents, q.question_type)
+        q.potential_answers = potential_answers
+        q.correctness_of_the_answers = correctness_of_the_answers
 
-    q.potential_answers = potential_answers
-    q.correctness_of_the_answers = correctness_of_the_answers
-
-    q.correct_answers = correct_answers
+        q.correct_answers = correct_answers
 
     q.solutions = str(get_field("QuestionSolutions", tex_frame_contents))[1:-1]
 

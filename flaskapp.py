@@ -206,8 +206,10 @@ def upload_tex():
                 return redirect(request.url)
             if allowed_file(zipf.filename):
                 Upload.register_question(zipf)
+                print("Upload complete")
                 return redirect(request.url)
             else:
+                print("Upload not complete")
                 print("That file extension is not allowed")
                 return redirect(request.url)
     return render_template("upload_tex.html", title="Upload")
@@ -226,6 +228,24 @@ def show_questions():
     return render_template(
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )
+
+@app.route("/guides_and_templates", methods=['GET', 'POST'])
+def guides_and_templates():
+    current_dir = os.getcwd()
+    items = os.listdir(os.getcwd() + '/faceit-concur/guides')
+
+    if request.method == "POST":
+        full_filename = ""
+        for item in items:
+            if item.startswith(request.form["filename"]):
+                full_filename = item
+                break 
+        return send_from_directory(directory=os.getcwd() + '/faceit-concur/guides', filename=full_filename, as_attachment=True)
+
+
+    items_in_directory = [os.path.splitext(item)[0] for item in items]
+    return render_template("guides_and_templates.html", relevant_files=items_in_directory)
+
 
 @app.route("/submit_answer/<querry>", methods=["GET","POST"])
 def filtered_question_list(querry):
