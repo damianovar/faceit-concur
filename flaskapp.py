@@ -250,7 +250,8 @@ def guides_and_templates():
 
 @app.route("/submit_answer/<querry>")
 def filtered_question_list(querry):
-    data, selection_data = db.list_question_objects()
+    data, selection_data = db.list_filtered_question_objects(querry)
+    print("We are live")
     return render_template(
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )

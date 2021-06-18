@@ -1,9 +1,11 @@
 var node_info;
 
-function query_for_question(question) {
-    let courses = create_course_string(create_list_of_listed_courses());
-    let mode = get_graph_mode();
-    let url = "/multi_graphviz/" + "complex numbers";
+function query_for_question() {
+    let contentUnit = document.getElementById("node_options_title").innerHTML
+    //let courses = create_course_string(create_list_of_listed_courses());
+    //let mode = get_graph_mode();
+    //let url = "/multi_graphviz/" + "complex numbers";
+    let url = window.location.origin + "/" + "submit_answer/" + contentUnit;
     window.location.href = url;
 }
 
