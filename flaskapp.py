@@ -242,6 +242,7 @@ def filtered_question_list(querry):
 @login_required
 def answer_selected_question():
     messages = request.args["messages"]
+    print("Messages:", messages)
     selected_question_id = json.loads(messages)["selected_question_id"]
 
     if request.method == "POST":
