@@ -170,7 +170,8 @@ def multi_graph_parser():
 def graph_list():
     if request.method == "POST":
         if request.form['delete_button']:
-            delete_course(request.form['delete_button'])
+            print("The delete feature is currently disabled")
+            #delete_course(request.form['delete_button'])
 
     return render_template(
         "graphlist.html", title="Graph list", CU_files=zip(*get_course_names_and_id())
