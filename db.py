@@ -29,7 +29,48 @@ client = connect(db       ="FaceIT-DB",
                  maxPoolsize      =1,
                 ssl_cert_reqs=ssl.CERT_NONE)
 
-def list_filtered_question_objects(querry : str):
+
+def list_test_filtered_question_objects(test : str):
+    """
+        Goes through the collection of questions (object type Question)
+        on the MongoDB server, and extracts the data into python lists
+
+        list_of_questions_attributes -> question text and question attributes
+        list_of_questions_IDs -> question IDs
+    """
+
+    # storage allocation
+    list_of_questions_attributes    = []
+    list_of_questions_IDs = []
+
+    filtering = Test.objects(id= test).first()
+    # scan all the questions in the MongoDB
+    for question in filtering.questions:
+
+        # save the id
+        list_of_questions_IDs.append(question.id)
+
+        # save the course name
+        course_list = [course.name for course in question.courses]
+        if not course_list:
+            course_list = ['N.D.']
+
+        # if course_name is None:
+        #     course_name = 'empty'
+
+       # store the interesting attributes
+        attributes_of_current_question = \
+                [question.body,
+                 course_list,
+                 [cu.name for cu in question.content_units],
+                 #question.taxonomy_levels
+                 ]
+        # push them in the list
+        list_of_questions_attributes.append(attributes_of_current_question)
+
+    return list_of_questions_attributes, list_of_questions_IDs
+
+def list_CU_filtered_question_objects(querry : str):
     """
         Goes through the collection of questions (object type Question)
         on the MongoDB server, and extracts the data into python lists

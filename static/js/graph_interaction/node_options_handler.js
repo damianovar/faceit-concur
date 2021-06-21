@@ -5,7 +5,7 @@ function query_for_question() {
     //let courses = create_course_string(create_list_of_listed_courses());
     //let mode = get_graph_mode();
     //let url = "/multi_graphviz/" + "complex numbers";
-    let url = window.location.origin + "/" + "submit_answer/" + contentUnit;
+    let url = window.location.origin + "/" + "submit_answer/" + "CU/" + contentUnit;
     window.location.href = url;
 }
 

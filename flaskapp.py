@@ -190,10 +190,13 @@ def create_test():
 
     return render_template("tests/create_test.html", data=data, selection_data=selection_data)
 
-@app.route("/select_test")
+@app.route("/select_test", methods=["GET", "POST"])
 def select_test():
-    list_of_tests = [test.name for test in Test.objects()]
-    print(list_of_tests)
+    if request.method == "POST":
+        if request.form["id"]:
+            return redirect("/submit_answer/test/" + str(request.form["id"]))
+            
+    list_of_tests = [[test.name, test.id] for test in Test.objects()]
     return render_template("tests/select_test.html", list_of_tests=list_of_tests)
 
 @app.route("/upload_excel", methods=["GET", "POST"])
@@ -265,16 +268,25 @@ def guides_and_templates():
     return render_template("guides_and_templates.html", relevant_files=items_in_directory)
 
 
-@app.route("/submit_answer/<querry>", methods=["GET","POST"])
-def filtered_question_list(querry):
-    data, selection_data = db.list_filtered_question_objects(querry)
-    if request.method == "POST":
-        selected_question = request.form.get("question_button")
-        messages = json.dumps({"selected_question_id": selected_question})
-        return redirect(url_for("answer_selected_question", messages=messages))
+@app.route("/submit_answer/<mode>/<querry>", methods=["GET","POST"])
+def filtered_question_list(mode,querry):
+    if mode=="CU":
+        data, selection_data = db.list_CU_filtered_question_objects(querry)
+        if request.method == "POST":
+            selected_question = request.form.get("question_button")
+            messages = json.dumps({"selected_question_id": selected_question})
+            return redirect(url_for("answer_selected_question", messages=messages))
+    elif mode=="test":
+        data, selection_data = db.list_test_filtered_question_objects(querry)
+        if request.method == "POST":
+            selected_question = request.form.get("question_button")
+            messages = json.dumps({"selected_question_id": selected_question})
+            return redirect(url_for("answer_selected_question", messages=messages))
+    
     return render_template(
-        "submit_answer/question_list.html", data=data, selection_data=selection_data
-    )
+            "submit_answer/question_list.html", data=data, selection_data=selection_data
+        )
+    
 
 @app.route("/submit_answer/answer_selected_question", methods=["GET", "POST"])
 @login_required
