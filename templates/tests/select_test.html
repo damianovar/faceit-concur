@@ -1,0 +1,12 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu6" %}
+{% block head %}
+{{ super()}}
+{% endblock %}
+{% block main %}
+
+{% for test in list_of_tests%}
+    <h1>{{test}}</h1>
+{% endfor%}
+
+{% endblock %}

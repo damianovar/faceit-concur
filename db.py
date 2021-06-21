@@ -6,7 +6,7 @@ from flask import session
 
 from bson.objectid import ObjectId
 import time
-from backend.models.models import CU, Course, Question, QuestionAnswer, Institution, Country, User, CUConnection
+from backend.models.models import CU, Course, Question, QuestionAnswer, Institution, Country, User, CUConnection, Test
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -392,3 +392,12 @@ def upload_image_to_question(question_id):
     return
 
 
+def add_new_test(test_name, question_list, creator_username):
+    question_obj_list = []
+    creator = User.objects(username=creator_username).first()
+    print(creator)
+    print(question_list)
+    for id in question_list:
+        question_obj_list.append(get_question_by_obj_id(id))
+
+    Test(name=test_name, questions=question_obj_list, creator=creator).save()
