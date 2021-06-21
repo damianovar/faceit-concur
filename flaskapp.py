@@ -178,6 +178,26 @@ def graph_list():
     )
 
 
+@app.route("/create_test", methods=["GET", "POST"])
+def create_test():
+    data, selection_data = db.list_question_objects()
+    if request.method == "POST":
+        selection = request.form.getlist("id")
+        print("Selection:", selection)
+        """
+        if selection:
+            zip_file_name = "questions" + str(uuid.uuid4()) + ".zip"
+            file_name = "questions" + str(uuid.uuid4()) + ".tex"
+            download = Download.get_questions_by_selection(selection)
+            Download.zip_download(download, zip_file_name, file_name)
+            return send_from_directory(
+                "static/clients/zip", zip_file_name, as_attachment=True
+            )
+        """
+        return redirect(request.url)
+
+    return render_template("tests/create_test.html", data=data, selection_data=selection_data)
+
 @app.route("/upload_excel", methods=["GET", "POST"])
 def upload_excel():
     if request.method == "POST":
@@ -218,14 +238,13 @@ def upload_tex():
 
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_required
-def show_questions():
-    data, selection_data = db.list_question_objects()
+def show_questions():    
 
     if request.method == "POST":
         selected_question = request.form.get("question_button")
         messages = json.dumps({"selected_question_id": selected_question})
         return redirect(url_for("answer_selected_question", messages=messages))
-
+    data, selection_data = db.list_question_objects()
     return render_template(
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )
@@ -378,8 +397,7 @@ def get_image(tex_name):
 def downloads():
     """Let a user download questions."""
 
-    # Check one which is used - 1 or 2
-    data, selection_data = db.list_question_objects()
+
 
     if request.method == "POST":
         selection = request.form.getlist("id")
@@ -392,6 +410,10 @@ def downloads():
                 "static/clients/zip", zip_file_name, as_attachment=True
             )
         return redirect(request.url)
+
+    # Check one which is used - 1 or 2
+    data, selection_data = db.list_question_objects()
+    
     return render_template(
         "downloads.html", title="Downloads", data=data, selection_data=selection_data
     )
