@@ -296,7 +296,7 @@ def answer_selected_question():
 
     if request.method == "POST":
         print("Form stuff", request.form)
-        selected_multiple_choice_answer = request.form.get("id")
+        selected_multiple_choice_answer = request.form.get("state")
         if not selected_multiple_choice_answer:
             return render_template(
                 "submit_answer/error_missing_selection.html",

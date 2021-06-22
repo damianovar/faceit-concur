@@ -32,7 +32,7 @@
             data-id-table="advancedTable" data-pagination="false" data-pagination-pre-text="Previous"
             data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
             data-page-size=5 data-page-list="[5,10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
-            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
+            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="state" data-select-item-name="state">
           <thead>
             <tr>
                 <!--<th data-field="id" data-valign="middle" data-visible="false"></th>-->
@@ -46,7 +46,7 @@
             <tr>
                 <td> {{ row}} </td>
                 
-                <td>  {{loop.index}}</td>
+                <td>  {{loop.index - 1}}</td>
               
             </tr>
             {% endfor %}
