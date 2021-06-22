@@ -322,13 +322,13 @@ def answer_selected_question():
         )
 
         return redirect(url_for("show_submission_info", messages=messages))
-
+    
     selected_question_obj = db.get_question_by_obj_id(selected_question_id)
     #list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(selected_question_obj)
     #question_image = db.get_question_image(selected_question_obj.id)
 
     current_user_role = db.get_user_role()
-    if current_user_role == "Admin" or current_user_role == "Teacher":
+    if (current_user_role == "Admin" or current_user_role == "Teacher") and selected_question_obj.correctness_of_the_answers:
         correct_answer_idx = selected_question_obj.correctness_of_the_answers.index(max(selected_question_obj.correctness_of_the_answers))
         correct_answer = (
             "The correct answer is: " + selected_question_obj.potential_answers[correct_answer_idx]
@@ -338,7 +338,7 @@ def answer_selected_question():
 
     return render_template(
         "submit_answer/selected_question_page.html",
-        question=selected_question_obj
+        question=selected_question_obj, correct_answer=correct_answer
     )
 
 
