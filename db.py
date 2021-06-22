@@ -6,7 +6,7 @@ from flask import session
 
 from bson.objectid import ObjectId
 import time
-from backend.models.models import CU, Course, Question, QuestionAnswer, Institution, Country, User, CUConnection
+from backend.models.models import CU, Course, Question, QuestionAnswer, Institution, Country, User, CUConnection, Test
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -29,7 +29,8 @@ client = connect(db       ="FaceIT-DB",
                  maxPoolsize      =1,
                 ssl_cert_reqs=ssl.CERT_NONE)
 
-def list_filtered_question_objects():
+
+def list_test_filtered_question_objects(test : str):
     """
         Goes through the collection of questions (object type Question)
         on the MongoDB server, and extracts the data into python lists
@@ -42,9 +43,49 @@ def list_filtered_question_objects():
     list_of_questions_attributes    = []
     list_of_questions_IDs = []
 
-    filtering = CU.objects(name= "complex numbers").first()
+    filtering = Test.objects(id= test).first()
     # scan all the questions in the MongoDB
-    for question in Question.objects(body__contains = "number"):
+    for question in filtering.questions:
+
+        # save the id
+        list_of_questions_IDs.append(question.id)
+
+        # save the course name
+        course_list = [course.name for course in question.courses]
+        if not course_list:
+            course_list = ['N.D.']
+
+        # if course_name is None:
+        #     course_name = 'empty'
+
+       # store the interesting attributes
+        attributes_of_current_question = \
+                [question.body,
+                 course_list,
+                 [cu.name for cu in question.content_units],
+                 #question.taxonomy_levels
+                 ]
+        # push them in the list
+        list_of_questions_attributes.append(attributes_of_current_question)
+
+    return list_of_questions_attributes, list_of_questions_IDs
+
+def list_CU_filtered_question_objects(querry : str):
+    """
+        Goes through the collection of questions (object type Question)
+        on the MongoDB server, and extracts the data into python lists
+
+        list_of_questions_attributes -> question text and question attributes
+        list_of_questions_IDs -> question IDs
+    """
+
+    # storage allocation
+    list_of_questions_attributes    = []
+    list_of_questions_IDs = []
+
+    filtering = CU.objects(name= querry).first()
+    # scan all the questions in the MongoDB
+    for question in Question.objects(content_units__contains = filtering):
 
         # save the id
         list_of_questions_IDs.append(question.id)
@@ -396,3 +437,12 @@ def upload_image_to_question(question_id):
     return
 
 
+def add_new_test(test_name, question_list, creator_username):
+    question_obj_list = []
+    creator = User.objects(username=creator_username).first()
+    print(creator)
+    print(question_list)
+    for id in question_list:
+        question_obj_list.append(get_question_by_obj_id(id))
+
+    Test(name=test_name, questions=question_obj_list, creator=creator).save()

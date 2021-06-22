@@ -23,7 +23,7 @@ from backend.user.forms import RegistrationForm, LoginForm
 import backend.graph.visualization as vis
 
 from backend.user.models import Account
-from backend.models.models import Institution, Course, User
+from backend.models.models import Institution, Course, User, Test
 from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, get_graphs_from_excel_file, get_multiple_graph
 
 import db
@@ -170,12 +170,34 @@ def multi_graph_parser():
 def graph_list():
     if request.method == "POST":
         if request.form['delete_button']:
-            delete_course(request.form['delete_button'])
+            print("The delete feature is currently disabled")
+            #delete_course(request.form['delete_button'])
 
     return render_template(
         "graphlist.html", title="Graph list", CU_files=zip(*get_course_names_and_id())
     )
 
+
+@app.route("/create_test", methods=["GET", "POST"])
+def create_test():
+    data, selection_data = db.list_question_objects()
+    if request.method == "POST":
+        test_name = request.form.get("test_name")
+        question_list = request.form.getlist("id")
+        if question_list and test_name:
+            db.add_new_test(test_name, question_list, session.get("user").get("username"))
+        return redirect(request.url)
+
+    return render_template("tests/create_test.html", data=data, selection_data=selection_data)
+
+@app.route("/select_test", methods=["GET", "POST"])
+def select_test():
+    if request.method == "POST":
+        if request.form["id"]:
+            return redirect("/submit_answer/test/" + str(request.form["id"]))
+            
+    list_of_tests = [[test.name, test.id] for test in Test.objects()]
+    return render_template("tests/select_test.html", list_of_tests=list_of_tests)
 
 @app.route("/upload_excel", methods=["GET", "POST"])
 def upload_excel():
@@ -217,18 +239,17 @@ def upload_tex():
 
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_required
+
 def show_questions():
     data, selection_data = db.list_question_objects("multiple choice")
-
     if request.method == "POST":
         selected_question = request.form.get("question_button")
         messages = json.dumps({"selected_question_id": selected_question})
         return redirect(url_for("answer_selected_question", messages=messages))
-
+    data, selection_data = db.list_question_objects()
     return render_template(
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )
-
 
 @app.route("/guides_and_templates", methods=['GET', 'POST'])
 def guides_and_templates():
@@ -248,12 +269,25 @@ def guides_and_templates():
     return render_template("guides_and_templates.html", relevant_files=items_in_directory)
 
 
-@app.route("/submit_answer/<querry>")
-def filtered_question_list(querry):
-    data, selection_data = db.list_question_objects()
+@app.route("/submit_answer/<mode>/<querry>", methods=["GET","POST"])
+def filtered_question_list(mode,querry):
+    if mode=="CU":
+        data, selection_data = db.list_CU_filtered_question_objects(querry)
+        if request.method == "POST":
+            selected_question = request.form.get("question_button")
+            messages = json.dumps({"selected_question_id": selected_question})
+            return redirect(url_for("answer_selected_question", messages=messages))
+    elif mode=="test":
+        data, selection_data = db.list_test_filtered_question_objects(querry)
+        if request.method == "POST":
+            selected_question = request.form.get("question_button")
+            messages = json.dumps({"selected_question_id": selected_question})
+            return redirect(url_for("answer_selected_question", messages=messages))
+    
     return render_template(
-        "submit_answer/question_list.html", data=data, selection_data=selection_data
-    )
+            "submit_answer/question_list.html", data=data, selection_data=selection_data
+        )
+    
 
 @app.route("/submit_answer/answer_selected_question", methods=["GET", "POST"])
 @login_required
@@ -374,8 +408,7 @@ def get_image(tex_name):
 def downloads():
     """Let a user download questions."""
 
-    # Check one which is used - 1 or 2
-    data, selection_data = db.list_question_objects()
+
 
     if request.method == "POST":
         selection = request.form.getlist("id")
@@ -388,6 +421,10 @@ def downloads():
                 "static/clients/zip", zip_file_name, as_attachment=True
             )
         return redirect(request.url)
+
+    # Check one which is used - 1 or 2
+    data, selection_data = db.list_question_objects()
+    
     return render_template(
         "downloads.html", title="Downloads", data=data, selection_data=selection_data
     )

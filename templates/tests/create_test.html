@@ -18,15 +18,21 @@
 {{ super()}}
 {% endblock %}
 {% block main %}
-<div class="container mb-2">
-    <form method="POST" id="download_form">
+
+ <h1>Create test</h1>
+      <hr>
+        <form method="POST" id="download_form">
+        <div class="form-group">
+          <label for="test_name">Test name:</label><br>
+          <input type="text" id="test_name" name="test_name"><br>
+        </div>
         <table id="table" data-toggle="table" data-search="true" data-advanced-search="true" data-search-align="right"
             data-show-columns="true" data-show-toggle="true" data-show-refresh="true" data-show-fullscreen="true"
             data-show-pagination-switch="true" data-filter-control="true" data-filter-show-clear="true"
             data-id-table="advancedTable" data-pagination="true" data-pagination-pre-text="Previous"
             data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
             data-page-list="[10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
-            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
+            data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
 
             <thead>
                 <tr>
@@ -54,9 +60,9 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div id="toolbar">
-            <button type="submit" id="dl-button" class="btn btn-primary mt-2">Submit</button>
+        <div>
+            <button type="submit" id="dl-button" class="btn btn-primary mt-2">Submit test</button>
         </div>
     </form>
-</div>
+
 {% endblock %}

@@ -1,11 +1,11 @@
 var node_info;
 
-
-
-function query_for_question(question) {
-    let courses = create_course_string(create_list_of_listed_courses());
-    let mode = get_graph_mode();
-    let url = "/multi_graphviz/" + "complex numbers";
+function query_for_question() {
+    let contentUnit = document.getElementById("node_options_title").innerHTML
+    //let courses = create_course_string(create_list_of_listed_courses());
+    //let mode = get_graph_mode();
+    //let url = "/multi_graphviz/" + "complex numbers";
+    let url = window.location.origin + "/" + "submit_answer/" + "CU/" + contentUnit;
     window.location.href = url;
 }
 
@@ -21,7 +21,6 @@ function node_click(properties) {
             document.getElementById("link_querry_button").style.display = "none";
         }
         else{
-            console.log("Hahahahahahah")
             document.getElementById("link_querry_button").style.display = "initial";
         }
         node_options.style.display = "initial";
