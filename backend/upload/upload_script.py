@@ -5,7 +5,7 @@ import re
 import zipfile
 from TexSoup import TexSoup  # , TokenWithPosition
 
-from backend.models.models import Course, Language, Question, CU, User, NotationStandard
+from backend.models.models import Course, Language, Question, CU, QuestionSolution, User, NotationStandard
 
 
 # ---------------- HELPER METHODS ------------------
@@ -20,11 +20,13 @@ class Upload:
     def register_question(file_path):
 
         # convert the file in questions
-        questions = zip_of_tex_files_to_questions(file_path)
+        questions, solutions = zip_of_tex_files_to_questions(file_path)
 
         # for each of them, save it
         for q in questions:
             q.save()
+        for qs in solutions:
+            qs.save()
 
 
 def zip_of_tex_files_to_questions(zipf):
@@ -36,6 +38,7 @@ def zip_of_tex_files_to_questions(zipf):
 
     # storage allocation
     questions = []
+    solutions = []
     # get the various files within the zip file uploaded in the portal
     zip_file = zipfile.ZipFile(zipf)
     file_list = zip_file.namelist()
@@ -71,9 +74,16 @@ def zip_of_tex_files_to_questions(zipf):
                     # add it to the list
                     if not question_already_in_db(q):
                         questions.append(q)
-                    # debug
-                    print("added question {}".format(len(questions)))
-                    q.print()
+                        # debug
+                        print("added question {}".format(len(questions)))
+                        #q.print()
+                        solution_frames = frame.find_all("IndexedSolution")
+                        for solution in solution_frames:
+                            tex_frame_solution_contents = list(solution.children)
+                            qs = tex_string_to_question_solution(
+                                tex_frame_solution_contents, file_list, zip_file, q)
+                            #if not solution_already_in_db(qs):
+                            solutions.append(qs)
 
                 # debug
                 print("finished processing frame {}".format(frame.name))
@@ -83,7 +93,7 @@ def zip_of_tex_files_to_questions(zipf):
         # debug
         print("finished processing file {}".format(current_file))
 
-    return questions
+    return questions, solutions
 
 
 # method to convert the text within a
@@ -96,6 +106,65 @@ def question_already_in_db(q):
         return False
     print("question already in db, skipping it..")
     return True
+
+def solution_already_in_db(qs):
+    if not QuestionSolution.objects(body=qs.body):
+        print("solution does not exists in db")
+        return False
+    print("solution already in db, skipping it..")
+    return True
+
+def tex_string_to_question_solution(tex_frame_contents, file_list, zip_file, q):
+    qs = QuestionSolution()
+    qs.creator = get_user()
+    qs.question = [q]
+    qs.body = get_solution_body(tex_frame_contents)
+    qs.content_units = get_solution_content_units(tex_frame_contents, qs.creator)
+    qs.body_image = get_image(
+        tex_frame_contents, file_list, zip_file, "SolutionBodyImage")
+    return qs
+
+
+def get_solution_body(tex_frame_contents):
+    """
+    Ugly function to format the question body
+    :param tex_frame_contents:
+    :return: question_body in string format
+    """
+    qs = [str(token) for token in tex_frame_contents if token.name == "SolutionBody"][0] \
+        .replace("\\SolutionBody{", "")[:-1]
+    qs = re.sub("[\n\t]", "", qs)
+    qs = re.sub('\s{2,}', ' ', qs)
+    qs = qs.replace('$$', "$")
+    qs = qs.replace(r"\bm", "")
+    qs = qs.replace("\qquad", "")
+    qs = qs.replace(" $", "$\ ")  # remove spacing to avoid problems with math
+
+    # remove LaTex commands that are not identified by qti
+    qs = qs.replace("\Reals", "")
+
+    # remove other things
+    qs = qs.replace("\\begin{small}", "")
+    qs = qs.replace("\\end{small}", "")
+    qs = qs.replace("\\begin{footnotesize}", "")
+    qs = qs.replace("\\end{footnotesize}", "")
+
+    return qs
+
+def get_solution_content_units(tex_frame_contents, creator):
+    content_units = str(
+        get_field("SolutionContentUnits", tex_frame_contents))[1:-1]
+    content_units = content_units.replace(
+        ' ,', ',').replace(', ', ',').split(",")
+    cu = []
+    for content_unit in content_units:
+        if CU.objects(name=content_unit).first() is not None:
+            cu.append(CU.objects(name=content_unit).first())
+            print("CU found: " + str(content_unit))
+        else:
+            print("CU not found - creating a new CU")
+            cu.append(CU(name=content_unit, creator=creator).save())
+    return cu
 
 def tex_string_to_question(tex_frame_contents, file_list, zip_file):
     # Current version: 0.12
@@ -111,7 +180,8 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
 
     q.body = get_question_body(tex_frame_contents)
 
-    q.courses = get_question_courses(tex_frame_contents)
+    q.courses = get_question_courses(tex_frame_contents, q.creator)
+    print(q.courses)
 
     q.body_image = get_image(
         tex_frame_contents, file_list, zip_file, "QuestionBodyImage")
@@ -150,7 +220,7 @@ def tex_string_to_question(tex_frame_contents, file_list, zip_file):
         print('ok')
     else:
         q.question_disclosability = 'me'
-    print(q.question_disclosability)
+    #print(q.question_disclosability)
 
     q.solution_disclosability = str(
         get_field("QuestionSolutionDisclosability", tex_frame_contents))[1:-1]
@@ -179,20 +249,22 @@ def get_user():
         print("User not found - a valid user is required to upload questions") 
         return None
 
-def get_question_courses(tex_frame_contents):
+def get_question_courses(tex_frame_contents, creator):
     courses = str(
         get_field("QuestionCourses", tex_frame_contents))[1:-1]
     courses = courses.replace(
         ' ,', ',').replace(', ', ',').split(",")
     course_list = []
     for course in courses:
-        print(Course.objects())
         if Course.objects(name=course).first() is not None:
             course_list.append(Course.objects(name=course).first())
             print("Course found: " + str(course))
         else:
-            print("Course not found - creating a new Course")
+            print("Course not found - it will be skipped")
+            #print("Course not found - creating a new Course")
+            #course_list.append(Course(name=course, creator=creator).save())
             continue
+    print(course_list)
     return course_list
 
 
@@ -250,7 +322,7 @@ def get_question_body(tex_frame_contents):
     q = q.replace('$$', "$")
     q = q.replace(r"\bm", "")
     q = q.replace("\qquad", "")
-    q = q.replace(" $", "$")  # remove spacing to avoid problems with math
+    q = q.replace(" $", "$\ ")  # remove spacing to avoid problems with math
 
     # remove LaTex commands that are not identified by qti
     q = q.replace("\Reals", "")
