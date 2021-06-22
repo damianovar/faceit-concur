@@ -295,6 +295,7 @@ def answer_selected_question():
     selected_question_id = json.loads(messages)["selected_question_id"]
 
     if request.method == "POST":
+        print("Form stuff", request.form)
         selected_multiple_choice_answer = request.form.get("id")
         if not selected_multiple_choice_answer:
             return render_template(
@@ -323,10 +324,8 @@ def answer_selected_question():
         return redirect(url_for("show_submission_info", messages=messages))
 
     selected_question_obj = db.get_question_by_obj_id(selected_question_id)
-    list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(
-        selected_question_obj
-    )
-    question_image = db.get_question_image(selected_question_obj.id)
+    #list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(selected_question_obj)
+    #question_image = db.get_question_image(selected_question_obj.id)
 
     current_user_role = db.get_user_role()
     if current_user_role == "Admin" or current_user_role == "Teacher":
@@ -339,12 +338,7 @@ def answer_selected_question():
 
     return render_template(
         "submit_answer/selected_question_page.html",
-        data=list_of_options,
-        selection_data=idx_list_for_options,
-        question_id=selected_question_obj.id,
-        question_text=selected_question_obj.body,
-        correct_answer=correct_answer,
-        question_image=question_image,
+        question=selected_question_obj
     )
 
 
@@ -355,6 +349,7 @@ def show_submission_info():
     selected_multiple_choice_answer = json.loads(messages)[
         "selected_multiple_choice_answer"
     ]
+    print("Message:", messages)
     question_id = json.loads(messages)["question_id"]
     written_answer = json.loads(messages)["written_answer"]
     perceived_difficulty = json.loads(messages)["perceived_difficulty"]
