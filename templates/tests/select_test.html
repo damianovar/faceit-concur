@@ -1,0 +1,16 @@
+{% extends "base/base.html" %}
+{% set active_page = "menu6" %}
+{% block head %}
+{{ super()}}
+{% endblock %}
+{% block main %}
+
+{% for test, id in list_of_tests%}
+    <form method="POST">
+        <h4 style="text-transform: capitalize;">{{test}}</h4> 
+        <input type="hidden" name="id" value="{{id}}" />
+        <button class="btn btn-primary" data-value="{{test}}">Do the test</button>
+    </form>  
+{% endfor%}
+
+{% endblock %}
