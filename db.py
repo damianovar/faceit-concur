@@ -110,7 +110,7 @@ def list_CU_filtered_question_objects(querry : str):
 
     return list_of_questions_attributes, list_of_questions_IDs
                    
-def list_question_objects():
+def list_question_objects(question_type='multiple choice'):
     """
         Goes through the collection of questions (object type Question)
         on the MongoDB server, and extracts the data into python lists
@@ -140,6 +140,7 @@ def list_question_objects():
        # store the interesting attributes
         attributes_of_current_question = \
                 [question.body,
+                 question.question_type,
                  course_list,
                  [cu.name for cu in question.content_units],
                  #question.taxonomy_levels
@@ -239,7 +240,10 @@ def get_answer_options_from_question_obj(selected_question_obj):
     if selected_question_obj.question_type == 'multiple choice':
         list_of_options = selected_question_obj.potential_answers
         idx_list_for_options = list(range(0, len(selected_question_obj.potential_answers)))  
-        return list_of_options, idx_list_for_options
+    elif selected_question_obj.question_type == 'numeric':
+        list_of_options = None
+        idx_list_for_options = None
+    return list_of_options, idx_list_for_options
 
 
 def get_avg_perceived_difficulty(question_id):

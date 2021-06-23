@@ -1,17 +1,3 @@
-<script>
-  MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']]
-    },
-    svg: {
-      fontCache: 'global'
-    }
-  };
-</script>
-
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
-</script>
 {% extends "base/base.html" %}
 {% set active_page = "menu7" %}
 {% block title %}Submit answer{% endblock %}
@@ -20,6 +6,19 @@
 <div class="container mb-2">
   <h2>Select the question you would like to answer</h2>
   <hr>
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+  </script>
+  <script type="text/javascript" id="MathJax-script" sync src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+  <!-- <script type="text/javascript" src="http://math.etsu.edu/LaTeXMathML/LaTeXMathML.js"></script> -->
+  <!-- <link rel="stylesheet" type="text/css" href="http://math.etsu.edu/LaTeXMathML/LaTeXMathML.standardarticle.css" /> -->
   <form id="submit_answer_form"  method="POST" onkeydown="return event.key != 'Enter';">  
   <td>Tip: Use available selection options ("Course","CU",...) to find desired questions </td><br>
     <table id="table" data-toggle="table" data-advanced-search="true" data-search="true" data-search-on-enter-key="false" data-search-align="right"
@@ -33,6 +32,7 @@
           <thead>
             <tr>
                 <th data-field="question" data-sortable="true">Question</th>
+                <th data-field="question_type" data-sortable="true" data-filter-control="select">Question Type</th>
                 <th data-field="course" data-sortable="true" data-filter-control="select">Course</th>
                 <th data-field="taxonomy" data-sortable="true" data-filter-control="select">CU</th>
                 <th data-field="taxonomy_level" >Taxonomy Level</th>

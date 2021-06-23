@@ -239,8 +239,9 @@ def upload_tex():
 
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_required
-def show_questions():    
 
+def show_questions():
+    data, selection_data = db.list_question_objects("multiple choice")
     if request.method == "POST":
         selected_question = request.form.get("question_button")
         messages = json.dumps({"selected_question_id": selected_question})
@@ -351,8 +352,12 @@ def answer_selected_question():
 
     
     selected_question_obj = db.get_question_by_obj_id(selected_question_id)
+   
     #list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(selected_question_obj)
     #question_image = db.get_question_image(selected_question_obj.id)
+
+    list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(
+        selected_question_obj)
 
     current_user_role = db.get_user_role()
     if (current_user_role == "Admin" or current_user_role == "Teacher") and selected_question_obj.correctness_of_the_answers:
