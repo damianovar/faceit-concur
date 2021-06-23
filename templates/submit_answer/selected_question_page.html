@@ -18,37 +18,37 @@
 <div class="container mb-2">
   <h2>Answer by selecting one of the options and submitting</h2>
   <hr>
-  <b> {{ question_text }} </b> 
+  <p> {{ question.body }} </p> 
 
-  {% if question_image != None %}
+  {% if question.body_image != None %}
   <br><br>
-  <img src="data:;base64,{{ question_image }}" style="max-width: calc(100% - 20px);" alt=""/>
+  <img src="data:;base64,{{ question.body_image  }}" style="max-width: calc(100% - 20px);" alt=""/>
   {% endif %}
 
   <form method="POST" id="download_form">
+  {% if question.question_type == "multiple choice" %}
     <table id="table" data-toggle="table" data-search="false" data-advanced-search="false" data-search-align="right"
             data-show-columns="false" data-show-toggle="false" data-show-refresh="false" data-show-fullscreen="false"
             data-show-pagination-switch="false" data-filter-control="false" data-filter-show-clear="false"
             data-id-table="advancedTable" data-pagination="false" data-pagination-pre-text="Previous"
             data-pagination-next-text="Next" data-pagination-h-align="left" data-pagination-detail-h-align="right"
             data-page-size=5 data-page-list="[5,10,20,50,100,All]" data-click-to-select="true" data-maintain-meta-data="true"
-            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="id" data-select-item-name="id">
+            data-toolbar="#toolbar" data-maintain-selected="true" data-id-field="state" data-select-item-name="state">
           <thead>
             <tr>
-                <th data-field="id" data-valign="middle" data-visible="false"></th>
+                <!--<th data-field="id" data-valign="middle" data-visible="false"></th>-->
                 <th data-field="question" data-sortable="true">Options</th>
                 <th data-field="state" data-radio="true"></th>
                 <!--<th data-field="taxonomy_level" data-sortable="true" data-filter-control="input">Taxonomy Level</th>-->
             </tr>
         </thead>
         <tbody>
-            {% for row in data %}
+            {% for  row in question.potential_answers %}
             <tr>
-                <td> {{ selection_data[loop.index0] }}</td>
+                <td> {{ row}} </td>
                 
-                <td> {{ row }}</td>
+                <td>  {{loop.index - 1}}</td>
               
-                <td></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -60,7 +60,11 @@
     <i> {{ correct_answer }} </i>
     <br><br>
     {% endif %}
-
+{% else %}
+      <b>Insert answer here:</b><br>
+    <textarea rows="4" cols="80" name="answer"></textarea>
+    <br>
+{% endif %}
     <style>
       .txt-center {
         text-align: center;
@@ -128,7 +132,7 @@
     <b>Add a comment if desired and submit:</b><br>
     <textarea rows="4" cols="80" name="written_answer"></textarea>
     <br>
-    <button type="submit" id="button_8" class="btn btn-primary mt-2" name="multiple_choice_button" value="{{question_id}}">Submit</button>
+    <button type="submit" id="button_8" class="btn btn-primary mt-2" name="multiple_choice_button" value="{{question.id}}">Submit</button>
 
   </form>
 </div>

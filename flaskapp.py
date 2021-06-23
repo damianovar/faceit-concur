@@ -296,41 +296,71 @@ def answer_selected_question():
     selected_question_id = json.loads(messages)["selected_question_id"]
 
     if request.method == "POST":
-        selected_multiple_choice_answer = request.form.get("id")
-        if not selected_multiple_choice_answer:
-            return render_template(
-                "submit_answer/error_missing_selection.html",
-                title="Answer not submitted", message="Answer not submitted"
+        print("Form stuff", request.form)
+        if "state" in request.form:
+            selected_multiple_choice_answer = request.form.get("state")
+            if not selected_multiple_choice_answer:
+                return render_template(
+                    "submit_answer/error_missing_selection.html",
+                    title="Answer not submitted", message="Answer not submitted"
+                )
+
+            question_id = request.form.get("multiple_choice_button")
+            written_answer = request.form.get("written_answer")
+            perceived_difficulty = request.form.get("rating")
+            if not perceived_difficulty:
+                return render_template(
+                    "submit_answer/error_missing_selection.html",
+                    title="Perceived difficulty not submitted", message="Perceived difficulty not submitted"
+                )            
+
+            messages = json.dumps(
+                {
+                    "selected_multiple_choice_answer": selected_multiple_choice_answer,
+                    "question_id": question_id,
+                    "written_answer": written_answer,
+                    "perceived_difficulty": perceived_difficulty,
+                }
             )
 
-        question_id = request.form.get("multiple_choice_button")
-        written_answer = request.form.get("written_answer")
-        perceived_difficulty = request.form.get("rating")
-        if not perceived_difficulty:
-            return render_template(
-                "submit_answer/error_missing_selection.html",
-                title="Perceived difficulty not submitted", message="Perceived difficulty not submitted"
-            )            
+            return redirect(url_for("show_submission_info", messages=messages))
+        else:
+            answer = request.form.get("answer")
+            if not answer:
+                return render_template(
+                    "submit_answer/error_missing_selection.html",
+                    title="Answer not submitted", message="Answer not submitted"
+                )
+            question_id = request.form.get("multiple_choice_button")
+            written_answer = request.form.get("written_answer")
+            perceived_difficulty = request.form.get("rating")
+            if not perceived_difficulty:
+                return render_template(
+                    "submit_answer/error_missing_selection.html",
+                    title="Perceived difficulty not submitted", message="Perceived difficulty not submitted")
+            messages = json.dumps(
+                {
+                    "selected_multiple_choice_answer": answer,
+                    "question_id": question_id,
+                    "written_answer": written_answer,
+                    "perceived_difficulty": perceived_difficulty,
+                }
+            )
 
-        messages = json.dumps(
-            {
-                "selected_multiple_choice_answer": selected_multiple_choice_answer,
-                "question_id": question_id,
-                "written_answer": written_answer,
-                "perceived_difficulty": perceived_difficulty,
-            }
-        )
+            return redirect(url_for("show_submission_info", messages=messages))
+            
 
-        return redirect(url_for("show_submission_info", messages=messages))
-
+    
     selected_question_obj = db.get_question_by_obj_id(selected_question_id)
-    question_image = db.get_question_image(selected_question_obj.id)
+   
+    #list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(selected_question_obj)
+    #question_image = db.get_question_image(selected_question_obj.id)
 
     list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(
         selected_question_obj)
 
     current_user_role = db.get_user_role()
-    if current_user_role == "Admin" or current_user_role == "Teacher":
+    if (current_user_role == "Admin" or current_user_role == "Teacher") and selected_question_obj.correctness_of_the_answers:
         correct_answer_idx = selected_question_obj.correctness_of_the_answers.index(max(selected_question_obj.correctness_of_the_answers))
         correct_answer = (
             "The correct answer is: " + selected_question_obj.potential_answers[correct_answer_idx]
@@ -340,12 +370,7 @@ def answer_selected_question():
 
     return render_template(
         "submit_answer/selected_question_page.html",
-        data=list_of_options,
-        selection_data=idx_list_for_options,
-        question_id=selected_question_obj.id,
-        question_text=selected_question_obj.body,
-        correct_answer=correct_answer,
-        question_image=question_image,
+        question=selected_question_obj, correct_answer=correct_answer
     )
 
 
@@ -356,34 +381,41 @@ def show_submission_info():
     selected_multiple_choice_answer = json.loads(messages)[
         "selected_multiple_choice_answer"
     ]
+    print("Message:", selected_multiple_choice_answer.isnumeric())
     question_id = json.loads(messages)["question_id"]
     written_answer = json.loads(messages)["written_answer"]
     perceived_difficulty = json.loads(messages)["perceived_difficulty"]
 
     answered_question_obj = db.get_question_by_obj_id(question_id)
-    db.write_answer_to_mongo(
-        answered_question_obj,
-        written_answer,
-        selected_multiple_choice_answer,
-        perceived_difficulty,
-    )
 
-    options_list = answered_question_obj.potential_answers
-    display_answer = str(options_list[int(selected_multiple_choice_answer)])
+    # Quick fix for making the thing work with multiple questiontypes, must be fixed after august
+    if selected_multiple_choice_answer.isnumeric():
+        db.write_answer_to_mongo(
+            answered_question_obj,
+            written_answer,
+            selected_multiple_choice_answer,
+            perceived_difficulty,
+        )
 
-    #data, _ = db.list_question_objects()
-    info_plot  = db.make_course_plot(question_id)
-    #info_plot = db.make_bar_plot(data)
-    # db.make_correctness_percentage_plot(question_id)
-    perceived_difficulty = db.get_avg_perceived_difficulty(question_id)
+        options_list = answered_question_obj.potential_answers
+        display_answer = str(options_list[int(selected_multiple_choice_answer)])
 
-    return render_template(
-        "submit_answer/answer_submitted_successfully.html",
-        answer=display_answer,
-        question=answered_question_obj.body,
-        plot=info_plot,
-        perceived_difficulty=perceived_difficulty,
-    )
+        #data, _ = db.list_question_objects()
+        info_plot  = db.make_course_plot(question_id)
+        #info_plot = db.make_bar_plot(data)
+        # db.make_correctness_percentage_plot(question_id)
+        perceived_difficulty = db.get_avg_perceived_difficulty(question_id)
+
+        return render_template(
+            "submit_answer/answer_submitted_successfully.html",
+            answer=display_answer,
+            question=answered_question_obj.body,
+            plot=info_plot,
+            perceived_difficulty=perceived_difficulty,
+        )
+    else:
+        return render_template("submit_answer/answer_submitted_successfully.html", answer=selected_multiple_choice_answer, question=answered_question_obj.body)
+
 
 
 @app.route("/get-tex/<tex_name>", methods=["GET", "POST"])
