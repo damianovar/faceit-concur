@@ -18,7 +18,7 @@
 <div class="container mb-2">
   <h2>Answer by selecting one of the options and submitting</h2>
   <hr>
-  <b> {{ question.body }} </b> 
+  <p> {{ question.body }} </p> 
 
   {% if question.body_image != None %}
   <br><br>
@@ -26,6 +26,7 @@
   {% endif %}
 
   <form method="POST" id="download_form">
+  {% if question.question_type == "multiple choice" %}
     <table id="table" data-toggle="table" data-search="false" data-advanced-search="false" data-search-align="right"
             data-show-columns="false" data-show-toggle="false" data-show-refresh="false" data-show-fullscreen="false"
             data-show-pagination-switch="false" data-filter-control="false" data-filter-show-clear="false"
@@ -59,7 +60,11 @@
     <i> {{ correct_answer }} </i>
     <br><br>
     {% endif %}
-
+{% else %}
+      <b>Insert answer here:</b><br>
+    <textarea rows="4" cols="80" name="answer"></textarea>
+    <br>
+{% endif %}
     <style>
       .txt-center {
         text-align: center;
