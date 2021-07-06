@@ -123,7 +123,12 @@ def list_question_objects(question_type='multiple choice', cu=None):
     list_of_questions_attributes    = []
     list_of_questions_IDs = []
     # scan all the questions in the MongoDB
-    for question in Question.objects(question_type=question_type, content_units__in = cu):
+    if cu is not None:
+        questions = Question.objects(question_type=question_type, content_units__in = cu)
+    else:
+        questions = Question.objects(question_type=question_type)
+
+    for question in questions:
 
         # save the id
         list_of_questions_IDs.append(question.id)

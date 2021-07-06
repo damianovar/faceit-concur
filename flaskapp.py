@@ -471,7 +471,7 @@ def downloads():
         return redirect(request.url)
 
     # Check one which is used - 1 or 2
-    data, selection_data = db.list_question_objects()
+    data, selection_data = db.list_question_objects('multiple choice')
     
     return render_template(
         "downloads.html", title="Downloads", data=data, selection_data=selection_data
