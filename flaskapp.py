@@ -19,11 +19,12 @@ from typing import *
 from backend.upload.upload_script import Upload
 from backend.download.download_script import Download
 from backend.user.forms import RegistrationForm, LoginForm
+from backend.questions.forms import QuestionFilterForm
 
 import backend.graph.visualization as vis
 
 from backend.user.models import Account
-from backend.models.models import Institution, Course, User, Test
+from backend.models.models import Institution, Course, User, Test, CU
 from backend.graph.graphDb import get_course_names_and_id, get_graph_from_id, create_course, delete_course, get_graphs_from_excel_file, get_multiple_graph
 
 import db
@@ -239,14 +240,29 @@ def upload_tex():
 
 @app.route("/submit_answer", methods=["GET", "POST"])
 @login_required
+def filter_questions():
+    """Return a page for registering a user."""
+    form = QuestionFilterForm()
+    form.question_type.choices = ['multiple choice']
+    form.cu.choices = [
+        cu.name for cu in CU.objects()]
+    if request.method == 'POST':
+        cu = request.form.get("cu")
+        return redirect(url_for("show_questions", cu=cu))
+    return render_template("submit_answer/filter_questions.html", title="Filter Questions", form=form)
+    # retrieve the filter
+    # return redirect(url_for(""))
 
+@app.route("/submit_answer/show_questions", methods=["GET", "POST"])
 def show_questions():
-    data, selection_data = db.list_question_objects("multiple choice")
+    cu_name = request.args["cu"]
+    cu = CU.objects(name=cu_name)
+    data, selection_data = db.list_question_objects("multiple choice", cu)
     if request.method == "POST":
         selected_question = request.form.get("question_button")
         messages = json.dumps({"selected_question_id": selected_question})
         return redirect(url_for("answer_selected_question", messages=messages))
-    data, selection_data = db.list_question_objects()
+    #data, selection_data = db.list_question_objects()
     return render_template(
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )

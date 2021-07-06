@@ -110,7 +110,7 @@ def list_CU_filtered_question_objects(querry : str):
 
     return list_of_questions_attributes, list_of_questions_IDs
                    
-def list_question_objects(question_type='multiple choice'):
+def list_question_objects(question_type='multiple choice', cu=None):
     """
         Goes through the collection of questions (object type Question)
         on the MongoDB server, and extracts the data into python lists
@@ -122,9 +122,8 @@ def list_question_objects(question_type='multiple choice'):
     # storage allocation
     list_of_questions_attributes    = []
     list_of_questions_IDs = []
-
     # scan all the questions in the MongoDB
-    for question in Question.objects():
+    for question in Question.objects(question_type=question_type, content_units__in = cu):
 
         # save the id
         list_of_questions_IDs.append(question.id)
@@ -399,7 +398,6 @@ def get_course(name):
 
 def get_amount_of_cus_in_course(course: str) -> int:
     return len(Course.objects(name=course).first().taught_cus_list)
-
 
 # Example function to manually add data
 def add_institution():
