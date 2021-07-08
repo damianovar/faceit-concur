@@ -6,20 +6,21 @@
     <div class="row">
       <div class="col">
   
-        <h1>Upload TeX-file</h1>
+        <h1>Upload exercises</h1>
+        <h5>(these should be in that .tex format you find in the 'Example Of How Downloaded Exercises Look Like In Tex' in the manuals and templates webpage)</h5>
         <hr>
   
         <form action="/upload" method="POST" enctype="multipart/form-data">
   
           <div class="form-group">
-            <label>Select image</label>
+            <label>Select the .zip file containing the various .tex files you want to upload</label>
             <div class="custom-file">
               <input type="file" class="custom-file-input" name="zipf" id="zipf" data-multiple-caption="{count} files selected" multiple>
-              <label class="custom-file-label" for="zipf">Select tex...</label>
+              <label class="custom-file-label" for="zipf">Select file</label>
             </div>
           </div>
   
-          <button type="submit" class="btn btn-primary">Upload</button>
+          <button type="submit" class="btn btn-primary">upload in the database</button>
   
         </form>
   

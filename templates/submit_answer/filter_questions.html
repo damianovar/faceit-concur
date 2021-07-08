@@ -4,10 +4,11 @@
 {% block main %}
 
 <div class="container mb-2">
-  <h2>Select the filters to select the questions you would like to answer</h2>
+  <h2>Filter which questions you would like to answer</h2>
   <hr>
   <form id="filter_questions_form"  method="POST" onkeydown="return event.key != 'Enter';">  
     <div class="form-group">
+	<label>Select the type of question here:</label>
       {{ form.question_type.label(class="form-control-label register-label") }}
       {% if form.question_type.errors %}
           {{ form.question_type(class="form-control form-control-lg is-invalid") }}
@@ -20,7 +21,10 @@
           {{ form.question_type(class="form-control form-control-lg") }}
       {% endif %}
     </div>
+  <hr>
+  <hr>
     <div class="form-group">
+	<label>Select to which content unit the question refers to here:</label>
       {{ form.cu.label(class="form-control-label register-label") }}
       {% if form.cu.errors %}
           {{ form.cu(class="form-control form-control-lg is-invalid") }}
@@ -33,6 +37,8 @@
           {{ form.cu(class="form-control form-control-lg") }}
       {% endif %}
     </div>
+  <hr>
+  <hr>
     <div class="form-group text-center ">
       {{ form.submit(class="submit-btn") }}
     </div>

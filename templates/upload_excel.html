@@ -6,36 +6,35 @@
   <div class="row">
     <div class="col">
 
-      <h1>Create course</h1>
+      <h1>upload a learning flow map</h1>
+      <h5>(use the 'Template For Defining A Learning Flow Map' in the manuals and templates webpage to create your own map)</h5>
       <hr>
 
       <form action="/upload_excel" method="POST" enctype="multipart/form-data">
         <div class="form-group">
-          <label for="course_name">Course name:</label><br>
+          <label for="course_name">Name of the map (or of the course):</label><br>
           <input type="text" id="course_name" name="course_name"><br>
         </div>
 
         <div class="form-group">
-            <label for="course_code">Course code:</label><br>
+            <label for="course_code">Code of the map (or of the course):</label><br>
             <input type="text" id="course_code" name="course_code"><br>
         </div>
 
         <div class="form-group">
-            <label for="course_institution">Course institution:</label><br>
+            <label for="course_institution">Institution:</label><br>
             <input type="text" id="course_institution" name="course_institution"><br>
         </div>
 
-
-
         <div class="form-group">
-          <label>Select image</label>
+          <label>Spreadsheet containing the information to create the map:</label>
           <div class="custom-file">
             <input type="file" class="custom-file-input" name="xlsx" id="xlsx" data-multiple-caption="{count} files selected" multiple>
-            <label class="custom-file-label" for="zipf">Select Excel file...</label>
+            <label class="custom-file-label" for="zipf">Select file...</label>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Upload</button>
+        <button type="submit" class="btn btn-primary">Upload the information</button>
 
       </form>
 
