@@ -3,7 +3,7 @@
 {% block title %}Upload{% endblock %}
 {% block main %}
 
-<h1>List of guides and templates</h1>
+<h1>manuals and templates</h1>
 
     <ol style="list-style-type: none;">
         {% for filename in relevant_files%}
@@ -11,14 +11,11 @@
             <form method="POST">
                 <h4 style="text-transform: capitalize;">{{filename}}</h4> 
                 <input name="filename" id="filename" value="{{filename}}" style="display: none;">
-                <button class="btn btn-primary">Download</button>  
+                <button class="btn btn-primary">download this file</button>  
             </form>
             </li>
             <br>
         {% endfor%}
     </ol>
-    
-
-
 
 {% endblock %}
