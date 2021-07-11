@@ -68,6 +68,8 @@ Restrict access to certain access level e.g. Teacher, Admin, ... (TODO: list of 
 str access_level
 
 """
+
+
 def requires_access_level(access_level):
     def decorator(f):
         @wraps(f)
@@ -77,7 +79,7 @@ def requires_access_level(access_level):
                 return redirect(url_for('index'))
             elif access_level == session.get("user").get("role"):
                 print(session.get("user").get("role"))
-                return f(*args, **kwargs)    
+                return f(*args, **kwargs)
             else:
                 flash("You do not have access to this page. Sorry!")
                 return redirect(url_for('index'))
@@ -144,9 +146,9 @@ def graphs(sheet, mode):
     graph = dict(get_graph_from_id(sheet, mode))
     if mode == "hierarchies":
         return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"], course_names=json.dumps([]))
-    else: 
+    else:
         return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=graph["nodes"], edges=graph["edges"],  course_names=json.dumps([]))
-    
+
 
 @app.route("/multi_graphviz/<sheet>/<mode>")
 def multi_graph(sheet, mode):
@@ -154,12 +156,11 @@ def multi_graph(sheet, mode):
     print("Course names:", course_names)
     if mode == "hierarchies":
         return render_template("graph_visualization_hierarchy.html", title='Visualize graphs', nodes=node_list, edges=edge_list, course_names=course_names)
-    else: 
+    else:
         return render_template("graph_visualization_relations.html", title='Visualize graphs', nodes=node_list, edges=edge_list, course_names=course_names)
-    
 
 
-@app.route("/multi_graph", methods=["POST"])    
+@app.route("/multi_graph", methods=["POST"])
 def multi_graph_parser():
     if request.method == 'POST':
         search = request.get_json()
@@ -172,7 +173,7 @@ def graph_list():
     if request.method == "POST":
         if request.form['delete_button']:
             print("The delete feature is currently disabled")
-            #delete_course(request.form['delete_button'])
+            # delete_course(request.form['delete_button'])
 
     return render_template(
         "graphlist.html", title="Graph list", CU_files=zip(*get_course_names_and_id())
@@ -186,19 +187,22 @@ def create_test():
         test_name = request.form.get("test_name")
         question_list = request.form.getlist("id")
         if question_list and test_name:
-            db.add_new_test(test_name, question_list, session.get("user").get("username"))
+            db.add_new_test(test_name, question_list,
+                            session.get("user").get("username"))
         return redirect(request.url)
 
     return render_template("tests/create_test.html", data=data, selection_data=selection_data)
+
 
 @app.route("/select_test", methods=["GET", "POST"])
 def select_test():
     if request.method == "POST":
         if request.form["id"]:
             return redirect("/submit_answer/test/" + str(request.form["id"]))
-            
+
     list_of_tests = [[test.name, test.id] for test in Test.objects()]
     return render_template("tests/select_test.html", list_of_tests=list_of_tests)
+
 
 @app.route("/upload_excel", methods=["GET", "POST"])
 def upload_excel():
@@ -209,8 +213,10 @@ def upload_excel():
             course_code = request.form["course_code"]
             course_institution = request.form["course_institution"]
 
-            relationship_graph, hierarchy_graph = get_graphs_from_excel_file(excel_file, course_name)
-            create_course(course_name, course_code, course_institution, relationship_graph, hierarchy_graph)
+            relationship_graph, hierarchy_graph = get_graphs_from_excel_file(
+                excel_file, course_name)
+            create_course(course_name, course_code, course_institution,
+                          relationship_graph, hierarchy_graph)
 
             return redirect(request.url)
 
@@ -253,6 +259,7 @@ def filter_questions():
     # retrieve the filter
     # return redirect(url_for(""))
 
+
 @app.route("/submit_answer/show_questions", methods=["GET", "POST"])
 def show_questions():
     cu_name = request.args["cu"]
@@ -267,6 +274,7 @@ def show_questions():
         "submit_answer/question_list.html", data=data, selection_data=selection_data
     )
 
+
 @app.route("/guides_and_templates", methods=['GET', 'POST'])
 def guides_and_templates():
     current_dir = os.getcwd()
@@ -277,33 +285,42 @@ def guides_and_templates():
         for item in items:
             if item.startswith(request.form["filename"]):
                 full_filename = item
-                break 
+                break
         return send_from_directory(directory=os.getcwd() + '/faceit-concur/guides', filename=full_filename, as_attachment=True)
 
-
     items_in_directory = [os.path.splitext(item)[0] for item in items]
-    return render_template("guides_and_templates.html", relevant_files=items_in_directory)
+    return render_template("guides_and_templates.html", relevant_files=items_in_directory, title="Guide")
 
 
-@app.route("/submit_answer/<mode>/<querry>", methods=["GET","POST"])
-def filtered_question_list(mode,querry):
-    if mode=="CU":
+@app.route("/workshops", methods=['GET', 'POST'])
+def workshops():
+    return render_template("workshops.html", title="Workshops")
+
+
+@app.route("/credits", methods=['GET', 'POST'])
+def credits():
+    return render_template("credits.html", title="Credits")
+
+
+@app.route("/submit_answer/<mode>/<querry>", methods=["GET", "POST"])
+def filtered_question_list(mode, querry):
+    if mode == "CU":
         data, selection_data = db.list_CU_filtered_question_objects(querry)
         if request.method == "POST":
             selected_question = request.form.get("question_button")
             messages = json.dumps({"selected_question_id": selected_question})
             return redirect(url_for("answer_selected_question", messages=messages))
-    elif mode=="test":
+    elif mode == "test":
         data, selection_data = db.list_test_filtered_question_objects(querry)
         if request.method == "POST":
             selected_question = request.form.get("question_button")
             messages = json.dumps({"selected_question_id": selected_question})
             return redirect(url_for("answer_selected_question", messages=messages))
-    
+
     return render_template(
-            "submit_answer/question_list.html", data=data, selection_data=selection_data
-        )
-    
+        "submit_answer/question_list.html", data=data, selection_data=selection_data
+    )
+
 
 @app.route("/submit_answer/answer_selected_question", methods=["GET", "POST"])
 @login_required
@@ -328,7 +345,7 @@ def answer_selected_question():
                 return render_template(
                     "submit_answer/error_missing_selection.html",
                     title="Perceived difficulty not submitted", message="Perceived difficulty not submitted"
-                )            
+                )
 
             messages = json.dumps(
                 {
@@ -364,22 +381,22 @@ def answer_selected_question():
             )
 
             return redirect(url_for("show_submission_info", messages=messages))
-            
 
-    
     selected_question_obj = db.get_question_by_obj_id(selected_question_id)
-   
+
     #list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(selected_question_obj)
     #question_image = db.get_question_image(selected_question_obj.id)
 
-    #list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(
+    # list_of_options, idx_list_for_options = db.get_answer_options_from_question_obj(
     #    selected_question_obj)
 
     current_user_role = db.get_user_role()
     if (current_user_role == "Admin" or current_user_role == "Teacher") and selected_question_obj.correctness_of_the_answers:
-        correct_answer_idx = selected_question_obj.correctness_of_the_answers.index(max(selected_question_obj.correctness_of_the_answers))
+        correct_answer_idx = selected_question_obj.correctness_of_the_answers.index(
+            max(selected_question_obj.correctness_of_the_answers))
         correct_answer = (
-            "The correct answer is: " + selected_question_obj.potential_answers[correct_answer_idx]
+            "The correct answer is: " +
+            selected_question_obj.potential_answers[correct_answer_idx]
         )
     else:  # current_user_role == 'Student'
         correct_answer = None
@@ -414,10 +431,11 @@ def show_submission_info():
         )
 
         options_list = answered_question_obj.potential_answers
-        display_answer = str(options_list[int(selected_multiple_choice_answer)])
+        display_answer = str(
+            options_list[int(selected_multiple_choice_answer)])
 
         #data, _ = db.list_question_objects()
-        info_plot  = db.make_course_plot(question_id)
+        info_plot = db.make_course_plot(question_id)
         #info_plot = db.make_bar_plot(data)
         # db.make_correctness_percentage_plot(question_id)
         perceived_difficulty = db.get_avg_perceived_difficulty(question_id)
@@ -431,7 +449,6 @@ def show_submission_info():
         )
     else:
         return render_template("submit_answer/answer_submitted_successfully.html", answer=selected_multiple_choice_answer, question=answered_question_obj.body)
-
 
 
 @app.route("/get-tex/<tex_name>", methods=["GET", "POST"])
@@ -456,8 +473,6 @@ def get_image(tex_name):
 def downloads():
     """Let a user download questions."""
 
-
-
     if request.method == "POST":
         selection = request.form.getlist("id")
         if selection:
@@ -472,7 +487,7 @@ def downloads():
 
     # Check one which is used - 1 or 2
     data, selection_data = db.list_question_objects('multiple choice')
-    
+
     return render_template(
         "downloads.html", title="Downloads", data=data, selection_data=selection_data
     )
