@@ -77,7 +77,7 @@ def requires_access_level(access_level):
             if session.get("user") is None:
                 flash("You must be logged in to access this page")
                 return redirect(url_for('index'))
-            elif access_level == session.get("user").get("role"):
+            elif session.get("user").get("role") in access_level:
                 print(session.get("user").get("role"))
                 return f(*args, **kwargs)
             else:
@@ -224,7 +224,7 @@ def upload_excel():
 
 
 @app.route("/upload", methods=["GET", "POST"])
-@requires_access_level("Admin")
+@requires_access_level(["Admin", "Teacher"])
 def upload_tex():
     """Upload a tex-file."""
     if request.method == "POST":
